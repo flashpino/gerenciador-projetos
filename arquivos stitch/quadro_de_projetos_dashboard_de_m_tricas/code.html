@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sprint Alpha Q3 - Dashboard Métricas</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary-fixed-variant": "#00522b",
+            "secondary-container": "#6f5fea",
+            "on-background": "#191b29",
+            "on-primary-fixed": "#001a40",
+            "tertiary-container": "#00884b",
+            "on-tertiary": "#ffffff",
+            "surface-container-low": "#f4f2ff",
+            "inverse-on-surface": "#f0efff",
+            "outline": "#717785",
+            "surface-container-high": "#e7e6fb",
+            "surface-bright": "#fbf8ff",
+            "on-tertiary-fixed": "#00210e",
+            "tertiary-fixed-dim": "#39e186",
+            "tertiary": "#006c3a",
+            "on-primary": "#ffffff",
+            "surface-variant": "#e1e1f5",
+            "on-surface-variant": "#414754",
+            "error-container": "#ffdad6",
+            "primary-container": "#0073ea",
+            "surface-dim": "#d9d8ec",
+            "primary-fixed": "#d7e2ff",
+            "on-error": "#ffffff",
+            "surface-tint": "#005cbd",
+            "inverse-primary": "#acc7ff",
+            "on-secondary-fixed-variant": "#4029ba",
+            "inverse-surface": "#2e2f3e",
+            "on-secondary-container": "#fffbff",
+            "surface-container-highest": "#e1e1f5",
+            "on-error-container": "#93000a",
+            "on-primary-container": "#ffffff",
+            "on-tertiary-container": "#ffffff",
+            "secondary": "#5644d0",
+            "tertiary-fixed": "#5effa0",
+            "outline-variant": "#c1c6d6",
+            "on-secondary-fixed": "#160066",
+            "surface-container-lowest": "#ffffff",
+            "secondary-fixed": "#e4dfff",
+            "secondary-fixed-dim": "#c6bfff",
+            "surface-container": "#edecff",
+            "primary": "#005bbc",
+            "surface": "#fbf8ff",
+            "on-primary-fixed-variant": "#004590",
+            "primary-fixed-dim": "#acc7ff",
+            "on-surface": "#191b29",
+            "background": "#fbf8ff",
+            "on-secondary": "#ffffff",
+            "error": "#ba1a1a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin": "1.5rem",
+            "space-md": "0.75rem",
+            "space-xl": "2rem",
+            "space-sm": "0.5rem",
+            "space-xs": "0.25rem",
+            "space-lg": "1.25rem",
+            "gutter": "1rem"
+          },
+          "fontFamily": {
+            "label-md": ["Plus Jakarta Sans"],
+            "display-lg": ["Plus Jakarta Sans"],
+            "body-md": ["Plus Jakarta Sans"],
+            "body-sm": ["Plus Jakarta Sans"],
+            "title-sm": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "cell-data": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+            "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "title-sm": ["15px", { "lineHeight": "20px", "letterSpacing": "-0.005em", "fontWeight": "600" }],
+            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "700" }],
+            "cell-data": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "500" }],
+            "headline-md": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased h-full overflow-hidden flex">
+<!-- ========================================================= -->
+<!-- SIDE NAV BAR (Shared Component Execution)                -->
+<!-- ========================================================= -->
+<aside class="fixed left-0 top-0 h-screen w-60 z-40 bg-inverse-surface border-r border-outline flex flex-col justify-between p-space-md text-inverse-on-surface">
+<!-- Top Workspace Branding & Account Block -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center gap-space-sm pb-space-sm border-b border-surface-variant/20">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-on-primary font-headline-md font-extrabold shadow-sm shrink-0">
+          SQ
+        </div>
+<div class="flex flex-col truncate">
+<span class="text-headline-md font-headline-md text-inverse-on-surface font-extrabold truncate">Squad Ágil Core</span>
+<span class="text-label-sm font-label-sm text-surface-dim truncate">Plano Pro Workspace</span>
+</div>
+</div>
+<!-- Main Navigation Rail Links -->
+<nav class="flex flex-col gap-space-xs mt-space-xs">
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-surface-dim hover:text-inverse-on-surface hover:bg-surface-variant/10 rounded-lg transition-colors active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-[20px]">workspaces</span>
+<span class="font-label-md text-label-md">Workspaces</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm bg-primary-container text-on-primary-container rounded-lg font-label-md active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-md text-label-md">Meus Painéis</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-surface-dim hover:text-inverse-on-surface hover:bg-surface-variant/10 rounded-lg transition-colors active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-[20px]">star</span>
+<span class="font-label-md text-label-md">Favoritos</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-surface-dim hover:text-inverse-on-surface hover:bg-surface-variant/10 rounded-lg transition-colors active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-[20px]">history</span>
+<span class="font-label-md text-label-md">Atividades</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-surface-dim hover:text-inverse-on-surface hover:bg-surface-variant/10 rounded-lg transition-colors active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-[20px]">folder_special</span>
+<span class="font-label-md text-label-md">Modelos</span>
+</a>
+</nav>
+<!-- CTA Button for SideNavBar -->
+<button class="w-full flex items-center justify-center gap-space-sm bg-primary hover:bg-primary-container text-on-primary rounded-lg py-space-sm px-space-md text-label-md font-label-md shadow-sm transition-colors active:scale-[0.98] mt-space-xs">
+<span class="material-symbols-outlined text-[18px]">add</span>
+        Novo Painel
+      </button>
+</div>
+<!-- SideNavBar Footer Actions -->
+<div class="flex flex-col gap-space-xs border-t border-surface-variant/20 pt-space-md">
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-surface-dim hover:text-inverse-on-surface hover:bg-surface-variant/10 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="font-label-md text-label-md">Notificações</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-surface-dim hover:text-inverse-on-surface hover:bg-surface-variant/10 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">help</span>
+<span class="font-label-md text-label-md">Ajuda</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-surface-dim hover:text-inverse-on-surface hover:bg-surface-variant/10 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="font-label-md text-label-md">Configurações</span>
+</a>
+<!-- User profile quick card -->
+<div class="mt-space-sm p-space-sm rounded-lg bg-surface-variant/10 flex items-center gap-space-sm">
+<img alt="Avatar do Usuário" class="w-8 h-8 rounded-full object-cover border border-outline-variant/40" data-alt="High quality professional headshot of a female Agile project manager smiling with warm lighting in a contemporary creative tech studio environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFgnzxs4lk2O06nPdHTDsGL9T47QbbiAwKzeU7OiPZwIcVYc1IqbcFWDV2HqS0fKVReEQ4q4G_SzHXQupk5rO93PSviSL3jSwfQSK92fWKLwsPs5kDtIAqkk-1lcDy4JPvDc5UvjqHFtKJtJboMpGcydYpzD4U8cfg4hky_3EgLEdquh3v_UlzquuaT2rc2B20iLtUs4WKE_m3o1qsXZGCaicDA9-cV4w9S2sxNScVvOLQCSudzsZy"/>
+<div class="flex flex-col truncate">
+<span class="text-label-md font-label-md text-inverse-on-surface truncate">Juliana Mendes</span>
+<span class="text-label-sm font-label-sm text-surface-dim truncate">Product Lead</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- ========================================================= -->
+<!-- MAIN WORKSPACE CONTENT CONTAINER (Offset for SideNavBar)  -->
+<!-- ========================================================= -->
+<div class="pl-60 flex-1 flex flex-col h-screen overflow-hidden">
+<!-- TopNavBar (Shared Component Execution) -->
+<header class="docked full-width top-0 sticky z-30 flex flex-col w-full bg-surface px-space-lg pt-space-md border-b border-outline-variant bg-surface-container-lowest">
+<!-- Upper Header Row -->
+<div class="flex items-center justify-between pb-space-sm">
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-space-sm">
+<h1 class="text-headline-lg font-headline-lg font-bold text-on-surface">Sprint Alpha Q3</h1>
+<button class="p-space-xs text-outline hover:text-primary rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[20px]">star</span>
+</button>
+</div>
+<span class="text-label-sm font-label-sm bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded-full font-bold">
+            Ativo
+          </span>
+</div>
+<!-- Trailing action clusters -->
+<div class="flex items-center gap-space-sm">
+<!-- Search in Bar -->
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-outline">search</span>
+<input class="w-full pl-9 pr-3 py-1.5 text-body-sm font-body-sm bg-surface-container rounded-lg border-0 focus:ring-2 focus:ring-primary text-on-surface placeholder:text-outline" placeholder="Buscar no painel..." type="text"/>
+</div>
+<!-- Trailing Icons from JSON -->
+<div class="flex items-center bg-surface-container-high/40 rounded-lg p-0.5 border border-outline-variant/50">
+<button class="p-space-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded transition-colors" title="Filtrar">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+</button>
+<button class="p-space-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded transition-colors" title="Pessoas">
+<span class="material-symbols-outlined text-[18px]">person</span>
+</button>
+<button class="p-space-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded transition-colors" title="Ordenar">
+<span class="material-symbols-outlined text-[18px]">sort</span>
+</button>
+<button class="p-space-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded transition-colors" title="Ajustes">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+</button>
+</div>
+<!-- Invite Action -->
+<button class="px-space-md py-space-xs text-label-md font-label-md text-on-surface bg-surface-container-lowest border border-outline-variant hover:bg-surface-container rounded-lg transition-all active:scale-[0.98] flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">group_add</span>
+            Convidar / Integrantes
+          </button>
+<!-- New Item Action -->
+<button class="px-space-md py-space-xs text-label-md font-label-md text-on-primary bg-primary-container hover:bg-primary rounded-lg transition-all shadow-sm active:scale-[0.98] flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">add</span>
+            Novo Item
+          </button>
+<!-- Profile Leader Avatar -->
+<img alt="Avatar Perfil Líder de Projeto" class="w-8 h-8 rounded-full object-cover border-2 border-primary/20" data-alt="Close-up executive headshot of an experienced technology lead with glasses and confident professional demeanor against a clean studio backdrop." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBi7gs2llDj_EaTEn02LkSxJFmFhOQFSnkGEE7aGiGRXx4gQcAhibEH3_bBWcMvLrm_K020n_rN8V4q5SbreSAYyXaxqUGv_TDg9r4K7n8hRhFP0AMVGJhd8HQms0Vk6DgjS8FcSb1OQXAPXjNy93aXQlz-XDxCrXOYEVWUZ6JCkD7b1ke2gh7_dnByIuD3-gvxLwJlyj9PTOAfuzzaHkZA_X91sUx2_tFFHFP1ftqiYCspVgeWA-Hc"/>
+</div>
+</div>
+<!-- Lower Sub-navigation Tabs -->
+<div class="flex items-center gap-space-lg text-title-sm font-title-sm border-t border-outline-variant/30 pt-space-xs overflow-x-auto">
+<a class="text-on-surface-variant hover:text-on-surface pb-space-xs transition-colors flex items-center gap-1.5 whitespace-nowrap" href="#">
+<span class="material-symbols-outlined text-[18px]">table_chart</span>
+          Tabela Principal
+        </a>
+<a class="text-on-surface-variant hover:text-on-surface pb-space-xs transition-colors flex items-center gap-1.5 whitespace-nowrap" href="#">
+<span class="material-symbols-outlined text-[18px]">view_kanban</span>
+          Kanban
+        </a>
+<a class="text-on-surface-variant hover:text-on-surface pb-space-xs transition-colors flex items-center gap-1.5 whitespace-nowrap" href="#">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span>
+          Cronograma Gantt
+        </a>
+<!-- ACTIVE TAB: Dashboard Métricas -->
+<a class="border-b-2 border-primary text-primary font-title-sm pb-space-xs flex items-center gap-1.5 whitespace-nowrap" href="#">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">monitoring</span>
+          Dashboard Métricas
+        </a>
+</div>
+</header>
+<!-- Sub-Header / Dashboard Controls Bar -->
+<section class="bg-surface-container-low/60 px-space-lg py-space-sm border-b border-outline-variant flex flex-wrap items-center justify-between gap-space-md">
+<!-- Period Filters -->
+<div class="flex items-center gap-space-xs bg-surface-container-lowest p-1 rounded-lg border border-outline-variant/70 shadow-sm">
+<button class="px-space-md py-1 rounded text-label-md font-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors">
+          Últimos 30 dias
+        </button>
+<button class="px-space-md py-1 rounded bg-primary-container text-on-primary-container text-label-md font-label-md font-bold shadow-xs">
+          Este Sprint
+        </button>
+<button class="px-space-md py-1 rounded text-label-md font-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors">
+          Q3 2024
+        </button>
+<div class="h-4 w-px bg-outline-variant mx-1"></div>
+<button class="px-space-sm py-1 text-label-md font-label-md text-on-surface-variant hover:text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+          Personalizado
+        </button>
+</div>
+<!-- Action buttons: Export & Customize -->
+<div class="flex items-center gap-space-sm">
+<div class="relative group">
+<button class="px-space-md py-1.5 bg-surface-container-lowest hover:bg-surface-container border border-outline-variant text-on-surface text-label-md font-label-md rounded-lg flex items-center gap-space-xs transition-all shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-outline">file_download</span>
+            Exportar Relatório
+            <span class="material-symbols-outlined text-[14px] text-outline">expand_more</span>
+</button>
+</div>
+<button class="px-space-md py-1.5 bg-surface-container-lowest hover:bg-surface-container border border-outline-variant text-primary text-label-md font-label-md rounded-lg flex items-center gap-space-xs transition-all shadow-sm">
+<span class="material-symbols-outlined text-[16px]">dashboard_customize</span>
+          Personalizar Widgets
+        </button>
+</div>
+</section>
+<!-- Main Scrollable Dashboard Canvas -->
+<main class="flex-1 overflow-y-auto p-space-lg space-y-space-lg bg-surface">
+<!-- 1. SCORECARDS / KPIS RÁPIDOS -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
+<!-- Scorecard 1: Taxa de Conclusão -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl border border-outline-variant shadow-sm hover:border-primary/50 transition-colors flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<span class="text-label-md font-label-md text-on-surface-variant">Taxa de Conclusão</span>
+<div class="w-7 h-7 rounded-lg bg-tertiary-container/10 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+</div>
+</div>
+<div class="mt-space-sm">
+<div class="flex items-baseline gap-space-sm">
+<span class="text-display-lg font-display-lg text-on-surface">78.4%</span>
+<span class="text-label-sm font-label-sm font-bold text-tertiary flex items-center">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span> +12%
+              </span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">vs sprint anterior</p>
+</div>
+<!-- Sparkline Chart ascendente -->
+<div class="mt-space-sm pt-space-xs border-t border-outline-variant/30 flex items-end justify-between h-8 gap-1">
+<div class="w-full bg-tertiary-container/20 hover:bg-tertiary-container rounded-t h-[35%] transition-all"></div>
+<div class="w-full bg-tertiary-container/30 hover:bg-tertiary-container rounded-t h-[45%] transition-all"></div>
+<div class="w-full bg-tertiary-container/40 hover:bg-tertiary-container rounded-t h-[40%] transition-all"></div>
+<div class="w-full bg-tertiary-container/50 hover:bg-tertiary-container rounded-t h-[65%] transition-all"></div>
+<div class="w-full bg-tertiary-container/70 hover:bg-tertiary-container rounded-t h-[70%] transition-all"></div>
+<div class="w-full bg-tertiary-container/80 hover:bg-tertiary-container rounded-t h-[85%] transition-all"></div>
+<div class="w-full bg-tertiary-container rounded-t h-[100%] transition-all"></div>
+</div>
+</div>
+<!-- Scorecard 2: Tarefas em Atraso / Gargalos -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl border border-error/40 bg-error-container/10 shadow-sm flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<span class="text-label-md font-label-md text-error">Tarefas em Atraso</span>
+<div class="w-7 h-7 rounded-lg bg-error-container flex items-center justify-center text-error">
+<span class="material-symbols-outlined text-[18px]">warning</span>
+</div>
+</div>
+<div class="mt-space-sm">
+<div class="flex items-baseline gap-space-sm">
+<span class="text-display-lg font-display-lg text-error">3 tarefas</span>
+</div>
+<p class="text-body-sm font-body-sm text-error/80 mt-0.5 font-medium">Impactando prazo de entrega</p>
+</div>
+<div class="mt-space-sm pt-space-xs border-t border-error/20 flex items-center justify-between">
+<a class="text-label-sm font-label-sm text-error hover:underline flex items-center gap-1 font-bold" href="#">
+              Ver gargalos identificados
+              <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- Scorecard 3: Velocidade Média do Squad -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl border border-outline-variant shadow-sm hover:border-primary/50 transition-colors flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<span class="text-label-md font-label-md text-on-surface-variant">Velocidade Média</span>
+<div class="w-7 h-7 rounded-lg bg-secondary-container/15 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[18px]">speed</span>
+</div>
+</div>
+<div class="mt-space-sm">
+<div class="flex items-baseline gap-space-xs">
+<span class="text-display-lg font-display-lg text-on-surface">42</span>
+<span class="text-title-sm font-title-sm text-on-surface-variant font-medium">pts / semana</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">Meta: 40 story points</p>
+</div>
+<!-- Target progress bar -->
+<div class="mt-space-sm pt-space-xs border-t border-outline-variant/30">
+<div class="w-full bg-surface-container-high rounded-full h-2 overflow-hidden">
+<div class="bg-secondary h-2 rounded-full" style="width: 105%;"></div>
+</div>
+<span class="text-label-sm font-label-sm text-secondary font-semibold mt-1 block">105% da capacidade estimada</span>
+</div>
+</div>
+<!-- Scorecard 4: Eficiência de Prazo -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl border border-outline-variant shadow-sm hover:border-primary/50 transition-colors flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<span class="text-label-md font-label-md text-on-surface-variant">Eficiência de Prazo</span>
+<div class="w-7 h-7 rounded-lg bg-primary-container/15 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+</div>
+</div>
+<div class="mt-space-sm">
+<div class="flex items-baseline gap-space-sm">
+<span class="text-display-lg font-display-lg text-on-surface">91.2%</span>
+<span class="text-label-sm font-label-sm font-bold text-tertiary flex items-center">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> +3.5%
+              </span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">Entregas dentro da tolerância</p>
+</div>
+<div class="mt-space-sm pt-space-xs border-t border-outline-variant/30 flex items-center justify-between text-body-sm font-body-sm text-on-surface-variant">
+<span>Pontuais: <strong class="text-on-surface">31 de 34</strong></span>
+<span class="text-tertiary font-bold text-label-sm">Excelente</span>
+</div>
+</div>
+</div>
+<!-- 2. MAIN CHARTS BENTO GRID (Donut Monday style & Stacked Bars) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md">
+<!-- WIDGET DONUT: Distribuição de Status de Tarefas (Monday.com style) -->
+<div class="lg:col-span-5 bg-surface-container-lowest p-space-lg rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between border-b border-outline-variant/40 pb-space-sm">
+<div>
+<h2 class="text-title-sm font-title-sm text-on-surface">Distribuição de Status de Tarefas</h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Volume consolidado de 48 itens totais</p>
+</div>
+<button class="p-1 text-outline hover:text-on-surface rounded">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+<!-- SVG Donut Chart with Monday colors -->
+<div class="py-space-md flex flex-col sm:flex-row items-center justify-center gap-space-lg">
+<div class="relative w-44 h-44 shrink-0 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+<!-- Background circle -->
+<circle cx="50" cy="50" fill="none" r="38" stroke="#edecff" stroke-width="12"></circle>
+<!-- Concluído: 48% (green #00884b) -->
+<circle class="transition-all duration-500 hover:opacity-90 cursor-pointer" cx="50" cy="50" fill="none" r="38" stroke="#00884b" stroke-dasharray="114.6 238.8" stroke-dashoffset="0" stroke-width="12"></circle>
+<!-- Em Progresso: 32% (blue #0073ea) -->
+<circle class="transition-all duration-500 hover:opacity-90 cursor-pointer" cx="50" cy="50" fill="none" r="38" stroke="#0073ea" stroke-dasharray="76.4 238.8" stroke-dashoffset="-114.6" stroke-width="12"></circle>
+<!-- Revisão: 12% (orange/amber #e27525) -->
+<circle class="transition-all duration-500 hover:opacity-90 cursor-pointer" cx="50" cy="50" fill="none" r="38" stroke="#e27525" stroke-dasharray="28.6 238.8" stroke-dashoffset="-191" stroke-width="12"></circle>
+<!-- Travado: 8% (red #ba1a1a) -->
+<circle class="transition-all duration-500 hover:opacity-90 cursor-pointer" cx="50" cy="50" fill="none" r="38" stroke="#ba1a1a" stroke-dasharray="19.2 238.8" stroke-dashoffset="-219.6" stroke-width="12"></circle>
+</svg>
+<!-- Center Summary Text -->
+<div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+<span class="text-headline-lg font-headline-lg font-bold text-on-surface">48</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant uppercase">Tarefas</span>
+</div>
+</div>
+<!-- Monday Color Legend -->
+<div class="flex flex-col gap-space-xs w-full">
+<!-- Done -->
+<div class="flex items-center justify-between p-1.5 rounded hover:bg-surface-container transition-colors cursor-pointer">
+<div class="flex items-center gap-space-sm">
+<span class="w-3.5 h-3.5 rounded bg-[#00884b]"></span>
+<span class="text-cell-data font-cell-data text-on-surface">Concluído</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="text-label-md font-label-md text-on-surface">23</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">48%</span>
+</div>
+</div>
+<!-- In Progress -->
+<div class="flex items-center justify-between p-1.5 rounded hover:bg-surface-container transition-colors cursor-pointer">
+<div class="flex items-center gap-space-sm">
+<span class="w-3.5 h-3.5 rounded bg-[#0073ea]"></span>
+<span class="text-cell-data font-cell-data text-on-surface">Em Progresso</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="text-label-md font-label-md text-on-surface">15</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">32%</span>
+</div>
+</div>
+<!-- Review -->
+<div class="flex items-center justify-between p-1.5 rounded hover:bg-surface-container transition-colors cursor-pointer">
+<div class="flex items-center gap-space-sm">
+<span class="w-3.5 h-3.5 rounded bg-[#e27525]"></span>
+<span class="text-cell-data font-cell-data text-on-surface">Revisão</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="text-label-md font-label-md text-on-surface">6</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">12%</span>
+</div>
+</div>
+<!-- Stuck -->
+<div class="flex items-center justify-between p-1.5 rounded hover:bg-surface-container transition-colors cursor-pointer">
+<div class="flex items-center gap-space-sm">
+<span class="w-3.5 h-3.5 rounded bg-[#ba1a1a]"></span>
+<span class="text-cell-data font-cell-data text-on-surface">Travado</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="text-label-md font-label-md text-on-surface">4</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">8%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Footer Micro-stats -->
+<div class="bg-surface-container/60 p-space-sm rounded-lg flex items-center justify-between text-body-sm font-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-tertiary">check</span>
+              Maior avanço na semana: <strong>Squad Frontend</strong>
+</span>
+<span class="text-label-sm font-label-sm text-primary font-semibold cursor-pointer hover:underline">Ver Detalhes</span>
+</div>
+</div>
+<!-- WIDGET BARRAS EMPILHADAS: Progresso por Squad / Épico -->
+<div class="lg:col-span-7 bg-surface-container-lowest p-space-lg rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between border-b border-outline-variant/40 pb-space-sm">
+<div>
+<h2 class="text-title-sm font-title-sm text-on-surface">Progresso por Squad / Épico</h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Divisão percentual de status por núcleo de entrega</p>
+</div>
+<div class="flex items-center gap-space-sm">
+<!-- Mini indicator legend -->
+<div class="hidden sm:flex items-center gap-3 text-label-sm font-label-sm text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-xs bg-[#00884b]"></span> Concluído</span>
+<span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-xs bg-[#0073ea]"></span> Progresso</span>
+<span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-xs bg-[#e27525]"></span> Revisão</span>
+<span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-xs bg-[#ba1a1a]"></span> Travado</span>
+</div>
+<button class="p-1 text-outline hover:text-on-surface rounded">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Stacked Bars Cluster -->
+<div class="space-y-space-md my-space-md">
+<!-- Squad 1: Frontend -->
+<div>
+<div class="flex items-center justify-between text-body-sm font-body-sm mb-1">
+<span class="font-bold text-on-surface flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+                  Squad Frontend
+                </span>
+<span class="text-label-md font-label-md text-tertiary">75% Concluído (12/16)</span>
+</div>
+<!-- Stacked segments -->
+<div class="w-full h-7 rounded-lg overflow-hidden flex shadow-xs border border-outline-variant/30">
+<div class="bg-[#00884b] hover:opacity-90 transition-opacity flex items-center justify-center text-on-primary text-label-sm font-bold" style="width: 75%;" title="Concluído: 75%">75%</div>
+<div class="bg-[#0073ea] hover:opacity-90 transition-opacity flex items-center justify-center text-on-primary text-label-sm font-bold" style="width: 15%;" title="Em Progresso: 15%">15%</div>
+<div class="bg-[#e27525] hover:opacity-90 transition-opacity flex items-center justify-center text-on-primary text-label-sm font-bold" style="width: 5%;" title="Revisão: 5%"></div>
+<div class="bg-[#ba1a1a] hover:opacity-90 transition-opacity flex items-center justify-center text-on-primary text-label-sm font-bold" style="width: 5%;" title="Travado: 5%"></div>
+</div>
+</div>
+<!-- Squad 2: Backend -->
+<div>
+<div class="flex items-center justify-between text-body-sm font-body-sm mb-1">
+<span class="font-bold text-on-surface flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                  Squad Backend
+                </span>
+<span class="text-label-md font-label-md text-primary">45% Concluído (9/20)</span>
+</div>
+<div class="w-full h-7 rounded-lg overflow-hidden flex shadow-xs border border-outline-variant/30">
+<div class="bg-[#00884b] hover:opacity-90 transition-opacity flex items-center justify-center text-on-primary text-label-sm font-bold" style="width: 45%;" title="Concluído: 45%">45%</div>
+<div class="bg-[#0073ea] hover:opacity-90 transition-opacity flex items-center justify-center text-on-primary text-label-sm font-bold" style="width: 35%;" title="Em Progresso: 35%">35%</div>
+<div class="bg-[#e27525] hover:opacity-90 transition-opacity flex items-center justify-center text-on-primary text-label-sm font-bold" style="width: 10%;" title="Revisão: 10%">10%</div>
+<div class="bg-[#ba1a1a] hover:opacity-90 transition-opacity flex items-center justify-center text-on-primary text-label-sm font-bold" style="width: 10%;" title="Travado: 10%">10%</div>
+</div>
+</div>
+<!-- Squad 3: Mobile -->
+<div>
+<div class="flex items-center justify-between text-body-sm font-body-sm mb-1">
+<span class="font-bold text-on-surface flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-tertiary-container"></span>
+                  Squad Mobile
+                </span>
+<span class="text-label-md font-label-md text-on-surface-variant">50% Concluído (4/8)</span>
+</div>
+<div class="w-full h-7 rounded-lg overflow-hidden flex shadow-xs border border-outline-variant/30">
+<div class="bg-[#00884b] hover:opacity-90 transition-opacity flex items-center justify-center text-on-primary text-label-sm font-bold" style="width: 50%;" title="Concluído: 50%">50%</div>
+<div class="bg-[#0073ea] hover:opacity-90 transition-opacity flex items-center justify-center text-on-primary text-label-sm font-bold" style="width: 30%;" title="Em Progresso: 30%">30%</div>
+<div class="bg-[#e27525] hover:opacity-90 transition-opacity flex items-center justify-center text-on-primary text-label-sm font-bold" style="width: 20%;" title="Revisão: 20%">20%</div>
+</div>
+</div>
+<!-- Squad 4: UX/Design System -->
+<div>
+<div class="flex items-center justify-between text-body-sm font-body-sm mb-1">
+<span class="font-bold text-on-surface flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-secondary-container"></span>
+                  Squad UX &amp; Research
+                </span>
+<span class="text-label-md font-label-md text-tertiary">90% Concluído (9/10)</span>
+</div>
+<div class="w-full h-7 rounded-lg overflow-hidden flex shadow-xs border border-outline-variant/30">
+<div class="bg-[#00884b] hover:opacity-90 transition-opacity flex items-center justify-center text-on-primary text-label-sm font-bold" style="width: 90%;" title="Concluído: 90%">90%</div>
+<div class="bg-[#0073ea] hover:opacity-90 transition-opacity flex items-center justify-center text-on-primary text-label-sm font-bold" style="width: 10%;" title="Em Progresso: 10%">10%</div>
+</div>
+</div>
+</div>
+<div class="border-t border-outline-variant/40 pt-space-sm flex items-center justify-between text-body-sm font-body-sm text-on-surface-variant">
+<span>Velocidade de entrega agregada: <strong class="text-on-surface">3.8 tarefas / dia</strong></span>
+<button class="text-primary hover:text-primary-container font-label-md text-label-md flex items-center gap-1">
+              Ver breakdown completo de épicos
+              <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- 3. WORKLOAD & RECENT ACTIVITY FEED GRID -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md">
+<!-- WIDGET: Carga de Trabalho da Equipe (Workload) -->
+<div class="lg:col-span-7 bg-surface-container-lowest p-space-lg rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between border-b border-outline-variant/40 pb-space-sm">
+<div>
+<div class="flex items-center gap-space-sm">
+<h2 class="text-title-sm font-title-sm text-on-surface">Carga de Trabalho da Equipe (Workload)</h2>
+<span class="bg-surface-container text-on-surface-variant px-2 py-0.5 rounded text-label-sm font-bold">Capacidade: 38h / sem</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Balanceamento de esforço por sprint e detecção de sobrecarga</p>
+</div>
+<button class="p-1 text-outline hover:text-on-surface rounded">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+</button>
+</div>
+<!-- Workload Rows -->
+<div class="space-y-space-md my-space-md">
+<!-- Member 1: Lucas (Normal/Ideal) -->
+<div class="flex items-center gap-space-md">
+<img alt="Avatar Lucas Silva" class="w-10 h-10 rounded-full object-cover border border-outline-variant shrink-0" data-alt="Close up modern studio portrait of a young male Brazilian software engineer in casual dark hoodie looking focused and approachable." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzJCKohU_5wz1SqZzrFwTGaSKrEz8fycEF7SNmUA5awTzX3bz-MatGJLLigPyLkUjXMgzwmv6RJdADP0bF3vevsEQw921ryaG5hksagbaHh80Znz2sI8322RocU7rfNQZJ7VulUUZvXP0Fhn9925v4Me07kGZ2KndpkewRkiwCNi6xdo61JDF0EkYrVcHi8j3qFZKvSi9IvXmvZteBbhnL_ET6lXKxG1R6gsQcWcQV9ufJ3oGfd-56"/>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-center mb-1">
+<div class="truncate">
+<span class="text-cell-data font-cell-data font-bold text-on-surface">Lucas Silva</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant ml-2">Engenheiro Frontend</span>
+</div>
+<span class="text-label-md font-label-md text-tertiary bg-tertiary-container/10 px-2 py-0.5 rounded-full font-bold">
+                    34h / 38h (Ideal)
+                  </span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-3 overflow-hidden">
+<div class="bg-tertiary h-3 rounded-full" style="width: 89%;"></div>
+</div>
+</div>
+</div>
+<!-- Member 2: Juliana (Sobrecarregada / Overloaded) -->
+<div class="flex items-center gap-space-md">
+<img alt="Avatar Juliana Mendes" class="w-10 h-10 rounded-full object-cover border border-error/50 shrink-0" data-alt="Professional corporate headshot of a Latina female tech leader in tailored blazer with bright warm office lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDswgMFfZ3Hb7s6GxUKS18FWU7W7Ih-9b-3QgpJIxY36OPrsU2DTUYiwI27_dn_HCiHGrw1WfwZBOGWs9q1SDoabvbYEnuQbouXfkdqqYqYDwij400uLX8NuqDbv4lJn3VPIgzT5MsYOMHBBpWgM4g-Ac93eEmIBrgiQ1qbFShEjA1795ICEYvkedyfi9CxO8jbqrvalxWFRgX07b_a_EpKz8u4BI_02C5IYOyF3eeiDVd1Dh3_dAAS"/>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-center mb-1">
+<div class="truncate">
+<span class="text-cell-data font-cell-data font-bold text-on-surface">Juliana Mendes</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant ml-2">Tech Lead &amp; Arquiteta</span>
+</div>
+<span class="text-label-md font-label-md text-error bg-error-container/40 px-2 py-0.5 rounded-full font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">priority_high</span> 46h / 38h (Sobrecarga)
+                  </span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-3 overflow-hidden">
+<div class="bg-error h-3 rounded-full" style="width: 121%;"></div>
+</div>
+</div>
+</div>
+<!-- Member 3: Rafael (Balanceado) -->
+<div class="flex items-center gap-space-md">
+<img alt="Avatar Rafael Costa" class="w-10 h-10 rounded-full object-cover border border-outline-variant shrink-0" data-alt="Portrait photo of a young male UX designer with stylish glasses and beige sweater in an airy minimalist co-working studio." src="https://lh3.googleusercontent.com/aida-public/AB6AXuATc0TjQuOo-kQ6hRGidfTxn7t9n5ZInrqS7ktK086Tio8-WzRJa_VoGXFL5T7sM3IS0rCih3KORfjZzNaoiz9w_S27YvokNA1H1c9c6NhGIKXSwhjb5Mk1Tgc4TzyzBcP7N9_Jqwo2H-EOejAuWXzk0ZSBEC3pMER_vIcymT0--De9Mi6t_FjGtadlkLnLi7Pql3Ms3YA3tjYUAb2M9ey2zOuPHMaM0nPpUhPRqXuf4bBfriRpimpW"/>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-center mb-1">
+<div class="truncate">
+<span class="text-cell-data font-cell-data font-bold text-on-surface">Rafael Costa</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant ml-2">Product Designer</span>
+</div>
+<span class="text-label-md font-label-md text-primary bg-primary-container/10 px-2 py-0.5 rounded-full font-bold">
+                    30h / 38h (Equilibrado)
+                  </span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-3 overflow-hidden">
+<div class="bg-primary h-3 rounded-full" style="width: 78%;"></div>
+</div>
+</div>
+</div>
+<!-- Member 4: Beatriz (Capacidade Disponível) -->
+<div class="flex items-center gap-space-md">
+<img alt="Avatar Beatriz Souza" class="w-10 h-10 rounded-full object-cover border border-outline-variant shrink-0" data-alt="Clean corporate portrait of a young female QA engineer with friendly expression in high-key daylight office background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfKB-gCXOpWiXUt_19cT9xNFNGx_VXMHH3WbxHPqgrF2E_BDQpIAm8qDXgmkTsulcI9L5YApf9u2aTPIwzvkt6BNIPNpm6bWjXcUTlDsB4D9jpe3PsoCDehFrgrBlxmLXGqicbA4T7O8ib6J33JJBsKS62FTsuQ4K3Uu7AxU5toUYEu2pagEnS5Nwq6Xn6ujPQInIw0gzfwKUCm6vFncTc_D5o2OXKoWO4AmsJbytJRrOZSg-lIulV"/>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-center mb-1">
+<div class="truncate">
+<span class="text-cell-data font-cell-data font-bold text-on-surface">Beatriz Souza</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant ml-2">QA &amp; Automação</span>
+</div>
+<span class="text-label-md font-label-md text-on-surface-variant bg-surface-container-high px-2 py-0.5 rounded-full font-bold">
+                    22h / 38h (Disponível)
+                  </span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-3 overflow-hidden">
+<div class="bg-secondary-container h-3 rounded-full" style="width: 57%;"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="border-t border-outline-variant/40 pt-space-sm flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-on-surface-variant">Recomendação: Realocar <strong>2 tarefas de Juliana</strong> para <strong>Beatriz</strong>.</span>
+<button class="px-space-md py-1 bg-surface-container hover:bg-surface-container-high text-on-surface text-label-md font-label-md rounded-lg transition-colors font-bold">
+              Redistribuir Carga
+            </button>
+</div>
+</div>
+<!-- WIDGET: Feed de Atividades Recentes (Real-Time Activity Log) -->
+<div class="lg:col-span-5 bg-surface-container-lowest p-space-lg rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between border-b border-outline-variant/40 pb-space-sm">
+<div>
+<div class="flex items-center gap-2">
+<h2 class="text-title-sm font-title-sm text-on-surface">Feed de Atividades Recentes</h2>
+<span class="inline-block w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Atualizações em tempo real do quadro</p>
+</div>
+<button class="p-1 text-outline hover:text-on-surface rounded" title="Filtrar eventos">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+</button>
+</div>
+<!-- Activity List -->
+<div class="space-y-space-md my-space-md overflow-hidden">
+<!-- Log 1: Conclusão de Tarefa -->
+<div class="flex items-start gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-tertiary/15 text-tertiary flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-body-sm font-body-sm text-on-surface leading-tight">
+<strong class="font-bold text-on-surface">Lucas Silva</strong> completou a tarefa <span class="font-medium text-primary hover:underline cursor-pointer">"Refatoração do Checkout API"</span>.
+                </p>
+<span class="text-label-sm font-label-sm text-outline mt-1 block">Há 12 minutos • Squad Backend</span>
+</div>
+</div>
+<!-- Log 2: Mudança de Status -->
+<div class="flex items-start gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-[#e27525]/15 text-[#e27525] flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[16px]">sync_alt</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-body-sm font-body-sm text-on-surface leading-tight">
+<strong class="font-bold text-on-surface">Juliana Mendes</strong> alterou o status de <span class="font-medium text-primary hover:underline cursor-pointer">"Pipeline CI/CD Kubernetes"</span> para <span class="bg-[#e27525] text-on-primary px-1.5 py-0.5 rounded text-[11px] font-bold">Em Revisão</span>.
+                </p>
+<span class="text-label-sm font-label-sm text-outline mt-1 block">Há 45 minutos • DevOps</span>
+</div>
+</div>
+<!-- Log 3: Comentário Adicionado -->
+<div class="flex items-start gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-primary/15 text-primary flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[16px]">chat_bubble_outline</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-body-sm font-body-sm text-on-surface leading-tight">
+<strong class="font-bold text-on-surface">Rafael Costa</strong> adicionou um comentário: <span class="italic text-on-surface-variant">"Arquivos do Figma exportados com as variantes dark..."</span>
+</p>
+<span class="text-label-sm font-label-sm text-outline mt-1 block">Há 1 hora • Squad UX</span>
+</div>
+</div>
+<!-- Log 4: Alerta de Bloqueio -->
+<div class="flex items-start gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-error/15 text-error flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[16px]">block</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-body-sm font-body-sm text-on-surface leading-tight">
+<strong class="font-bold text-on-surface">Beatriz Souza</strong> marcou a tarefa <span class="font-medium text-primary hover:underline cursor-pointer">"Homologação Gateway de Pagamento"</span> como <span class="bg-error text-on-error px-1.5 py-0.5 rounded text-[11px] font-bold">Travado</span>.
+                </p>
+<span class="text-label-sm font-label-sm text-outline mt-1 block">Há 3 horas • QA</span>
+</div>
+</div>
+</div>
+<div class="border-t border-outline-variant/40 pt-space-sm flex items-center justify-center">
+<a class="text-label-md font-label-md text-primary hover:underline font-bold flex items-center gap-1" href="#">
+              Ver histórico completo de atividades
+              <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</a>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

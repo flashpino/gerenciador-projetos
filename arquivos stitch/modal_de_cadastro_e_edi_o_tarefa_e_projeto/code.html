@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-background" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Squad Ágil Core | Sprint Alpha Q3</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "outline-variant": "#c1c6d6",
+            "on-primary": "#ffffff",
+            "primary": "#005bbc",
+            "on-surface-variant": "#414754",
+            "error": "#ba1a1a",
+            "error-container": "#ffdad6",
+            "tertiary": "#006c3a",
+            "surface-container": "#edecff",
+            "tertiary-fixed": "#5effa0",
+            "surface-bright": "#fbf8ff",
+            "surface-container-high": "#e7e6fb",
+            "surface-variant": "#e1e1f5",
+            "on-tertiary-fixed-variant": "#00522b",
+            "tertiary-container": "#00884b",
+            "surface-container-low": "#f4f2ff",
+            "primary-fixed": "#d7e2ff",
+            "on-tertiary-container": "#ffffff",
+            "background": "#fbf8ff",
+            "primary-container": "#0073ea",
+            "inverse-primary": "#acc7ff",
+            "secondary-container": "#6f5fea",
+            "on-primary-fixed": "#001a40",
+            "on-secondary-fixed-variant": "#4029ba",
+            "secondary": "#5644d0",
+            "on-tertiary": "#ffffff",
+            "inverse-surface": "#2e2f3e",
+            "surface-dim": "#d9d8ec",
+            "on-error": "#ffffff",
+            "inverse-on-surface": "#f0efff",
+            "on-error-container": "#93000a",
+            "on-secondary": "#ffffff",
+            "surface-tint": "#005cbd",
+            "on-secondary-container": "#fffbff",
+            "on-primary-container": "#ffffff",
+            "on-primary-fixed-variant": "#004590",
+            "secondary-fixed-dim": "#c6bfff",
+            "tertiary-fixed-dim": "#39e186",
+            "outline": "#717785",
+            "secondary-fixed": "#e4dfff",
+            "on-secondary-fixed": "#160066",
+            "surface-container-lowest": "#ffffff",
+            "primary-fixed-dim": "#acc7ff",
+            "surface": "#fbf8ff",
+            "on-tertiary-fixed": "#00210e",
+            "on-background": "#191b29",
+            "on-surface": "#191b29",
+            "surface-container-highest": "#e1e1f5"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-md": "0.75rem",
+            "margin": "1.5rem",
+            "gutter": "1rem",
+            "space-sm": "0.5rem",
+            "space-xl": "2rem",
+            "space-lg": "1.25rem",
+            "space-xs": "0.25rem"
+          },
+          "fontFamily": {
+            "title-sm": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "body-md": ["Plus Jakarta Sans"],
+            "display-lg": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "body-sm": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "cell-data": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "title-sm": ["15px", { "lineHeight": "20px", "letterSpacing": "-0.005em", "fontWeight": "600" }],
+            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "700" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "headline-md": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "cell-data": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "500" }]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="h-full font-body-md text-body-md text-on-surface antialiased overflow-hidden flex bg-[#f6f7fb]">
+<!-- SideNavBar Anchor -->
+<aside class="fixed left-0 top-0 h-screen w-60 z-40 bg-inverse-surface border-r border-outline flex flex-col justify-between p-space-md">
+<div class="flex flex-col gap-space-md">
+<!-- Header Workspace Info -->
+<div class="flex items-center gap-space-sm pb-space-sm border-b border-outline/30">
+<div class="w-9 h-9 rounded-lg bg-primary-container flex items-center justify-center text-on-primary font-headline-md text-headline-md">
+          S
+        </div>
+<div class="flex flex-col overflow-hidden">
+<span class="text-headline-md font-headline-md font-extrabold text-inverse-on-surface truncate">Squad Ágil Core</span>
+<span class="text-label-sm font-label-sm text-surface-dim">Plano Pro Workspace</span>
+</div>
+</div>
+<!-- Quick Action CTA -->
+<button class="w-full flex items-center justify-center gap-space-xs py-space-sm bg-primary-container text-on-primary-container rounded-lg font-label-md text-label-md hover:bg-primary transition-all duration-150 active:scale-[0.98]">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span>Novo Painel</span>
+</button>
+<!-- Navigation Tabs (Meus Painéis Active) -->
+<nav class="flex flex-col gap-1 mt-space-xs">
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-surface-dim hover:text-inverse-on-surface hover:bg-surface-variant/10 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">workspaces</span>
+<span class="font-label-md text-label-md">Workspaces</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm bg-primary-container text-on-primary-container rounded-lg font-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="font-label-md text-label-md">Meus Painéis</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-surface-dim hover:text-inverse-on-surface hover:bg-surface-variant/10 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">star</span>
+<span class="font-label-md text-label-md">Favoritos</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-surface-dim hover:text-inverse-on-surface hover:bg-surface-variant/10 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">history</span>
+<span class="font-label-md text-label-md">Atividades</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-surface-dim hover:text-inverse-on-surface hover:bg-surface-variant/10 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">folder_special</span>
+<span class="font-label-md text-label-md">Modelos</span>
+</a>
+</nav>
+</div>
+<!-- SideNavBar Footer -->
+<div class="flex flex-col gap-1 border-t border-outline/30 pt-space-sm">
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-surface-dim hover:text-inverse-on-surface hover:bg-surface-variant/10 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="font-label-md text-label-md">Notificações</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-surface-dim hover:text-inverse-on-surface hover:bg-surface-variant/10 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">help</span>
+<span class="font-label-md text-label-md">Ajuda</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-surface-dim hover:text-inverse-on-surface hover:bg-surface-variant/10 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="font-label-md text-label-md">Configurações</span>
+</a>
+</div>
+</aside>
+<!-- Workspace Canvas Wrapper (Starts offset by sidebar 60) -->
+<div class="ml-60 flex-1 flex flex-col h-full overflow-hidden relative">
+<!-- TopNavBar Anchor -->
+<header class="docked full-width top-0 sticky z-30 flex flex-col w-full bg-surface px-space-lg pt-space-md border-b border-outline-variant">
+<div class="flex items-center justify-between pb-space-sm">
+<!-- Title and Board Info -->
+<div class="flex items-center gap-space-md">
+<h1 class="text-headline-lg font-headline-lg font-bold text-on-surface">Sprint Alpha Q3</h1>
+<button class="p-1 text-on-surface-variant hover:text-on-surface rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[20px]">star</span>
+</button>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant text-label-sm font-label-sm">
+            Q3 2024
+          </span>
+</div>
+<!-- Trailing Actions & Search -->
+<div class="flex items-center gap-space-sm">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-2.5 text-on-surface-variant text-[18px]">search</span>
+<input class="pl-8 pr-3 py-1 text-body-sm font-body-sm bg-surface-container-lowest border border-outline-variant rounded-lg text-on-surface placeholder:text-outline focus:outline-none focus:border-primary-container w-52" placeholder="Buscar no painel..." type="text"/>
+</div>
+<button class="p-1.5 text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[20px]">filter_list</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[20px]">person</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[20px]">sort</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</button>
+<div class="h-5 w-[1px] bg-outline-variant mx-1"></div>
+<button class="px-3 py-1.5 bg-surface-container-lowest border border-outline-variant text-on-surface font-label-md text-label-md rounded-lg hover:bg-surface-container transition-colors">
+            Convidar / Integrantes
+          </button>
+<button class="px-3 py-1.5 bg-primary-container text-on-primary-container font-label-md text-label-md rounded-lg hover:bg-primary transition-all duration-150 active:scale-[0.98]">
+            Novo Item
+          </button>
+<img class="w-8 h-8 rounded-full border-2 border-primary-container object-cover ml-1" data-alt="Close up professional portrait of a tech project manager leader smiling softly in a modern bright corporate office workspace with soft blurred ambient daylight and tech screens." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxAn2RIe35mszEqllrlVvOlbtaoIIkR7GCNivCV68cqBcEFLlu7mW4v3RS8RJ4C_bCrEx2n1C0pHdAFnOOHu9ChZkoH5odpzhBOHOs7PCJ1tnYT1Wrkm89Y2o-WZ64qZG6D5bcSjXXOAJWK5Xq_tVwDUp89wSGmzEX7XTtD6I4SRHIz087CFwd_e9IlYP2jH7k2htQ2QkSTBfcsSo_oxfA5o8r6oSae5m6FvH8GEh1McIWjnl42OxF"/>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<nav class="flex items-center gap-space-lg text-title-sm font-title-sm mt-1">
+<a class="border-b-2 border-primary text-primary font-title-sm pb-space-xs flex items-center gap-1.5" href="#">
+<span class="material-symbols-outlined text-[18px]">table_chart</span>
+<span>Tabela Principal</span>
+</a>
+<a class="text-on-surface-variant hover:text-on-surface pb-space-xs transition-colors flex items-center gap-1.5" href="#">
+<span class="material-symbols-outlined text-[18px]">view_kanban</span>
+<span>Kanban</span>
+</a>
+<a class="text-on-surface-variant hover:text-on-surface pb-space-xs transition-colors flex items-center gap-1.5" href="#">
+<span class="material-symbols-outlined text-[18px]">timeline</span>
+<span>Cronograma Gantt</span>
+</a>
+<a class="text-on-surface-variant hover:text-on-surface pb-space-xs transition-colors flex items-center gap-1.5" href="#">
+<span class="material-symbols-outlined text-[18px]">insights</span>
+<span>Dashboard Métricas</span>
+</a>
+</nav>
+</header>
+<!-- Main Workspace Background Board (Visible slightly beneath blur backdrop) -->
+<main class="flex-1 p-space-lg overflow-y-auto space-y-space-lg select-none filter blur-[1.5px] opacity-75">
+<!-- Group 1: Em Execução -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+<div class="flex items-center justify-between px-space-md py-2.5 bg-surface-container-low border-b border-outline-variant">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary-container text-[20px]">expand_more</span>
+<h2 class="font-headline-md text-headline-md text-primary-container">Em Execução</h2>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm">5 Itens</span>
+</div>
+</div>
+<table class="w-full border-collapse text-left font-cell-data text-cell-data">
+<thead>
+<tr class="bg-surface-container-lowest border-b border-outline-variant text-on-surface-variant text-label-sm font-label-sm">
+<th class="py-2 px-3 w-10 text-center"><input class="rounded border-outline-variant" type="checkbox"/></th>
+<th class="py-2 px-3">Tarefa / Item</th>
+<th class="py-2 px-3 text-center w-36">Responsável</th>
+<th class="py-2 px-3 text-center w-36">Status</th>
+<th class="py-2 px-3 text-center w-32">Prioridade</th>
+<th class="py-2 px-3 text-center w-44">Prazo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-surface-container hover:bg-surface-container-low">
+<td class="py-2.5 px-3 text-center"><input class="rounded border-outline-variant" type="checkbox"/></td>
+<td class="py-2.5 px-3 font-semibold text-on-surface flex items-center gap-2">
+<span class="w-1.5 h-6 bg-primary-container rounded-sm inline-block"></span>
+                [PROJ-104] Refatoração do Gateway de Pagamento &amp; PIX
+              </td>
+<td class="py-2.5 px-3 text-center">Lucas Silva</td>
+<td class="py-2.5 px-3 text-center"><span class="px-3 py-1 rounded bg-[#0073ea] text-white font-label-sm">Em Andamento</span></td>
+<td class="py-2.5 px-3 text-center"><span class="px-2.5 py-1 rounded bg-[#e2445c] text-white font-label-sm">Crítica</span></td>
+<td class="py-2.5 px-3 text-center text-on-surface-variant">15 Set - 28 Set</td>
+</tr>
+<tr class="border-b border-surface-container hover:bg-surface-container-low">
+<td class="py-2.5 px-3 text-center"><input class="rounded border-outline-variant" type="checkbox"/></td>
+<td class="py-2.5 px-3 font-semibold text-on-surface flex items-center gap-2">
+<span class="w-1.5 h-6 bg-primary-container rounded-sm inline-block"></span>
+                [PROJ-105] Validação de Segurança PCI-DSS Tokenizer
+              </td>
+<td class="py-2.5 px-3 text-center">Helena Brandão</td>
+<td class="py-2.5 px-3 text-center"><span class="px-3 py-1 rounded bg-[#fdab3d] text-white font-label-sm">Em Revisão</span></td>
+<td class="py-2.5 px-3 text-center"><span class="px-2.5 py-1 rounded bg-[#ff5ac4] text-white font-label-sm">Alta</span></td>
+<td class="py-2.5 px-3 text-center text-on-surface-variant">18 Set - 25 Set</td>
+</tr>
+<tr class="border-b border-surface-container hover:bg-surface-container-low">
+<td class="py-2.5 px-3 text-center"><input class="rounded border-outline-variant" type="checkbox"/></td>
+<td class="py-2.5 px-3 font-semibold text-on-surface flex items-center gap-2">
+<span class="w-1.5 h-6 bg-primary-container rounded-sm inline-block"></span>
+                [PROJ-106] Implementação de Webhook para Notificação Assíncrona
+              </td>
+<td class="py-2.5 px-3 text-center">Rafael Souza</td>
+<td class="py-2.5 px-3 text-center"><span class="px-3 py-1 rounded bg-[#00c875] text-white font-label-sm">Pronto</span></td>
+<td class="py-2.5 px-3 text-center"><span class="px-2.5 py-1 rounded bg-[#579bfc] text-white font-label-sm">Média</span></td>
+<td class="py-2.5 px-3 text-center text-on-surface-variant">10 Set - 16 Set</td>
+</tr>
+</tbody>
+</table>
+</div>
+</main>
+<!-- BACKDROP MODAL OVERLAY -->
+<div class="fixed inset-0 z-50 bg-[#191b29]/45 backdrop-blur-[3px] flex items-center justify-center p-space-md md:p-6 overflow-y-auto">
+<!-- MAIN FLOATING RICH MODAL CONTAINER -->
+<div class="bg-surface-container-lowest w-full max-w-7xl h-[942px] rounded-2xl shadow-2xl border border-outline-variant flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+<!-- 1. MODAL HEADER -->
+<header class="border-b border-outline-variant bg-surface-bright px-space-lg pt-space-md pb-0 flex flex-col gap-space-sm flex-shrink-0">
+<!-- Top Row: Breadcrumb, Status & Action Icons -->
+<div class="flex items-center justify-between">
+<!-- Contextual Breadcrumb -->
+<div class="flex items-center gap-2 text-label-md font-label-md text-on-surface-variant">
+<span class="flex items-center gap-1 hover:text-primary cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-[16px] text-primary-container">workspaces</span>
+                Squad Ágil Core
+              </span>
+<span class="text-outline-variant">/</span>
+<span class="hover:text-primary cursor-pointer transition-colors">Sprint Alpha Q3</span>
+<span class="text-outline-variant">/</span>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed text-label-sm font-label-sm">
+                Em Execução (Semana 38)
+              </span>
+</div>
+<!-- Header Quick Action Buttons -->
+<div class="flex items-center gap-1">
+<button class="p-1.5 text-on-surface-variant hover:text-primary-container hover:bg-surface-container rounded-lg transition-all" title="Favoritar Tarefa">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-all" title="Compartilhar">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-all" title="Histórico de alterações">
+<span class="material-symbols-outlined text-[20px]">history</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-all" title="Maximizar Modal">
+<span class="material-symbols-outlined text-[20px]">open_in_full</span>
+</button>
+<div class="h-4 w-[1px] bg-outline-variant mx-1"></div>
+<button class="p-1.5 text-on-surface-variant hover:text-error hover:bg-error-container/30 rounded-lg transition-all" title="Fechar Modal">
+<span class="material-symbols-outlined text-[22px]">close</span>
+</button>
+</div>
+</div>
+<!-- Editable Project / Task Title -->
+<div class="flex items-center gap-space-sm pt-1">
+<span class="px-2.5 py-1 rounded-md bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md font-bold tracking-tight">
+              PROJ-104
+            </span>
+<div class="flex-1 flex items-center group cursor-text">
+<input class="w-full text-headline-lg font-headline-lg font-bold text-on-surface bg-transparent border-b-2 border-transparent hover:border-outline-variant focus:border-primary-container focus:bg-surface-container-lowest focus:outline-none px-1 py-0.5 rounded transition-colors" type="text" value="Refatoração do Gateway de Pagamento &amp; PIX"/>
+<button class="p-1 text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+</div>
+</div>
+<!-- Modal Internal Navigation Tabs -->
+<nav class="flex items-center gap-space-lg text-title-sm font-title-sm mt-2 border-b border-outline-variant -mb-[1px] overflow-x-auto">
+<button class="border-b-2 border-primary text-primary font-title-sm pb-2.5 flex items-center gap-1.5 whitespace-nowrap">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+<span>Detalhes &amp; Atributos</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface pb-2.5 transition-colors flex items-center gap-1.5 whitespace-nowrap">
+<span class="material-symbols-outlined text-[18px]">checklist</span>
+<span>Subtarefas &amp; Checklist (4/6)</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface pb-2.5 transition-colors flex items-center gap-1.5 whitespace-nowrap">
+<span class="material-symbols-outlined text-[18px]">chat_bubble_outline</span>
+<span>Atualizações &amp; Conversas</span>
+<span class="w-5 h-5 rounded-full bg-primary-container text-on-primary text-[11px] font-bold flex items-center justify-center">8</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface pb-2.5 transition-colors flex items-center gap-1.5 whitespace-nowrap">
+<span class="material-symbols-outlined text-[18px]">attach_file</span>
+<span>Arquivos &amp; Anexos (3)</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface pb-2.5 transition-colors flex items-center gap-1.5 whitespace-nowrap">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+<span>Registro de Tempo (Timeline)</span>
+</button>
+</nav>
+</header>
+<!-- 2 & 3. MODAL BODY (TWO-COLUMN SPLIT CANVAS) -->
+<div class="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden">
+<!-- LEFT / MAIN PANE: Details, Attributes Grid, Rich Text & Subtasks (7 cols) -->
+<section class="lg:col-span-7 border-r border-outline-variant overflow-y-auto p-space-lg space-y-space-lg bg-surface-container-lowest">
+<!-- ATTRIBUTES SECTION: Monday-Style Visual Grid -->
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<h3 class="font-headline-md text-headline-md text-on-surface flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[20px]">dashboard_customize</span>
+                  Propriedades do Item
+                </h3>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Sincronizado via Webhook Core</span>
+</div>
+<!-- High-Contrast Monday Attribute Grid -->
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-3 p-space-md bg-surface-container-low rounded-xl border border-outline-variant">
+<!-- Responsável -->
+<div class="flex flex-col gap-1">
+<span class="text-label-sm font-label-sm text-on-surface-variant">Responsável</span>
+<div class="flex items-center gap-2 p-1.5 bg-surface-container-lowest rounded-lg border border-outline-variant hover:border-primary-container cursor-pointer transition-colors group">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Close up professional portrait of a senior software developer smiling, well-lit portrait photograph against a clean tech office backdrop with soft natural lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjqICxL5tqmvjPwBkfUHxXrI1N2hzrtgFO1EaynBpqhcl9LUcrcjYeU_UlDB8Ar-aom81bOHAiDF9lw-gtqAeC-VY4lLwD9_qRIqoVqcdLCL79V3f-N3h0AfULJa3TpgacyISVspRsjwXUHLG6V_49IxS6AnbIN_eFOKTq3DPUZOqKGj8EmgcNBenKUm1nvXgUIeowvajO3E66K7mrVL-ayhf9i2Hgo2Zoe2XhsJZWhWLOaFoh-dBG"/>
+<span class="text-body-sm font-body-sm font-semibold truncate flex-1">Lucas Silva</span>
+<span class="material-symbols-outlined text-[16px] text-outline group-hover:text-primary-container">arrow_drop_down</span>
+</div>
+</div>
+<!-- Status (Vibrant Monday Selector) -->
+<div class="flex flex-col gap-1">
+<span class="text-label-sm font-label-sm text-on-surface-variant">Status</span>
+<div class="relative group cursor-pointer">
+<div class="flex items-center justify-between px-3 py-1.5 bg-[#0073ea] text-white rounded-lg font-label-md text-label-md shadow-sm hover:brightness-105 transition-all">
+<span>Em Andamento</span>
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Prioridade -->
+<div class="flex flex-col gap-1">
+<span class="text-label-sm font-label-sm text-on-surface-variant">Prioridade</span>
+<div class="flex items-center justify-between px-3 py-1.5 bg-[#e2445c] text-white rounded-lg font-label-md text-label-md shadow-sm hover:brightness-105 cursor-pointer transition-all">
+<span>Crítica</span>
+<span class="material-symbols-outlined text-[18px]">priority_high</span>
+</div>
+</div>
+<!-- Prazo / Datas -->
+<div class="flex flex-col gap-1">
+<span class="text-label-sm font-label-sm text-on-surface-variant">Período / Prazo</span>
+<div class="flex items-center justify-between px-2.5 py-1.5 bg-surface-container-lowest rounded-lg border border-outline-variant hover:border-primary-container cursor-pointer transition-colors">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary-container">calendar_month</span>
+<span class="text-body-sm font-body-sm font-medium">15 - 28 Set</span>
+</div>
+<span class="text-[10px] bg-error-container text-on-error-container px-1.5 py-0.5 rounded font-bold">4d rest.</span>
+</div>
+</div>
+<!-- Grupo de Destino -->
+<div class="flex flex-col gap-1">
+<span class="text-label-sm font-label-sm text-on-surface-variant">Grupo de Destino</span>
+<div class="flex items-center justify-between px-2.5 py-1.5 bg-surface-container-lowest rounded-lg border border-outline-variant hover:border-primary-container cursor-pointer transition-colors">
+<span class="text-body-sm font-body-sm text-primary-container font-semibold truncate">Em Execução</span>
+<span class="material-symbols-outlined text-[16px] text-outline">unfold_more</span>
+</div>
+</div>
+<!-- Estimativa & Tempo -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center text-label-sm font-label-sm">
+<span class="text-on-surface-variant">Horas</span>
+<span class="font-bold text-on-surface">14h / 20h</span>
+</div>
+<div class="w-full bg-surface-container-highest rounded-full h-2.5 overflow-hidden mt-1">
+<div class="bg-primary-container h-full rounded-full" style="width: 70%"></div>
+</div>
+<span class="text-[10px] text-right text-on-surface-variant">70% consumido</span>
+</div>
+</div>
+<!-- Tags Pill Bar -->
+<div class="flex items-center flex-wrap gap-1.5 mt-space-sm pt-2">
+<span class="text-label-sm font-label-sm text-on-surface-variant mr-1">Tags:</span>
+<span class="px-2.5 py-1 bg-surface-container text-secondary font-label-sm text-label-sm rounded-full flex items-center gap-1">
+                  #Backend
+                  <button class="hover:text-error text-[14px] leading-none">×</button>
+</span>
+<span class="px-2.5 py-1 bg-surface-container text-secondary font-label-sm text-label-sm rounded-full flex items-center gap-1">
+                  #Fintech
+                  <button class="hover:text-error text-[14px] leading-none">×</button>
+</span>
+<span class="px-2.5 py-1 bg-surface-container text-secondary font-label-sm text-label-sm rounded-full flex items-center gap-1">
+                  #Segurança
+                  <button class="hover:text-error text-[14px] leading-none">×</button>
+</span>
+<button class="px-2.5 py-1 border border-dashed border-outline text-on-surface-variant hover:border-primary-container hover:text-primary-container font-label-sm text-label-sm rounded-full flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[14px]">add</span>
+                  Adicionar Tag
+                </button>
+</div>
+</div>
+<!-- RICH TEXT DESCRIPTION FIELD -->
+<div class="space-y-space-xs">
+<label class="block font-headline-md text-headline-md text-on-surface">
+                Descrição do Escopo &amp; Critérios de Aceite
+              </label>
+<div class="border border-outline-variant rounded-xl overflow-hidden focus-within:border-primary-container transition-all">
+<!-- Rich Text Toolbar -->
+<div class="flex items-center gap-1 p-1.5 bg-surface-container-low border-b border-outline-variant text-on-surface-variant flex-wrap">
+<button class="p-1.5 hover:bg-surface-container rounded text-on-surface" title="Negrito"><span class="material-symbols-outlined text-[18px]">format_bold</span></button>
+<button class="p-1.5 hover:bg-surface-container rounded text-on-surface" title="Itálico"><span class="material-symbols-outlined text-[18px]">format_italic</span></button>
+<button class="p-1.5 hover:bg-surface-container rounded text-on-surface" title="Sublinhado"><span class="material-symbols-outlined text-[18px]">format_underlined</span></button>
+<div class="h-4 w-[1px] bg-outline-variant mx-1"></div>
+<button class="p-1.5 hover:bg-surface-container rounded text-on-surface" title="Lista ordenada"><span class="material-symbols-outlined text-[18px]">format_list_numbered</span></button>
+<button class="p-1.5 hover:bg-surface-container rounded text-on-surface" title="Lista com marcadores"><span class="material-symbols-outlined text-[18px]">format_list_bulleted</span></button>
+<button class="p-1.5 hover:bg-surface-container rounded text-on-surface" title="Checklist"><span class="material-symbols-outlined text-[18px]">checklist</span></button>
+<div class="h-4 w-[1px] bg-outline-variant mx-1"></div>
+<button class="p-1.5 hover:bg-surface-container rounded text-on-surface" title="Bloco de Código"><span class="material-symbols-outlined text-[18px]">code</span></button>
+<button class="p-1.5 hover:bg-surface-container rounded text-on-surface" title="Inserir Link"><span class="material-symbols-outlined text-[18px]">link</span></button>
+<button class="p-1.5 hover:bg-surface-container rounded text-primary-container font-bold text-label-sm" title="Mencionar Colega">@ Mencionar</button>
+</div>
+<!-- Content Area -->
+<div class="p-space-md text-body-md font-body-md text-on-surface space-y-2 bg-surface-container-lowest focus:outline-none min-h-[130px]" contenteditable="true">
+<p>Realizar a migração da arquitetura legado do parceiro adquirente para a nova engine assíncrona com suporte nativo ao <strong>PIX Automático</strong> e reconciliação em tempo real via webhooks seguros HMAC-SHA256.</p>
+<ul class="list-disc pl-5 space-y-1 text-on-surface-variant text-body-sm font-body-sm">
+<li>Latência de confirmação não deve exceder <strong>450ms</strong> em p99.</li>
+<li>Fallback de rota automática habilitado caso a API bancária retorne erro 5xx contínuo.</li>
+<li>Logs mascarados conforme diretrizes de compliance PCI-DSS.</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- SUBTASKS & CHECKLIST INTERACTIVE LIST -->
+<div class="space-y-space-sm pt-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<h3 class="font-headline-md text-headline-md text-on-surface">Subtarefas Técnicas</h3>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm">4 de 6 concluídas</span>
+</div>
+<button class="text-primary-container hover:text-primary font-label-md text-label-md flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[16px]">add_task</span>
+                  + Adicionar Subtarefa
+                </button>
+</div>
+<!-- Interactive Subtasks Stack -->
+<div class="space-y-1.5">
+<!-- Subtask 1 (Completed) -->
+<div class="flex items-center justify-between p-2.5 bg-surface-container-low rounded-lg border border-outline-variant hover:border-primary transition-colors">
+<div class="flex items-center gap-space-sm flex-1">
+<input checked="" class="w-4 h-4 rounded text-primary-container focus:ring-primary border-outline cursor-pointer" type="checkbox"/>
+<span class="line-through text-on-surface-variant font-cell-data text-cell-data">Mapeamento de payloads e schemas OpenAPI 3.1</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="px-2 py-0.5 rounded bg-[#00c875]/20 text-[#00884b] font-label-sm text-label-sm">Feito</span>
+<img class="w-5 h-5 rounded-full object-cover" data-alt="Portrait photo of a young female tech professional with glasses and modern attire in a bright light-mode office setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCb579XVtc225uJe2gL2WsaYuKlky7s92CqNYK7D75s8lSSkGbMspadTvN8IGLZ-WsZesbQ1UXnBR8xwZuCYs3xkt3iulpLVTOhvsFalis33ZIZrFgPBQ3TBoro8pDjcETmbPBOjl_isK9uY_Z99blFCFsCUvA8u4yVFz0_sca8VNa6B0zWW6Wn7fV5j3JcjCQ2VleQTVdsX9Si_hqTpUDCHYyquHH3NA8HdIQX1NM0Qt0rAmSrj4ct"/>
+</div>
+</div>
+<!-- Subtask 2 (Completed) -->
+<div class="flex items-center justify-between p-2.5 bg-surface-container-low rounded-lg border border-outline-variant hover:border-primary transition-colors">
+<div class="flex items-center gap-space-sm flex-1">
+<input checked="" class="w-4 h-4 rounded text-primary-container focus:ring-primary border-outline cursor-pointer" type="checkbox"/>
+<span class="line-through text-on-surface-variant font-cell-data text-cell-data">Criptografia em repouso dos certificados e chaves Pix</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="px-2 py-0.5 rounded bg-[#00c875]/20 text-[#00884b] font-label-sm text-label-sm">Feito</span>
+<img class="w-5 h-5 rounded-full object-cover" data-alt="Corporate headshot of an experienced software engineer with a beard in daylight office interior." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD19vMiPYLZ3JgIvJy5te6U4edbMd1s68T5vGV_ySzzpbCR6PvQTP_giB1PoEIZse4vZ4uSknfRLI8s-24WHZytKxxJkhzOf_tMCwcCzFXpvDEJ0-76ghrlxyRnIzvgp6ZvnqL8gGd79oANksCt8t7Wr9wiKI-wpx8_veTsVXAxMr364yQQY22MwJY6aVm8sinMxmpd1o7ceXngGUSgDmceUwO2KUHRkR_ehN9M12lHGY2Ax-WqG0Um"/>
+</div>
+</div>
+<!-- Subtask 3 (In Progress) -->
+<div class="flex items-center justify-between p-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant hover:border-primary-container shadow-xs transition-colors">
+<div class="flex items-center gap-space-sm flex-1">
+<input class="w-4 h-4 rounded text-primary-container focus:ring-primary border-outline-variant cursor-pointer" type="checkbox"/>
+<span class="text-on-surface font-semibold font-cell-data text-cell-data">Configuração de fila RabbitMQ para retentativa de Webhook</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="px-2 py-0.5 rounded bg-[#0073ea] text-white font-label-sm text-label-sm">Em Andamento</span>
+<img class="w-5 h-5 rounded-full object-cover" data-alt="Portrait of an energetic Brazilian product engineer working at a desk with dual monitors in an open creative space." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDx2VUPCDRKad8L4emccodZSATB1mmtOeyd1g5Rqsbb4nimf6P71eMH2s8HwOwly3Hg2yCrPakdC1_wlsDAFAcq7O4XBx7HD0DozX_SZDg0KMaJYvFh1tKzySZ8OJsZQBjZJVJX-eVWZ9UItaCKOJING4K0oHMfRHI7UwVsuTLP8T1KGomoMfX-vLg7mRK3G-cZltkukmcgAHkvXRI9WSBLJqWlYxIXjNP_WtHMFL1c1J_ZbRDbeI2F"/>
+</div>
+</div>
+<!-- Subtask 4 (Pending) -->
+<div class="flex items-center justify-between p-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant hover:border-primary-container shadow-xs transition-colors">
+<div class="flex items-center gap-space-sm flex-1">
+<input class="w-4 h-4 rounded text-primary-container focus:ring-primary border-outline-variant cursor-pointer" type="checkbox"/>
+<span class="text-on-surface font-cell-data text-cell-data">Testes de carga e estresse com 10.000 requisições simultâneas</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="px-2 py-0.5 rounded bg-surface-variant text-on-surface-variant font-label-sm text-label-sm">Pendente</span>
+<button class="w-5 h-5 rounded-full border border-dashed border-outline flex items-center justify-center text-outline hover:text-primary">
+<span class="material-symbols-outlined text-[14px]">person_add</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- RIGHT PANE: Collaboration, Live Updates & Conversations Feed (5 cols) -->
+<section class="lg:col-span-5 bg-surface flex flex-col h-full overflow-hidden">
+<!-- Feed Header -->
+<div class="px-space-md py-space-sm bg-surface-container-low border-b border-outline-variant flex items-center justify-between flex-shrink-0">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-[20px]">forum</span>
+<h3 class="font-title-sm text-title-sm text-on-surface">Atualizações do Squad</h3>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">3 membros online</span>
+</div>
+<!-- Scrollable Timeline Stream -->
+<div class="flex-1 overflow-y-auto p-space-md space-y-space-md">
+<!-- Update Composer Box -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-xs overflow-hidden focus-within:border-primary-container">
+<textarea class="w-full p-space-sm text-body-sm font-body-sm text-on-surface bg-transparent border-none resize-none focus:ring-0 placeholder:text-outline" placeholder="Escreva uma atualização ou mencione @equipe..." rows="3"></textarea>
+<div class="flex items-center justify-between px-space-sm py-1.5 bg-surface-container-low border-t border-outline-variant">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<button class="p-1 hover:text-primary-container transition-colors" title="Anexar arquivo"><span class="material-symbols-outlined text-[18px]">attach_file</span></button>
+<button class="p-1 hover:text-primary-container transition-colors" title="Inserir emoji"><span class="material-symbols-outlined text-[18px]">sentiment_satisfied</span></button>
+<button class="p-1 hover:text-primary-container transition-colors" title="Mencionar membro"><span class="material-symbols-outlined text-[18px]">alternate_email</span></button>
+<button class="p-1 hover:text-primary-container transition-colors" title="Formatar texto"><span class="material-symbols-outlined text-[18px]">text_fields</span></button>
+</div>
+<button class="px-3 py-1 bg-primary-container text-on-primary-container font-label-md text-label-md rounded-lg hover:bg-primary transition-all active:scale-[0.98]">
+                    Atualizar
+                  </button>
+</div>
+</div>
+<!-- Conversation Item 1 -->
+<article class="bg-surface-container-lowest p-space-md rounded-xl border border-outline-variant space-y-2">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-2">
+<img class="w-7 h-7 rounded-full object-cover" data-alt="Headshot photo of a tech team lead woman smiling warmly, clean white background, high-key bright professional business lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUa6nYgwLwrF4T_2sHpc4VNN7Vg7k06ziFIKGEguQARu5nKjeGYYe3XoQiJUkd20hHxYymLbuHyQ6FNtZULpvA137eUXkNQsaYDP0NwK2HMokGlL1u7pi01OWIJdpAl3zuqaxiJaxXFpgHjpe6XoYjFeiZK3H81dBBS7RPOMDnXTVyL4F3sL7ERF_AjeIjwRDiBxTUm0eew_IpPowRQD8PcKH77RKadVaXqWzt6Ek6mehtY9N-iNjQ"/>
+<div>
+<h4 class="font-title-sm text-title-sm text-on-surface leading-tight">Helena Brandão</h4>
+<span class="text-[11px] text-on-surface-variant">Tech Lead • há 20 min</span>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-[18px]">more_horiz</span></button>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface">
+                  Atualizei os contratos de teste com o time de pagamentos. A homologação com a adquirente foi liberada em sandbox. Segue o diagrama com o novo fluxo de fallback:
+                </p>
+<!-- File Attachment Preview -->
+<div class="flex items-center justify-between p-2 bg-surface-container-low rounded-lg border border-outline-variant hover:border-primary transition-colors cursor-pointer group">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#0073ea] text-[22px]">image</span>
+<div>
+<div class="text-body-sm font-body-sm font-bold group-hover:text-primary truncate max-w-[180px]">diagrama_arquitetura_pix.png</div>
+<div class="text-[10px] text-on-surface-variant">PNG • 1.4 MB • Versão 2.3</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary text-[18px]">download</span>
+</div>
+<!-- Reactions and Reply Actions -->
+<div class="flex items-center gap-2 pt-1">
+<button class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant text-label-sm font-label-sm hover:bg-surface-variant">
+<span>🚀</span>
+<span>3</span>
+</button>
+<button class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant text-label-sm font-label-sm hover:bg-surface-variant">
+<span>👍</span>
+<span>5</span>
+</button>
+<button class="text-label-sm font-label-sm text-primary-container hover:underline ml-auto flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">reply</span>
+                    Responder
+                  </button>
+</div>
+</article>
+<!-- Conversation Item 2 -->
+<article class="bg-surface-container-lowest p-space-md rounded-xl border border-outline-variant space-y-2">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-2">
+<img class="w-7 h-7 rounded-full object-cover" data-alt="Close up photography of Lucas Silva software developer with focused and confident expression, styled in minimalist engineering attire in soft daylight." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWMZXjWeQaftu_MBGx4vT9B8augsuceL5vZBIWo1HnVvvDHt2ncZt9QbeIMTyX6FH0sp53FmCugb69xzcz1Ho2YU2ApAvWl3WAvzBHszJ2nP0yxcyJ2LErpJmhQn7jKCtRKcMyWIdLZHwfIQyFjA8sBIWRXH_DbZXxOQj2nMzHkYpx34AoVwLOa7a53rx_Fwf1iaFfHQtkTaK0hXWWgC0LVjdHTuSc9d1AVM249DJDZ2Xwqf06TNFm"/>
+<div>
+<h4 class="font-title-sm text-title-sm text-on-surface leading-tight">Lucas Silva</h4>
+<span class="text-[11px] text-on-surface-variant">Senior Backend • há 1h</span>
+</div>
+</div>
+<span class="px-2 py-0.5 bg-[#0073ea]/15 text-[#005bbc] text-[10px] font-bold rounded">Status Alterado</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface">
+                  Status modificado de <span class="bg-surface-variant px-1 rounded text-on-surface-variant">Pendente</span> para <span class="bg-[#0073ea] text-white px-1.5 py-0.5 rounded text-[11px] font-bold">Em Andamento</span> após conclusão dos testes unitários de hash.
+                </p>
+</article>
+</div>
+</section>
+</div>
+<!-- 4. MODAL FOOTER -->
+<footer class="px-space-lg py-space-sm bg-surface-bright border-t border-outline-variant flex items-center justify-between flex-shrink-0">
+<!-- Auto-save Sync Status and Discard Action -->
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-1.5 text-label-sm font-label-sm text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-[#00c875] animate-pulse"></span>
+<span>Última edição salva há 2 min por <strong>Helena Brandão</strong></span>
+</div>
+<div class="h-4 w-[1px] bg-outline-variant hidden sm:block"></div>
+<button class="text-error hover:text-on-error-container hover:bg-error-container/30 px-2.5 py-1 rounded-lg font-label-md text-label-md transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+              Excluir Tarefa
+            </button>
+</div>
+<!-- Primary Modal Confirm / Cancel Actions -->
+<div class="flex items-center gap-space-sm">
+<button class="px-4 py-2 rounded-lg bg-surface-container-lowest border border-outline-variant text-on-surface hover:bg-surface-container font-label-md text-label-md transition-colors">
+              Cancelar
+            </button>
+<button class="px-5 py-2 rounded-lg bg-primary-container text-on-primary-container hover:bg-primary font-label-md text-label-md shadow-sm transition-all duration-150 active:scale-[0.98] flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px]">check</span>
+<span>Salvar Alterações / Concluir</span>
+</button>
+</div>
+</footer>
+</div>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sprint Alpha Q3 - Quadro Kanban | Squad Ágil Core</title>
+<!-- Google Fonts: Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 with Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary-fixed-variant": "#00522b",
+            "secondary-container": "#6f5fea",
+            "on-background": "#191b29",
+            "on-primary-fixed": "#001a40",
+            "tertiary-container": "#00884b",
+            "on-tertiary": "#ffffff",
+            "surface-container-low": "#f4f2ff",
+            "inverse-on-surface": "#f0efff",
+            "outline": "#717785",
+            "surface-container-high": "#e7e6fb",
+            "surface-bright": "#fbf8ff",
+            "on-tertiary-fixed": "#00210e",
+            "tertiary-fixed-dim": "#39e186",
+            "tertiary": "#006c3a",
+            "on-primary": "#ffffff",
+            "surface-variant": "#e1e1f5",
+            "on-surface-variant": "#414754",
+            "error-container": "#ffdad6",
+            "primary-container": "#0073ea",
+            "surface-dim": "#d9d8ec",
+            "primary-fixed": "#d7e2ff",
+            "on-error": "#ffffff",
+            "surface-tint": "#005cbd",
+            "inverse-primary": "#acc7ff",
+            "on-secondary-fixed-variant": "#4029ba",
+            "inverse-surface": "#2e2f3e",
+            "on-secondary-container": "#fffbff",
+            "surface-container-highest": "#e1e1f5",
+            "on-error-container": "#93000a",
+            "on-primary-container": "#ffffff",
+            "on-tertiary-container": "#ffffff",
+            "secondary": "#5644d0",
+            "tertiary-fixed": "#5effa0",
+            "outline-variant": "#c1c6d6",
+            "on-secondary-fixed": "#160066",
+            "surface-container-lowest": "#ffffff",
+            "secondary-fixed": "#e4dfff",
+            "secondary-fixed-dim": "#c6bfff",
+            "surface-container": "#edecff",
+            "primary": "#005bbc",
+            "surface": "#fbf8ff",
+            "on-primary-fixed-variant": "#004590",
+            "primary-fixed-dim": "#acc7ff",
+            "on-surface": "#191b29",
+            "background": "#fbf8ff",
+            "on-secondary": "#ffffff",
+            "error": "#ba1a1a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin": "1.5rem",
+            "space-md": "0.75rem",
+            "space-xl": "2rem",
+            "space-sm": "0.5rem",
+            "space-xs": "0.25rem",
+            "space-lg": "1.25rem",
+            "gutter": "1rem"
+          },
+          "fontFamily": {
+            "label-md": ["Plus Jakarta Sans"],
+            "display-lg": ["Plus Jakarta Sans"],
+            "body-md": ["Plus Jakarta Sans"],
+            "body-sm": ["Plus Jakarta Sans"],
+            "title-sm": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "cell-data": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+            "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "title-sm": ["15px", { "lineHeight": "20px", "letterSpacing": "-0.005em", "fontWeight": "600" }],
+            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "700" }],
+            "cell-data": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "500" }],
+            "headline-md": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .custom-scrollbar::-webkit-scrollbar {
+      height: 8px;
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f4f2ff;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #c1c6d6;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #717785;
+    }
+    .kanban-card {
+      transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.15s ease;
+    }
+    .kanban-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.10), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased overflow-hidden select-none">
+<div class="flex h-screen w-screen overflow-hidden">
+<!-- SHARED COMPONENT: SideNavBar (Exact JSON Spec) -->
+<aside class="fixed left-0 top-0 h-screen w-60 z-40 bg-inverse-surface border-r border-outline flex flex-col justify-between p-space-md">
+<!-- Top Section -->
+<div class="flex flex-col gap-space-lg">
+<!-- Brand / Header Card -->
+<div class="flex items-center gap-space-sm px-space-xs py-space-xs">
+<div class="w-9 h-9 rounded-lg bg-primary-container flex items-center justify-center text-on-primary font-headline-md shadow-sm">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">workspaces</span>
+</div>
+<div class="flex flex-col overflow-hidden">
+<span class="text-headline-md font-headline-md font-extrabold text-inverse-on-surface truncate leading-tight">Squad Ágil Core</span>
+<span class="text-label-sm font-label-sm text-surface-dim opacity-80 truncate">Plano Pro Workspace</span>
+</div>
+</div>
+<!-- CTA Button -->
+<button class="w-full flex items-center justify-center gap-space-sm bg-primary hover:bg-surface-tint active:scale-[0.98] text-on-primary py-space-sm px-space-md rounded-lg font-label-md transition-all shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span>Novo Painel</span>
+</button>
+<!-- Navigation Tabs List -->
+<nav class="flex flex-col gap-1">
+<!-- Item 0: Workspaces -->
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-surface-dim hover:text-inverse-on-surface hover:bg-surface-variant/10 rounded-lg transition-colors active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-[20px]">workspaces</span>
+<span class="font-label-md text-label-md">Workspaces</span>
+</a>
+<!-- Item 1: Meus Painéis (ACTIVE based on Board/Canvas context) -->
+<a class="flex items-center gap-space-md px-space-md py-space-sm bg-primary-container text-on-primary-container rounded-lg font-label-md active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-md text-label-md">Meus Painéis</span>
+</a>
+<!-- Item 2: Favoritos -->
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-surface-dim hover:text-inverse-on-surface hover:bg-surface-variant/10 rounded-lg transition-colors active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-[20px]">star</span>
+<span class="font-label-md text-label-md">Favoritos</span>
+</a>
+<!-- Item 3: Atividades -->
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-surface-dim hover:text-inverse-on-surface hover:bg-surface-variant/10 rounded-lg transition-colors active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-[20px]">history</span>
+<span class="font-label-md text-label-md">Atividades</span>
+</a>
+<!-- Item 4: Modelos -->
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-surface-dim hover:text-inverse-on-surface hover:bg-surface-variant/10 rounded-lg transition-colors active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-[20px]">folder_special</span>
+<span class="font-label-md text-label-md">Modelos</span>
+</a>
+</nav>
+</div>
+<!-- Footer Navigation Items -->
+<div class="flex flex-col gap-1 pt-space-md border-t border-outline/30">
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-surface-dim hover:text-inverse-on-surface hover:bg-surface-variant/10 rounded-lg transition-colors active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="font-label-md text-label-md">Notificações</span>
+<span class="ml-auto w-2 h-2 rounded-full bg-error"></span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-surface-dim hover:text-inverse-on-surface hover:bg-surface-variant/10 rounded-lg transition-colors active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-[20px]">help</span>
+<span class="font-label-md text-label-md">Ajuda</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-surface-dim hover:text-inverse-on-surface hover:bg-surface-variant/10 rounded-lg transition-colors active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="font-label-md text-label-md">Configurações</span>
+</a>
+<!-- User Profile Quick Item -->
+<div class="flex items-center gap-space-sm mt-space-sm pt-space-sm px-space-xs border-t border-outline/20">
+<img alt="Avatar do Usuário" class="w-8 h-8 rounded-full border border-outline-variant object-cover" data-alt="Corporate headshot of an agile squad project leader smiling with warm studio lighting and neutral architectural background reflecting professional executive confidence" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChft3lBK0teMEFWW_mNQ7jCCGWZIWrOaEoE3DsA-1RtzJuz7ja-PsCy3nAhZe_-Jr9bdhCJEC9WGukuztF4q1wLmvkjDbvUxrNeUWk5LO1GLbksxgejHgdu4zdMeAk-I_BiC1764brHK3OfQCbNLy8PdKs7faY9uBsMJyzQ4i6LOl5tuzQnmwZQn3C5W08BlDh5MSkd9at0OcyoVvpdg2HD2RJUJ7gtt7wo-ypAIabgX6Xx37ZmT22"/>
+<div class="flex flex-col truncate">
+<span class="text-label-md font-label-md text-inverse-on-surface leading-tight truncate">Lucas Silveira</span>
+<span class="text-label-sm font-label-sm text-surface-dim truncate">Scrum Master Lead</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Workspace Staging Canvas (Offset by SideNavBar width: w-60 = 15rem = 240px) -->
+<div class="flex-1 ml-60 flex flex-col h-screen overflow-hidden bg-background">
+<!-- SHARED COMPONENT: TopNavBar (Exact JSON Spec & Visual Alignment) -->
+<header class="docked full-width top-0 sticky z-30 flex flex-col w-full bg-surface px-space-lg pt-space-md border-b border-outline-variant">
+<!-- Top Row: Title, Action Buttons, Filter Icons & Search -->
+<div class="flex items-center justify-between gap-space-md pb-space-sm">
+<!-- Board Identity -->
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-space-xs">
+<h1 class="text-headline-lg font-headline-lg font-bold text-on-surface tracking-tight">Sprint Alpha Q3</h1>
+<button class="p-1 text-on-surface-variant hover:text-on-surface rounded transition-colors" title="Favoritar painel">
+<span class="material-symbols-outlined text-[20px]">star</span>
+</button>
+</div>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-label-sm font-label-sm bg-primary-fixed text-on-primary-fixed">
+              Sprint Ativa #14
+            </span>
+</div>
+<!-- Trailing Toolbar Controls -->
+<div class="flex items-center gap-space-sm">
+<!-- Search Bar (on_right) -->
+<div class="relative flex items-center">
+<span class="material-symbols-outlined text-[18px] absolute left-2.5 text-on-surface-variant pointer-events-none">search</span>
+<input class="w-52 lg:w-64 pl-8 pr-3 py-1.5 text-body-sm font-body-sm bg-surface-container-lowest border border-outline-variant rounded-lg focus:outline-none focus:border-primary transition-all" placeholder="Buscar neste quadro..." type="text"/>
+</div>
+<!-- Trailing Icon Actions: star, filter_list, person, sort, tune -->
+<div class="flex items-center border-l border-r border-outline-variant px-space-xs gap-1 text-on-surface-variant">
+<button class="p-1.5 hover:bg-surface-container hover:text-on-surface rounded-lg transition-colors active:scale-[0.98]" title="Filtro Avançado">
+<span class="material-symbols-outlined text-[20px]">filter_list</span>
+</button>
+<button class="p-1.5 hover:bg-surface-container hover:text-on-surface rounded-lg transition-colors active:scale-[0.98]" title="Filtrar por Pessoa">
+<span class="material-symbols-outlined text-[20px]">person</span>
+</button>
+<button class="p-1.5 hover:bg-surface-container hover:text-on-surface rounded-lg transition-colors active:scale-[0.98]" title="Ordenar Itens">
+<span class="material-symbols-outlined text-[20px]">sort</span>
+</button>
+<button class="p-1.5 hover:bg-surface-container hover:text-on-surface rounded-lg transition-colors active:scale-[0.98]" title="Configurar Visão">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</button>
+</div>
+<!-- Primary & Secondary Trailing Actions -->
+<button class="px-space-md py-1.5 bg-surface-container-lowest hover:bg-surface-container border border-outline-variant rounded-lg text-label-md font-label-md text-on-surface flex items-center gap-1.5 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-[18px] text-primary">person_add</span>
+<span>Convidar / Integrantes</span>
+</button>
+<button class="px-space-md py-1.5 bg-primary hover:bg-surface-tint text-on-primary rounded-lg text-label-md font-label-md flex items-center gap-1.5 shadow-sm active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Novo Item</span>
+</button>
+</div>
+</div>
+<!-- Bottom Row: Navigation Links with 'Kanban' as ACTIVE -->
+<nav class="flex items-center gap-space-lg pt-space-xs text-title-sm">
+<!-- Tabela Principal (Inactive) -->
+<a class="text-on-surface-variant hover:text-on-surface pb-space-xs transition-colors flex items-center gap-1.5" href="#">
+<span class="material-symbols-outlined text-[18px]">table_chart</span>
+<span>Tabela Principal</span>
+</a>
+<!-- Kanban (ACTIVE tab according to context) -->
+<a class="border-b-2 border-primary text-primary font-title-sm pb-space-xs flex items-center gap-1.5" href="#">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">view_kanban</span>
+<span>Kanban</span>
+<span class="px-1.5 py-0.2 bg-primary-fixed text-on-primary-fixed rounded text-label-sm font-label-sm">20</span>
+</a>
+<!-- Cronograma Gantt (Inactive) -->
+<a class="text-on-surface-variant hover:text-on-surface pb-space-xs transition-colors flex items-center gap-1.5" href="#">
+<span class="material-symbols-outlined text-[18px]">timeline</span>
+<span>Cronograma Gantt</span>
+</a>
+<!-- Dashboard Métricas (Inactive) -->
+<a class="text-on-surface-variant hover:text-on-surface pb-space-xs transition-colors flex items-center gap-1.5" href="#">
+<span class="material-symbols-outlined text-[18px]">bar_chart</span>
+<span>Dashboard Métricas</span>
+</a>
+<button class="text-on-surface-variant hover:text-on-surface pb-space-xs ml-auto flex items-center gap-1 text-label-md font-label-md">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Nova Visualização</span>
+</button>
+</nav>
+</header>
+<!-- Sub-Bar: Quick Filter Bar & Board Metrics -->
+<div class="bg-surface-container-low px-space-lg py-2 border-b border-outline-variant/60 flex items-center justify-between gap-space-md">
+<!-- Quick Filter Pills -->
+<div class="flex items-center gap-space-sm overflow-x-auto">
+<span class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Filtros:</span>
+<!-- Quick Member Filter Stack -->
+<div class="flex items-center -space-x-1.5 hover:space-x-1 transition-all">
+<button class="relative group" title="Marina Costa (Tech Lead)">
+<img alt="Marina Costa" class="w-6 h-6 rounded-full border-2 border-surface-container-lowest object-cover" data-alt="Portrait of senior female software engineer wearing glasses in high-tech bright modern office environment with soft focus studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzDBIZbJUv6w_Dxl0G5d35cc8fh-Eg25puQ24v0wTgN4_QCfJJ7C_MPG1EVmSZtYRn406-tnVr36zwNNOS2KMafUXm_YJfqoKRNU5gvdmLTYW5OgrI_faXmZw3gnj_QdvY66RvrMwg4jjDnODSC2xsgn4FErN5mAH5xTes4OFOCXKP9pXyKlNxdocmjCXjRqGlwQwhZgwVybCdabcOqtdnTECR1ZBwgyVo5vo7k9SOECl62QTvyk7S"/>
+</button>
+<button class="relative group" title="Diego Faria (Backend)">
+<img alt="Diego Faria" class="w-6 h-6 rounded-full border-2 border-surface-container-lowest object-cover" data-alt="Portrait of male software developer smiling in modern agile office workspace with gentle daylight and minimal clean design tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTWjijZKLykIdojOp3CMP2FC4iY8kQYTHfJf5AWx_7i-dD3iDYB5PQwC50snwOq2tNxhNw1XM0l86VkrYOi7eXxjvLRLln57TOrgY6igu-NFRgMocl1hqpOEtKoCtqol2eUi0qv8OJtn0TCErPDo5qyuKWs1_Se03rwUoKTxa2KXDeHeh9f1ctnJ0RyvrMVHucwrdTb0excHHWL2XkMIc9zEh6H8hedjx3yi82zBLPlo6EFXp2GJtn"/>
+</button>
+<button class="relative group" title="Bianca Lima (UI/UX)">
+<img alt="Bianca Lima" class="w-6 h-6 rounded-full border-2 border-surface-container-lowest object-cover" data-alt="Portrait of young female creative product designer with neat minimal attire in a modern Scandinavian styled studio environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKLEihfDIMM62uTuX06usVUxSfH-yRwY56hEkmMvvZ8_VANAG3KCQT14UjQ8x91cYdmAUrcqoCmz48oUPQNd0jStuUpVjyOgmfG-Nb79J8td3H0QfrSCTFwR3cKD8JCVaBYYT-yrEhLEJCQvm7IOycaOK3Rb3J3MF6LU-Zy3w0Avu2tlZw3v-A1-ROjA0dPznUubQ5VcYuXC8t8WyasDnhVlkQZxXOgXbydsHjbxu2bzwMW1jJLClc"/>
+</button>
+<button class="relative group" title="Rodrigo Santos (QA Lead)">
+<img alt="Rodrigo Santos" class="w-6 h-6 rounded-full border-2 border-surface-container-lowest object-cover" data-alt="Portrait of male QA automation engineer with attentive expression in a sleek light-toned corporate tech workspace" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1VzXk1AxdIT4jlzEpC_izsTfmxy0ZCC6wYT2zYmqErhBNh_rWDzXLXSPva6FKTZ4QmVphm7XkhvwSAfC3ST4747R0ViMoA2bUXu2lYFaXUXeFIoTOd_Djw38ufhYIABIdskf7HP4Szlk3cF3HFs9TXxUHcE1ff_uFq5A0E6vTqyoDaspa1Ju7YIT2sHWXNymauMT3zj-JwzmLUHX7xKmd4gzf-8X2OVMh16PrrVwI96Wi5p5A2NlX"/>
+</button>
+</div>
+<div class="h-4 w-px bg-outline-variant/70"></div>
+<!-- Tag Chips -->
+<button class="px-2 py-0.5 bg-surface-container-lowest border border-outline-variant hover:bg-surface-container rounded-full text-label-sm font-label-sm text-on-surface flex items-center gap-1 transition-colors">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+<span>Prioridade: Todas</span>
+<span class="material-symbols-outlined text-[14px]">expand_more</span>
+</button>
+<button class="px-2 py-0.5 bg-surface-container-lowest border border-outline-variant hover:bg-surface-container rounded-full text-label-sm font-label-sm text-on-surface flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[14px]">label</span>
+<span>Tags: Core &amp; UI</span>
+</button>
+<button class="px-2 py-0.5 bg-primary-fixed border border-primary/20 text-on-primary-fixed rounded-full text-label-sm font-label-sm flex items-center gap-1 font-semibold">
+<span>Sprint Atual</span>
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</div>
+<!-- Summary Metric Chips -->
+<div class="flex items-center gap-space-md text-label-sm font-label-sm text-on-surface-variant">
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-sm bg-tertiary"></span>
+<span>Progresso da Sprint: <strong class="text-on-surface">58% Concluído</strong></span>
+</div>
+<span class="text-outline-variant">|</span>
+<span>12 dias restantes</span>
+</div>
+</div>
+<!-- MAIN KANBAN BOARD CONTAINER (Horizontal Scrollable Grid) -->
+<main class="flex-1 overflow-x-auto overflow-y-hidden p-space-lg custom-scrollbar bg-background">
+<div class="flex gap-space-lg h-full items-start min-w-[1240px] pb-4">
+<!-- ======================================================== -->
+<!-- COLUNA 1: A Fazer / Backlog (Cinza Ardósia / 5 itens) -->
+<!-- ======================================================== -->
+<section class="flex flex-col w-80 max-h-full bg-surface-container-low rounded-xl border border-outline-variant/60 shadow-sm flex-shrink-0">
+<!-- Header da Coluna -->
+<div class="p-space-md border-b border-outline-variant/50 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-outline"></span>
+<h2 class="text-title-sm font-title-sm text-on-surface font-bold">A Fazer / Backlog</h2>
+<span class="px-2 py-0.5 rounded-full bg-surface-variant text-on-surface-variant text-label-sm font-label-sm">5</span>
+</div>
+<div class="flex items-center gap-0.5 text-on-surface-variant">
+<button class="p-1 hover:bg-surface-container rounded transition-colors" title="Adicionar cartão rápido">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+<button class="p-1 hover:bg-surface-container rounded transition-colors" title="Opções da coluna">
+<span class="material-symbols-outlined text-[18px]">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Cartões (Vertical Scroll) -->
+<div class="flex-1 overflow-y-auto p-space-sm flex flex-col gap-space-sm custom-scrollbar">
+<!-- Card 1.1: Backend Kafka -->
+<article class="kanban-card bg-surface-container-lowest border-l-4 border-l-outline border border-outline-variant/40 rounded-lg p-space-md cursor-pointer">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant text-label-sm font-label-sm">Backend</span>
+<span class="px-2 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed text-label-sm font-label-sm">Infra</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant hover:text-on-surface text-[18px]">more_vert</span>
+</div>
+<h3 class="text-body-md font-body-md font-semibold text-on-surface mb-2 leading-snug">
+                  Configurar Cluster Kafka para eventos assíncronos de telemetria
+                </h3>
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/30 text-body-sm">
+<div class="flex items-center gap-1 text-on-surface-variant text-label-sm">
+<span class="material-symbols-outlined text-[15px]">calendar_today</span>
+<span>18 Out</span>
+<span class="ml-2 px-1.5 py-0.5 rounded bg-surface-container text-on-surface text-[10px] font-bold">Média</span>
+</div>
+<img alt="Diego Faria" class="w-6 h-6 rounded-full border border-outline-variant object-cover" data-alt="Portrait of an experienced male cloud infrastructure architect looking focused in clean bright technology lab setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiSncv883FXLPMSNbpZsvggiKam3sUpUOeXKs7PDTLnFVSY-Bl9TKkuN-QbXFb5ZlEMhJlgq1yNpGggTZB3UB6GhLMQui5wvchftKbHjZa0Eoan5VYZog3C9WXzpAxEfRncME_vfA-HAtl8PM9iJXQALkM0BleS3wOoUKiNMwul8CpvZbNN7VGJ8Ug0tkQ_SlyC0rUELlNIyuDgeQPooh3q1p654cQhazYKRbCtHEz2FbTj1lKQ3pF"/>
+</div>
+</article>
+<!-- Card 1.2: Database Migration -->
+<article class="kanban-card bg-surface-container-lowest border-l-4 border-l-outline border border-outline-variant/40 rounded-lg p-space-md cursor-pointer">
+<div class="flex items-center justify-between mb-2">
+<span class="px-2 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed text-label-sm font-label-sm">Infra</span>
+<span class="material-symbols-outlined text-outline-variant text-[18px]">more_vert</span>
+</div>
+<h3 class="text-body-md font-body-md font-semibold text-on-surface mb-2 leading-snug">
+                  Otimização de índices Postgres nas tabelas de histórico de auditoria
+                </h3>
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/30">
+<div class="flex items-center gap-1 text-on-surface-variant text-label-sm">
+<span class="material-symbols-outlined text-[15px]">calendar_today</span>
+<span>20 Out</span>
+<span class="ml-2 px-1.5 py-0.5 rounded bg-surface-container text-on-surface text-[10px] font-bold">Baixa</span>
+</div>
+<img alt="Thiago Rocha" class="w-6 h-6 rounded-full border border-outline-variant object-cover" data-alt="Close up profile picture of a young male data engineer with clean background and focused expression in open office" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeazHSFu_8KrX1OtIg5qqwrouLtUNNHvtUpMH5g-8SYsAemcPCgdziA46TJjFnQ_QcFcUT0zr9aVyE4W7pcDZZNFJs6stbUgYijatgYt9Vfv6IprcPatkughdT-s-dXnpfNcmrD2i6FD0d5wVjXwnVvAb4y1Sb5qFe4nv3Fa7MSVqs5O6mQdvlzIof5_BLg6Nb8-U4LXh_ok0-fa8pV4rJdEFLsGjK1wqinXTapfDTWLhyrbTmqwY5"/>
+</div>
+</article>
+<!-- Card 1.3: Auth MFA -->
+<article class="kanban-card bg-surface-container-lowest border-l-4 border-l-outline border border-outline-variant/40 rounded-lg p-space-md cursor-pointer">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant text-label-sm font-label-sm">Backend</span>
+<span class="px-2 py-0.5 rounded bg-error-container text-on-error-container text-label-sm font-label-sm">Segurança</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant text-[18px]">more_vert</span>
+</div>
+<h3 class="text-body-md font-body-md font-semibold text-on-surface mb-2 leading-snug">
+                  Implementação do fluxo de autenticação multifator (TOTP / SMS)
+                </h3>
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/30">
+<div class="flex items-center gap-1 text-error text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[15px]">priority_high</span>
+<span>Urgente</span>
+<span class="text-on-surface-variant font-normal ml-1">15 Out</span>
+</div>
+<img alt="Marina Costa" class="w-6 h-6 rounded-full border border-outline-variant object-cover" data-alt="Portrait of senior female software engineer wearing glasses in high-tech bright modern office environment with soft focus studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBH_vQOtQmLP91841SRlIdzdEcLvtNxKJIyonDgxpsr10ezkPm3Y2nRk-ctcwkZPsux2v1Bx8PA10_r6FkPQ5uduN9csJ-O6hl_z-vkcFbZv3jCclnFjmyMw4kTNceMD4tkxAhu7ICIOJmh2pOt_Ywn_LRTOmP6nXsfRtyauIStV8czL8GYRCDsvuR27DfzGCdxt1p6t_ycLshyIJC9w2gTexC7-FjnOi4BsdInwTdW4HUb7QBH-wuc"/>
+</div>
+</article>
+<!-- Card 1.4: API Webhooks -->
+<article class="kanban-card bg-surface-container-lowest border-l-4 border-l-outline border border-outline-variant/40 rounded-lg p-space-md cursor-pointer">
+<div class="flex items-center justify-between mb-2">
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant text-label-sm font-label-sm">Backend</span>
+<span class="material-symbols-outlined text-outline-variant text-[18px]">more_vert</span>
+</div>
+<h3 class="text-body-md font-body-md font-semibold text-on-surface mb-2 leading-snug">
+                  Especificação OpenAPI 3.1 e endpoints para webhooks públicos
+                </h3>
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/30">
+<div class="flex items-center gap-1 text-on-surface-variant text-label-sm">
+<span class="material-symbols-outlined text-[15px]">calendar_today</span>
+<span>22 Out</span>
+<span class="ml-2 px-1.5 py-0.5 rounded bg-surface-container text-on-surface text-[10px] font-bold">Média</span>
+</div>
+<div class="w-6 h-6 rounded-full bg-outline-variant/40 border border-outline-variant flex items-center justify-center text-[10px] font-bold text-on-surface-variant">
+                    DF
+                  </div>
+</div>
+</article>
+<!-- Card 1.5: CI/CD Pipeline Update -->
+<article class="kanban-card bg-surface-container-lowest border-l-4 border-l-outline border border-outline-variant/40 rounded-lg p-space-md cursor-pointer">
+<div class="flex items-center justify-between mb-2">
+<span class="px-2 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed text-label-sm font-label-sm">Infra</span>
+<span class="material-symbols-outlined text-outline-variant text-[18px]">more_vert</span>
+</div>
+<h3 class="text-body-md font-body-md font-semibold text-on-surface mb-2 leading-snug">
+                  Atualização de runners GitHub Actions e cache de dependências Go
+                </h3>
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/30">
+<div class="flex items-center gap-1 text-on-surface-variant text-label-sm">
+<span class="material-symbols-outlined text-[15px]">calendar_today</span>
+<span>25 Out</span>
+</div>
+<img alt="Diego Faria" class="w-6 h-6 rounded-full border border-outline-variant object-cover" data-alt="Portrait of an experienced male cloud infrastructure architect looking focused in clean bright technology lab setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSH5CeAiFyCNju991PJqotXKPrHCtrklbe2JyHQurwD831WuNE8NFD7Wg8cljXM1a3JIN8K_dVSR79bfLdznfmkS1zIPeS1OJdmSuAFb_k0fYRkgwQ-Za1BUwANPR0dVN3Qo8x_TKR8Ba_Erfq7PPVqYv-b4rtGQs5lMfSsteIfGjoJ268AAq7tR5BNm_FJOO-cQslA7Lzzj1bnm1Jw__k7hF0l7ovgUE8TbN8f546gd45Go4IAZEn"/>
+</div>
+</article>
+</div>
+<!-- Botão Rodapé + Adicionar Cartão -->
+<div class="p-space-sm border-t border-outline-variant/40">
+<button class="w-full py-1.5 px-space-sm flex items-center justify-center gap-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg text-label-md font-label-md transition-colors">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Adicionar Cartão</span>
+</button>
+</div>
+</section>
+<!-- ======================================================== -->
+<!-- COLUNA 2: Em Andamento (Azul vibrante Monday / 4 itens)  -->
+<!-- ======================================================== -->
+<section class="flex flex-col w-80 max-h-full bg-surface-container-low rounded-xl border border-primary/30 shadow-sm flex-shrink-0">
+<!-- Header da Coluna -->
+<div class="p-space-md border-b border-primary/20 flex items-center justify-between bg-primary-fixed/20 rounded-t-xl">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-primary-container"></span>
+<h2 class="text-title-sm font-title-sm text-on-surface font-bold">Em Andamento</h2>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed text-label-sm font-label-sm">4</span>
+</div>
+<div class="flex items-center gap-0.5 text-primary">
+<button class="p-1 hover:bg-surface-container rounded transition-colors" title="Adicionar cartão">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+<button class="p-1 hover:bg-surface-container rounded transition-colors" title="Opções">
+<span class="material-symbols-outlined text-[18px]">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Cartões (Vertical Scroll) -->
+<div class="flex-1 overflow-y-auto p-space-sm flex flex-col gap-space-sm custom-scrollbar">
+<!-- Card 2.1: Gateway de Pagamentos -->
+<article class="kanban-card bg-surface-container-lowest border-l-4 border-l-primary-container border border-outline-variant/40 rounded-lg p-space-md cursor-pointer">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed text-label-sm font-label-sm">Checkout Core</span>
+<span class="px-2 py-0.5 rounded bg-error-container text-on-error-container text-label-sm font-label-sm font-bold">Alta</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant text-[18px]">more_vert</span>
+</div>
+<h3 class="text-body-md font-body-md font-semibold text-on-surface mb-2 leading-snug">
+                  Integração do Stripe Elements v3 com suporte a Pix Instantâneo
+                </h3>
+<!-- Barra de Progresso Visual (65%) -->
+<div class="space-y-1 mb-3">
+<div class="flex justify-between text-label-sm font-label-sm text-on-surface-variant">
+<span>Progresso</span>
+<span class="font-bold text-primary">65%</span>
+</div>
+<div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 65%;"></div>
+</div>
+</div>
+<!-- Subtarefas e Prazo em Destaque -->
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/30">
+<div class="flex items-center gap-1.5 text-label-sm font-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-primary">check_box</span>
+<span>4/6 subtarefas</span>
+</div>
+<span class="px-2 py-0.5 rounded bg-error-container text-on-error-container text-label-sm font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">alarm</span>
+                    Entrega amanhã
+                  </span>
+<img alt="Marina Costa" class="w-6 h-6 rounded-full border border-outline-variant object-cover" data-alt="Portrait of senior female software engineer wearing glasses in high-tech bright modern office environment with soft focus studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7uAqHqmjMbYcVht7xU52nRGrjLI3fOw-7n5zbd_tCJQg7_OyL5c8co2auP_LawDOR94R03Z1cjB6-8VfJh_Rw1goBkE3vXJvZxPl11JyJLxTTkoIr316lR-jJ2Fwm_Ya8bVxwUkUcppnWeG0AZ_N4FjYA-pOTi4QyuTmSUF56XHibOmO5Dyc2qVTXbpG20_xBj9JroeT-oh5UP8vE65MskYSJjOLl1sw1M1As4D63VxfkWLn0TeWT"/>
+</div>
+</article>
+<!-- Card 2.2: Mobile Responsive Board -->
+<article class="kanban-card bg-surface-container-lowest border-l-4 border-l-primary-container border border-outline-variant/40 rounded-lg p-space-md cursor-pointer">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant text-label-sm font-label-sm">Frontend</span>
+<span class="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed text-label-sm font-label-sm font-bold">Média</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant text-[18px]">more_vert</span>
+</div>
+<h3 class="text-body-md font-body-md font-semibold text-on-surface mb-2 leading-snug">
+                  Viewport responsivo do Kanban Board e gestos de Swipe no Touch
+                </h3>
+<!-- Barra de Progresso Visual (40%) -->
+<div class="space-y-1 mb-3">
+<div class="flex justify-between text-label-sm font-label-sm text-on-surface-variant">
+<span>Progresso</span>
+<span class="font-bold text-primary">40%</span>
+</div>
+<div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 40%;"></div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/30">
+<div class="flex items-center gap-1.5 text-label-sm font-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-primary">check_box</span>
+<span>2/5 subtarefas</span>
+</div>
+<span class="text-label-sm text-on-surface-variant">Em 3 dias</span>
+<img alt="Bianca Lima" class="w-6 h-6 rounded-full border border-outline-variant object-cover" data-alt="Portrait of young female creative product designer with neat minimal attire in a modern Scandinavian styled studio environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQbcq7Lm6q72XDslsWsOujyOB8zhHHskzN8ZZaSrGVqEQ0XxL5GWm_xEijYXpBRMJQzv_Rzd2WR4fdDMclNDGpgkjmRsqQ_Ee2qCnLfEBX1kcYu_a-9Z_1HXz2ya3ZmiccSPCLNq41Zfyz3BgIRLSnBpAu-TReRcpMYJAtiy692lvvJiHWvf9DvyYq3lZheOfCjcxF85J2ljrQ9qapWawcVXC-AEL41nibtNO2X2_SEH1_tExDyHVN"/>
+</div>
+</article>
+<!-- Card 2.3: WebSocket Live Sync -->
+<article class="kanban-card bg-surface-container-lowest border-l-4 border-l-primary-container border border-outline-variant/40 rounded-lg p-space-md cursor-pointer">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant text-label-sm font-label-sm">Realtime</span>
+<span class="px-2 py-0.5 rounded bg-error-container text-on-error-container text-label-sm font-label-sm font-bold">Alta</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant text-[18px]">more_vert</span>
+</div>
+<h3 class="text-body-md font-body-md font-semibold text-on-surface mb-2 leading-snug">
+                  Sincronização em tempo real de cards via WebSockets + Redis PubSub
+                </h3>
+<!-- Barra de Progresso Visual (85%) -->
+<div class="space-y-1 mb-3">
+<div class="flex justify-between text-label-sm font-label-sm text-on-surface-variant">
+<span>Progresso</span>
+<span class="font-bold text-primary">85%</span>
+</div>
+<div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 85%;"></div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/30">
+<div class="flex items-center gap-1.5 text-label-sm font-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-primary">check_box</span>
+<span>5/6 subtarefas</span>
+</div>
+<span class="text-label-sm text-on-surface-variant">Hoje, 18:00</span>
+<img alt="Diego Faria" class="w-6 h-6 rounded-full border border-outline-variant object-cover" data-alt="Portrait of male software developer smiling in modern agile office workspace with gentle daylight and minimal clean design tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7MRFflCP7jyy1Wy-FMiR6tYBhVkELeqWs2Rcfui1-oqmAvZiI-ddDcOGyEBKctS1IhZ_vS1cEvKsI_twr0mjxx-P6wyklBmLmKa2YzvnJPlbNIKgGhazWNult1qs1ZvhBIE7NmySBmp9UDqKGjW31J50x08V6KgQCNfWXjSRpzO3Eo3Nuu1qUvBcE6YaIV9QWIIPHQoytjw5pyWfn9roZR40kEXu0uJXawupcnYdtgKbQMLLOlR4_"/>
+</div>
+</article>
+<!-- Card 2.4: Export CSV/XLSX -->
+<article class="kanban-card bg-surface-container-lowest border-l-4 border-l-primary-container border border-outline-variant/40 rounded-lg p-space-md cursor-pointer">
+<div class="flex items-center justify-between mb-2">
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant text-label-sm font-label-sm">Exportações</span>
+<span class="material-symbols-outlined text-outline-variant text-[18px]">more_vert</span>
+</div>
+<h3 class="text-body-md font-body-md font-semibold text-on-surface mb-2 leading-snug">
+                  Motor assíncrono de relatórios analíticos em formato XLSX e CSV
+                </h3>
+<div class="space-y-1 mb-3">
+<div class="flex justify-between text-label-sm font-label-sm text-on-surface-variant">
+<span>Progresso</span>
+<span class="font-bold text-primary">20%</span>
+</div>
+<div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 20%;"></div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/30">
+<div class="flex items-center gap-1.5 text-label-sm font-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-primary">check_box</span>
+<span>1/5 subtarefas</span>
+</div>
+<span class="text-label-sm text-on-surface-variant">21 Out</span>
+<img alt="Thiago Rocha" class="w-6 h-6 rounded-full border border-outline-variant object-cover" data-alt="Close up profile picture of a young male data engineer with clean background and focused expression in open office" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmvSVAZhDva0AmFSGoic8zw6AO0ek57y9ChUhycPuVNJRBlGcpB23Y-bgFKEVwZu2alRgBITNCZc3xVCwU8Yge9aIiXrcdrDsMmuRklfVkqTTVc3Nr2ALADf3oLGTbUJCq3BbwyrVrnrMV4gA-P0PnM7YKVyxaJK4bOX_XSbGTi53wdDlyBuuGey4bjquxfNttwENr_qVN3igxgzoa9hTfJ2rnnWIaDgnxwkhk8v9TDjMOvSCQXA2s"/>
+</div>
+</article>
+</div>
+<!-- Botão Rodapé + Adicionar Cartão -->
+<div class="p-space-sm border-t border-primary/20">
+<button class="w-full py-1.5 px-space-sm flex items-center justify-center gap-1.5 text-primary hover:bg-primary-fixed/40 rounded-lg text-label-md font-label-md transition-colors">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Adicionar Cartão</span>
+</button>
+</div>
+</section>
+<!-- ======================================================== -->
+<!-- COLUNA 3: Em Revisão / QA (Laranja Âmbar / 3 itens)      -->
+<!-- ======================================================== -->
+<section class="flex flex-col w-80 max-h-full bg-surface-container-low rounded-xl border border-amber-300 shadow-sm flex-shrink-0">
+<!-- Header da Coluna -->
+<div class="p-space-md border-b border-amber-200 flex items-center justify-between bg-amber-50 rounded-t-xl">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-amber-500"></span>
+<h2 class="text-title-sm font-title-sm text-on-surface font-bold">Em Revisão / QA</h2>
+<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-label-sm font-label-sm font-bold">3</span>
+</div>
+<div class="flex items-center gap-0.5 text-amber-800">
+<button class="p-1 hover:bg-amber-100 rounded transition-colors" title="Adicionar cartão">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+<button class="p-1 hover:bg-amber-100 rounded transition-colors" title="Opções">
+<span class="material-symbols-outlined text-[18px]">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Cartões (Vertical Scroll) -->
+<div class="flex-1 overflow-y-auto p-space-sm flex flex-col gap-space-sm custom-scrollbar">
+<!-- Card 3.1: Design Tokens & Miniatura de UI Preview -->
+<article class="kanban-card bg-surface-container-lowest border-l-4 border-l-amber-500 border border-outline-variant/40 rounded-lg p-space-md cursor-pointer">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-label-sm font-label-sm">Code Review #412</span>
+<span class="px-2 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed text-label-sm font-label-sm">Design System</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant text-[18px]">more_vert</span>
+</div>
+<h3 class="text-body-md font-body-md font-semibold text-on-surface mb-2 leading-snug">
+                  Componentes de Tabela Densificada e Cores Semânticas
+                </h3>
+<!-- Miniatura de Preview UI -->
+<div class="mb-3 rounded-lg overflow-hidden border border-outline-variant/50 relative group">
+<img alt="UI Design System Preview" class="w-full h-28 object-cover transition-transform group-hover:scale-105 duration-200" data-alt="High-fidelity user interface screenshot of a clean modern SaaS analytics table featuring crisp colorful status badges and micro interactions in a bright light aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfhjxVL_435bgwxrmugbSGcCaRe6LdknlrStfnsEjF6yZTsAkhUmmYo4A-F8We6JD1o3S8FGLqG0B7qcY674UjVMRlVTMq-aKUX3wyUXvtTdcP6f5ftX0fuTid0nDdH8kez4-ZK1fbO1wvdaSt81Y8CMhRho1V87lOpAIPM_lXwYeFJxxBXHHdKjyZiNWU7T2WC6EB4s9P1NJ30SId4c7G5cU_EMCihSaMlZf9fGuMzydv-mLYO5k5"/>
+<div class="absolute bottom-1 right-1 px-1.5 py-0.5 bg-inverse-surface/80 rounded text-[10px] text-inverse-on-surface font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">image</span>
+                    preview.png
+                  </div>
+</div>
+<!-- Métricas QA: Comentários e Responsável de QA -->
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/30">
+<div class="flex items-center gap-3 text-label-sm font-label-sm text-on-surface-variant">
+<span class="flex items-center gap-1 text-on-surface font-semibold">
+<span class="material-symbols-outlined text-[16px] text-amber-600">chat_bubble</span>
+                      8 comentários
+                    </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">attach_file</span>
+                      2
+                    </span>
+</div>
+<div class="flex items-center -space-x-1.5">
+<img alt="Bianca Lima (Designer)" class="w-6 h-6 rounded-full border border-surface-container-lowest object-cover" data-alt="Portrait of young female creative product designer with neat minimal attire in a modern Scandinavian styled studio environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpTUBt86GR9wMy9-iqlugutgwCK9el-F23UL_OOhf2HYHfbNYQH1ShwJW37lFiIL7Q7_09j_M70RenCJde-VdiEYQaBzCn-zV3z_qVYO15nOX3s0bpajwTFt46STxb6tjQRXC1FknRekPuO-oDdJabrNZpWlrHieFr5MlGRrI9JL9yWw8jP5kpcdOvpzEDR6aNjB37nu1EdklR5qh14Zj02y4FyBNyXv3eXwzXvG78-biTF68Ypfcj"/>
+<img alt="Rodrigo Santos (QA Lead)" class="w-6 h-6 rounded-full border border-surface-container-lowest object-cover" data-alt="Portrait of male QA automation engineer with attentive expression in a sleek light-toned corporate tech workspace" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzjxaFXZa2YEozP1i9t2ewitsJCq0hqVSk_GPwZTyNlE1bko43vS8Ez1u0rr5DCj9EMcv7LvF4DiFGIFZf52JfKS1a5Z9gPSgHwjy1NySkevKBN9i7mzlUPDgzscFxb9T5WsMd9tIxf0QKaMayvAFGVqcgt8ZpAkYT3gqd3Csj4EjO4v6BtTr_QIoROOSI-zf3F3oPn5goXm5epfc-xFY4aq1X9cXY11-5gmlzTteeRsSpa9qrX7dX"/>
+</div>
+</div>
+</article>
+<!-- Card 3.2: Rate Limiter Middleware -->
+<article class="kanban-card bg-surface-container-lowest border-l-4 border-l-amber-500 border border-outline-variant/40 rounded-lg p-space-md cursor-pointer">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-label-sm font-label-sm">PR #489</span>
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant text-label-sm font-label-sm">Backend</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant text-[18px]">more_vert</span>
+</div>
+<h3 class="text-body-md font-body-md font-semibold text-on-surface mb-2 leading-snug">
+                  Rate limiting por IP e Tenant com fallback em memória distribuída
+                </h3>
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/30">
+<div class="flex items-center gap-3 text-label-sm font-label-sm text-on-surface-variant">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-amber-600">chat_bubble</span>
+                      4 comentários
+                    </span>
+<span class="px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded font-semibold text-[10px]">Aguardando QA</span>
+</div>
+<img alt="Rodrigo Santos (QA)" class="w-6 h-6 rounded-full border border-outline-variant object-cover" data-alt="Portrait of male QA automation engineer with attentive expression in a sleek light-toned corporate tech workspace" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIeQoZ_Z4q_Ee_kRxbziZVJSqPM-ZCfRVV51O4JMSCGo50G6VeCDyPZHfMHMlq9Brpkww8FrYC4qCsujn7xuhsmJS3mr0ZA8hVHRLPwHOwhWuzjXsew2MFlcEakF5eOcDUlqg7me5HhD1P4acK0I4zYiOedlBA9ZjfRrc1fF0j3DtXTdVA2s--CEidPSgtgdcmT3UsTZTeXyqQJKKPm48Yjl754_TV5svXTuyUdDRcT9kso2QADYO8"/>
+</div>
+</article>
+<!-- Card 3.3: Dark Mode Palette QA -->
+<article class="kanban-card bg-surface-container-lowest border-l-4 border-l-amber-500 border border-outline-variant/40 rounded-lg p-space-md cursor-pointer">
+<div class="flex items-center justify-between mb-2">
+<span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-label-sm font-label-sm">Visual Regression</span>
+<span class="material-symbols-outlined text-outline-variant text-[18px]">more_vert</span>
+</div>
+<h3 class="text-body-md font-body-md font-semibold text-on-surface mb-2 leading-snug">
+                  Verificação de contraste WCAG AAA nas cores de superfícies
+                </h3>
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/30">
+<div class="flex items-center gap-2 text-label-sm font-label-sm text-on-surface-variant">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-amber-600">chat_bubble</span>
+                      3 comentários
+                    </span>
+</div>
+<img alt="Bianca Lima" class="w-6 h-6 rounded-full border border-outline-variant object-cover" data-alt="Portrait of young female creative product designer with neat minimal attire in a modern Scandinavian styled studio environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdqsGtFTyl1J1a-Q3kEWMqgrmuoaiWSpu0GbpsJ2j79Ij7-GfO_1B95CsYhBhQXJTSvzBR_eUgLkbAySYoOpQRNw0sGZZcFMh--Z2xZF6-bjeWBg-rwpGF_P-sMWZncRc4WZP3KOVTNUgXanP3XZdP0j4CPZSdaJeMTNsiKQfREkfn4fw8oClorhXulYDDNkua8pKNfk3shyPWs4aVB93ruwG0l7Okl-y2NkJ_k8lFV8WV9RV-JGnu"/>
+</div>
+</article>
+</div>
+<!-- Botão Rodapé + Adicionar Cartão -->
+<div class="p-space-sm border-t border-amber-200">
+<button class="w-full py-1.5 px-space-sm flex items-center justify-center gap-1.5 text-amber-800 hover:bg-amber-100 rounded-lg text-label-md font-label-md transition-colors">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Adicionar Cartão</span>
+</button>
+</div>
+</section>
+<!-- ======================================================== -->
+<!-- COLUNA 4: Concluído (Verde Esmeralda Vibrante / 8 itens) -->
+<!-- ======================================================== -->
+<section class="flex flex-col w-80 max-h-full bg-surface-container-low rounded-xl border border-tertiary-fixed-dim/40 shadow-sm flex-shrink-0">
+<!-- Header da Coluna -->
+<div class="p-space-md border-b border-tertiary/20 flex items-center justify-between bg-tertiary-container/10 rounded-t-xl">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-tertiary"></span>
+<h2 class="text-title-sm font-title-sm text-on-surface font-bold">Concluído</h2>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-label-sm font-label-sm font-bold">8</span>
+</div>
+<div class="flex items-center gap-0.5 text-tertiary">
+<button class="p-1 hover:bg-surface-container rounded transition-colors" title="Adicionar cartão">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+<button class="p-1 hover:bg-surface-container rounded transition-colors" title="Opções">
+<span class="material-symbols-outlined text-[18px]">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Cartões (Vertical Scroll) -->
+<div class="flex-1 overflow-y-auto p-space-sm flex flex-col gap-space-sm custom-scrollbar">
+<!-- Card 4.1: OAuth Google -->
+<article class="kanban-card bg-surface-container-lowest border-l-4 border-l-tertiary border border-outline-variant/40 rounded-lg p-space-md cursor-pointer opacity-95">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed text-label-sm font-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                      Deploy Prod
+                    </span>
+</div>
+<span class="material-symbols-outlined text-outline-variant text-[18px]">more_vert</span>
+</div>
+<h3 class="text-body-md font-body-md font-semibold text-on-surface mb-2 leading-snug line-through text-on-surface-variant/80">
+                  Login Social Google Identity &amp; Microsoft Entra SSO
+                </h3>
+<!-- Métricas Concluídas: Tempo gasto vs planejado -->
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/30 text-label-sm font-label-sm">
+<div class="flex items-center gap-1 text-tertiary font-semibold">
+<span class="material-symbols-outlined text-[15px]">timer</span>
+<span>14h / 16h estimadas</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span>12 Out</span>
+<img alt="Marina Costa" class="w-6 h-6 rounded-full border border-outline-variant object-cover" data-alt="Portrait of senior female software engineer wearing glasses in high-tech bright modern office environment with soft focus studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9jgUfL9562XeLb0OgWzQou2oPpGAXU_ZgRUjKGavJ90E0ytb1UZ3-_ePxS2S8HW7bUcqubk0QvG9kvIFIXaCi_pf_J9KXiGJIRHqH1DcKC81uSDDl7Hh-vj-rFN85m3v04RwaEY7I2ZCpLl0tQLWLes4TgfXGa8oxVymbq2mHwgjjbscKVejlx5VthTs5L_Te0WYGipNMBuZ3t1F0ft60ZUDJ-mN74p3znNHBnmo5OaaAIR9d04xS"/>
+</div>
+</div>
+</article>
+<!-- Card 4.2: Redis Caching -->
+<article class="kanban-card bg-surface-container-lowest border-l-4 border-l-tertiary border border-outline-variant/40 rounded-lg p-space-md cursor-pointer opacity-95">
+<div class="flex items-center justify-between mb-2">
+<span class="px-2 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed text-label-sm font-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                    Concluído
+                  </span>
+<span class="material-symbols-outlined text-outline-variant text-[18px]">more_vert</span>
+</div>
+<h3 class="text-body-md font-body-md font-semibold text-on-surface mb-2 leading-snug line-through text-on-surface-variant/80">
+                  Camada de Cache Redis Sentinel para respostas de rotas quentes
+                </h3>
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/30 text-label-sm font-label-sm">
+<div class="flex items-center gap-1 text-tertiary font-semibold">
+<span class="material-symbols-outlined text-[15px]">timer</span>
+<span>8h / 8h</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span>11 Out</span>
+<img alt="Diego Faria" class="w-6 h-6 rounded-full border border-outline-variant object-cover" data-alt="Portrait of male software developer smiling in modern agile office workspace with gentle daylight and minimal clean design tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQFccGfCMoU5pakSuulCT3rAIgbCV7Iz9ChRkbl5Rw3qBdDHmUiXQNH_aRD4tJR9FZg9KyICaUK_wMVnV4qJCGTT1o_m6_uZXZSs7cRHN4L6G8eZX7zguFvLhRiF2gt68fm_SYPuMbIfxoJeVqeJZEQ9DWxEVuCkPPvbyCCN6ysseR8aDFypH_uIVR3q-gaf56uZVMe4ZIRNjqIbJkiwH0UbSmQ7rHByLt4vuuv9Qpjb2x5QV8lKy5"/>
+</div>
+</div>
+</article>
+<!-- Card 4.3: Auditoria LGPD -->
+<article class="kanban-card bg-surface-container-lowest border-l-4 border-l-tertiary border border-outline-variant/40 rounded-lg p-space-md cursor-pointer opacity-95">
+<div class="flex items-center justify-between mb-2">
+<span class="px-2 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed text-label-sm font-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                    Aprovado
+                  </span>
+<span class="material-symbols-outlined text-outline-variant text-[18px]">more_vert</span>
+</div>
+<h3 class="text-body-md font-body-md font-semibold text-on-surface mb-2 leading-snug line-through text-on-surface-variant/80">
+                  Consentimento de Cookies e Política de Retenção de Logs LGPD
+                </h3>
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/30 text-label-sm font-label-sm">
+<div class="flex items-center gap-1 text-tertiary font-semibold">
+<span class="material-symbols-outlined text-[15px]">timer</span>
+<span>6h / 8h</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span>09 Out</span>
+<img alt="Bianca Lima" class="w-6 h-6 rounded-full border border-outline-variant object-cover" data-alt="Portrait of young female creative product designer with neat minimal attire in a modern Scandinavian styled studio environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUOMJxjN4_5kup0es74zg86P6fYddLrGZmZNLBc7fcmAcufbPf2qr1sRI1Kh2qkFiROZuQAbp8AhLJ0_SMKg5XpbC-pHBFEEqJKzpv1hagnpN9xPEi0r5aWTvz4ikYZaHBxDflIQ8pgEOkmuRmeswTXSDj_PghisbT4nGql6JJYoV_951qoQDqtjTNDvcrdOyXwGQZTpeWJL3V60OjJnA8oanN7oBPC6W4cl0qPaHTQXzS99MNY-yJ"/>
+</div>
+</div>
+</article>
+<!-- Card 4.4: Cypress E2E Tests -->
+<article class="kanban-card bg-surface-container-lowest border-l-4 border-l-tertiary border border-outline-variant/40 rounded-lg p-space-md cursor-pointer opacity-95">
+<div class="flex items-center justify-between mb-2">
+<span class="px-2 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed text-label-sm font-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                    100% Pass
+                  </span>
+<span class="material-symbols-outlined text-outline-variant text-[18px]">more_vert</span>
+</div>
+<h3 class="text-body-md font-body-md font-semibold text-on-surface mb-2 leading-snug line-through text-on-surface-variant/80">
+                  Automação da suíte de regressão E2E com Cypress e Relatórios Mochawesome
+                </h3>
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/30 text-label-sm font-label-sm">
+<div class="flex items-center gap-1 text-tertiary font-semibold">
+<span class="material-symbols-outlined text-[15px]">timer</span>
+<span>22h / 20h</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span>08 Out</span>
+<img alt="Rodrigo Santos" class="w-6 h-6 rounded-full border border-outline-variant object-cover" data-alt="Portrait of male QA automation engineer with attentive expression in a sleek light-toned corporate tech workspace" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzBkBjWK4Awvo1_98lrWp8eFr-J-soO0Mg9rq4W9LMfpHHUSGZUZ_DoSeXtdbSFR3Y4v8oUgROI9UMfr_2eVR2bnWSf9fSdMrxN6U7xo79q1enU9lBXQofBZ1m9Z-45_QHySseRhzXxLezlLexvLyaxxHzNZ1pnYPMD_JTG0Kwr2wQgzH0qMTpqgGhnGpGM6QN0Vz3LJoCG27OImtslKPWZv1f50sFZ4KjppISWn-S0YDx1jWbWP6W"/>
+</div>
+</div>
+</article>
+<!-- Cartão Minificado para mostrar volume total (8 itens) -->
+<div class="p-2 bg-surface-container rounded-lg border border-outline-variant/40 flex items-center justify-between text-label-sm font-label-sm text-on-surface-variant">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-tertiary">check</span>
+                  +4 itens entregues arquivados
+                </span>
+<button class="text-primary hover:underline font-semibold">Ver todos</button>
+</div>
+</div>
+<!-- Botão Rodapé + Adicionar Cartão -->
+<div class="p-space-sm border-t border-tertiary/20">
+<button class="w-full py-1.5 px-space-sm flex items-center justify-center gap-1.5 text-tertiary hover:bg-tertiary-fixed/30 rounded-lg text-label-md font-label-md transition-colors">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Adicionar Cartão</span>
+</button>
+</div>
+</section>
+<!-- Botão Nova Coluna Kanban -->
+<div class="w-72 h-32 rounded-xl border-2 border-dashed border-outline-variant/60 flex flex-col items-center justify-center gap-2 text-on-surface-variant hover:text-primary hover:border-primary hover:bg-surface-container-low transition-all cursor-pointer flex-shrink-0">
+<span class="material-symbols-outlined text-[24px]">add_circle</span>
+<span class="font-title-sm text-title-sm">Adicionar Nova Coluna</span>
+</div>
+</div>
+</main>
+</div>
+</div>
+<script>
+    // Lightweight vanilla micro-interactions for Kanban Drag-Drop Visual Feedback
+    document.addEventListener('DOMContentLoaded', () => {
+      const cards = document.querySelectorAll('.kanban-card');
+      
+      cards.forEach(card => {
+        card.setAttribute('draggable', 'true');
+        
+        card.addEventListener('dragstart', (e) => {
+          card.classList.add('opacity-40', 'scale-[0.98]');
+          e.dataTransfer.setData('text/plain', 'card-dragging');
+        });
+
+        card.addEventListener('dragend', () => {
+          card.classList.remove('opacity-40', 'scale-[0.98]');
+        });
+      });
+
+      // Quick filter buttons active toggle micro-interaction
+      const filterButtons = document.querySelectorAll('.filter-pill');
+      filterButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          btn.classList.toggle('bg-primary-fixed');
+          btn.classList.toggle('text-on-primary-fixed');
+        });
+      });
+    });
+  </script>
+</body></html>
