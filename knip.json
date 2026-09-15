@@ -1,0 +1,25 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": ["src/main.tsx", "scripts/*.mjs"],
+  "project": ["src/**/*.{ts,tsx}", "scripts/**/*.mjs"],
+
+  "ignoreDependencies": [
+    "@tailwindcss/vite",
+    "tailwindcss",
+    "@vitest/coverage-v8",
+    "jsdom",
+    "axe-core",
+
+    "@dnd-kit/core",
+    "@dnd-kit/sortable",
+    "@dnd-kit/utilities",
+    "@supabase/supabase-js",
+    "@tanstack/react-query",
+    "lucide-react",
+    "react-router-dom",
+    "@testing-library/user-event",
+    "vite-plugin-pwa",
+    "vitest-axe"
+  ],
+  "ignore": ["dist/**", "coverage/**"]
+}

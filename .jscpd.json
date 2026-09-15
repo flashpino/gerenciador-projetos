@@ -1,0 +1,8 @@
+{
+  "threshold": 1,
+  "minLines": 8,
+  "reporters": ["consoleFull"],
+  "ignore": ["**/*.test.tsx", "**/*.test.ts", "**/node_modules/**", "**/dist/**"],
+  "absolute": false,
+  "gitignore": true
+}
