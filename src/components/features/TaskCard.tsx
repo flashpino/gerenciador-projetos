@@ -42,7 +42,10 @@ export function TaskCard({ task, membros, aoMover, aoAbrir }: Props) {
   // "button" com botões dentro também é aninhamento interativo inválido em ARIA.
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: task.id,
-    attributes: { role: 'group', tabIndex: -1 },
+    // roleDescription vazio: o padrao do dnd-kit e a string em ingles
+    // "draggable", que SOBRESCREVE (nao complementa) o papel falado via
+    // aria-roledescription — anunciaria ingles por cima do role="group" acima.
+    attributes: { role: 'group', tabIndex: -1, roleDescription: '' },
   })
 
   return (

@@ -96,6 +96,8 @@ export function Tabs({
   }
 
   return (
+    // tabIndex={-1} necessario para o lint jsx-a11y (role interativo) — nao afeta
+    // a ordem de tab por ser negativo; quem recebe foco de verdade e o <button role="tab"> ativo.
     <div role="tablist" aria-label={rotulo} onKeyDown={tecla} tabIndex={-1} className={faixa}>
       {items.map((i) => (
         <button

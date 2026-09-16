@@ -89,7 +89,7 @@ passam por `src/hooks/` → `src/services/`.
 
 | Componente | Compõe | Vive em |
 |---|---|---|
-| `BoardShell` | Tabs, Button, Avatar | todas as 4 views (layout comum) |
+| `BoardShell` | Tabs | todas as 4 views (layout comum) |
 | `StatusCell` | Badge, Menu | tabela, kanban, modal |
 | `PriorityCell` | Badge, Menu | tabela, modal |
 | `AssigneeCell` | Avatar, Menu | tabela, kanban, modal |
@@ -97,9 +97,9 @@ passam por `src/hooks/` → `src/services/`.
 | `TaskTable` | StateView, Checkbox, ProgressBar, *Cells | Tabela Principal |
 | `TaskGroup` | ProgressBar, Badge, Button | Tabela Principal |
 | `TaskCardList` | StateView, *Cells | Tabela Principal **em 375px** |
-| `KanbanBoard` | StateView, KanbanColumn | Kanban |
-| `KanbanColumn` | Badge, Button, TaskCard | Kanban |
-| `TaskCard` | Badge, Avatar, ProgressBar | Kanban |
+| `KanbanBoard` | Tabs, KanbanColumn | Kanban |
+| `KanbanColumn` | Badge, TaskCard | Kanban |
+| `TaskCard` | Badge, Avatar, ProgressBar, Menu, DueDateCell | Kanban |
 | `GanttChart` | StateView, GanttRow, GanttScale | Gantt |
 | `GanttRow` | Badge, Avatar | Gantt |
 | `MetricTile` | Badge, ProgressBar | Dashboard |

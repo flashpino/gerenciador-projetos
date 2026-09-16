@@ -24,7 +24,7 @@ export function BoardShell({ titulo, children }: Props) {
   const { pathname } = useLocation()
 
   return (
-    <main className="mx-auto max-w-[1440px] p-gutter md:p-margin">
+    <main className="mx-auto max-w-canvas p-gutter md:p-margin">
       <h1 className="mb-gutter text-display">{titulo}</h1>
       <Tabs
         rotulo="Visões do quadro"

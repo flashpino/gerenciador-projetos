@@ -2,7 +2,7 @@ import { DndContext, PointerSensor, useSensor, useSensors, type DragEndEvent } f
 import { useState } from 'react'
 import { Tabs, type ItemTab } from '@/components/ui/Tabs'
 import { colunasPorStatus } from '@/lib/kanban'
-import { STATUS } from '@/lib/status'
+import { ORDEM_STATUS, STATUS } from '@/lib/status'
 import type { GroupComTarefas, Profile, Task, TaskStatus } from '@/types/domain'
 import { KanbanColumn } from './KanbanColumn'
 
@@ -37,6 +37,7 @@ export function KanbanBoard({ grupos, membros, aoMover, aoAbrir }: Props) {
   const aoSoltar = ({ active, over }: DragEndEvent) => {
     if (!over) return
     const destino = over.id as TaskStatus
+    if (!ORDEM_STATUS.includes(destino)) return // droppable desconhecido: nada a fazer
     const origem = colunas.find((c) => c.tarefas.some((t) => t.id === active.id))
     if (origem?.status === destino) return // soltou na própria coluna: nada a fazer
     mover(String(active.id), destino)
@@ -54,18 +55,30 @@ export function KanbanBoard({ grupos, membros, aoMover, aoAbrir }: Props) {
   // dnd-kit para isto: clique continua clique, só vira arrastar quem move de fato.
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }))
 
-  // O dnd-kit anuncia o arrastar sozinho, em inglês, numa região viva própria
-  // (role="status"). Isso duplicaria o anúncio — e em outro idioma — do mesmo
-  // evento que `mover` já anuncia em `<output>` acima. "Um caminho, um anúncio":
-  // a região do dnd-kit é redirecionada para um nó nunca inserido no documento,
-  // então ela nunca chega a um leitor de tela nem colide com o <output> nosso.
-  const [regiaoDndOculta] = useState(() => document.createElement('div'))
-
   return (
     <DndContext
       sensors={sensors}
       onDragEnd={aoSoltar}
-      accessibility={{ container: regiaoDndOculta }}
+      accessibility={{
+        // O dnd-kit anuncia o arrastar sozinho, em inglês, numa região viva
+        // própria (role="status"). Isso duplicaria o anúncio — e em outro
+        // idioma — do mesmo evento que `mover` já anuncia em `<output>`
+        // abaixo. "Um caminho, um anúncio": aqui os anúncios da própria lib
+        // são silenciados (retornam undefined, nada é escrito na região dela)
+        // em vez de desviar o container dela para um nó fora do documento —
+        // isso deixaria o aria-describedby que ela injeta apontando para um
+        // id que não resolve a nada (IDREF pendurado).
+        announcements: {
+          onDragStart: () => undefined,
+          onDragMove: () => undefined,
+          onDragOver: () => undefined,
+          onDragEnd: () => undefined,
+          onDragCancel: () => undefined,
+        },
+        screenReaderInstructions: {
+          draggable: 'Use o menu "Ações de…" no card para mover esta tarefa entre colunas.',
+        },
+      }}
     >
       <div>
         {/*
@@ -93,6 +106,8 @@ export function KanbanBoard({ grupos, membros, aoMover, aoAbrir }: Props) {
 
         <div
           id="painel-kanban"
+          role="tabpanel"
+          aria-labelledby={`aba-${visivel}`}
           className="grid grid-cols-1 gap-gutter md:grid-cols-2 md:overflow-x-auto lg:grid-cols-5"
         >
           {colunas.map((c) => (

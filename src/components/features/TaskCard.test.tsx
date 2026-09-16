@@ -66,4 +66,13 @@ describe('TaskCard', () => {
     // sr-only explícito é a ÚNICA ocorrência que um leitor de tela alcança.
     expect(screen.getByText('Responsável: Ana Lima')).toBeInTheDocument()
   })
+
+  it('anuncia a ausência de responsável', () => {
+    render(<TaskCard task={tarefa({ assignee_id: null })} membros={MEMBROS} aoMover={() => {}} aoAbrir={() => {}} />)
+
+    // Avatar tem sua propria copia visivel "Sem responsavel" dentro do wrapper
+    // aria-hidden; so a copia FORA dele conta como anuncio real.
+    const anunciados = screen.getAllByText('Sem responsável').filter((el) => !el.closest('[aria-hidden="true"]'))
+    expect(anunciados).toHaveLength(1)
+  })
 })

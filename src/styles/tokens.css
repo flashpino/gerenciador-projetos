@@ -129,7 +129,7 @@
   --spacing-gutter: 1rem;
   --spacing-margin: 1.5rem;
 
-  /* Espacamento fino (Design.md 'spacing'), usado por *-space-{xs,sm,md,lg,xl} */
+  /* Espacamento fino (DESIGN.md 'spacing'), usado por *-space-{xs,sm,md,lg,xl} */
   /* em todo o codigo — faltavam aqui, entao essas classes compilavam para nada. */
   --spacing-space-xs: 0.25rem;
   --spacing-space-sm: 0.5rem;
@@ -143,6 +143,7 @@
   /* Densidades de linha da tabela (DESIGN.md: 36-40px, cabecalhos 44px) */
   --spacing-row: 2.5rem;                    /* 40px */
   --spacing-row-header: 2.75rem;            /* 44px */
+  --spacing-canvas: 90rem;                  /* 1440px — largura maxima do shell do board */
 
   /* --- Raio -------------------------------------------------------------- */
   --radius-sm: 0.25rem;

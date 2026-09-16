@@ -66,7 +66,7 @@ componentes, cada um semanticamente honesto no seu breakpoint
 | Largura | Layout |
 |---|---|
 | **375** | **Uma coluna por vez.** Faixa de abas no topo mostra as colunas com contagem; deslizar ou tocar troca. Mover tarefa é pelo `Menu` do card ("Mover para…"), não por arrastar |
-| **768** | 2 colunas visíveis, scroll horizontal dentro do board |
+| **768** | Grade de 2 colunas: as 5 colunas de status empilham em 2×3, sem scroll horizontal |
 | **1440** | Todas as colunas, largura fluida |
 
 **Arrastar não é a única forma de mover em nenhuma largura.** O `Menu` do card

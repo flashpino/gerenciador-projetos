@@ -68,7 +68,11 @@ describe('KanbanBoard', () => {
     await user.click(screen.getByRole('button', { name: /ações de refatorar/i }))
     await user.click(screen.getByRole('menuitem', { name: 'Mover para Em revisão' }))
 
-    expect(screen.getByRole('status')).toHaveTextContent('Refatorar movida para Em revisão')
+    // Desde que os anúncios do próprio dnd-kit foram silenciados (não removidos —
+    // ele sempre injeta seu <div role="status"> vazio), há dois status na árvore.
+    // O nosso é o <output>; o do dnd-kit nunca ganha texto.
+    const nosso = screen.getAllByRole('status').find((el) => el.tagName === 'OUTPUT')
+    expect(nosso).toHaveTextContent('Refatorar movida para Em revisão')
   })
 
   // F2.6: em 375px navega-se uma coluna por vez, sem perder acesso a nenhuma.
