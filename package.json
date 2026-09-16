@@ -14,7 +14,8 @@
     "dup": "jscpd src --min-lines 8 --threshold 1",
     "dead": "knip",
     "arch": "node scripts/check-arch.mjs",
-    "verify": "npm run lint && npm run build && npm run test:cov && npm run dup && npm run dead && npm run arch"
+    "verify": "npm run lint && npm run build && npm run test:cov && npm run dup && npm run dead && npm run arch && npm run contrast",
+    "contrast": "node scripts/check-contrast.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

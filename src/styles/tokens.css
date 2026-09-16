@@ -1,2 +1,190 @@
-/* Fonte UNICA de cor, espaco, tipografia, raio e sombra.
-   Preenchido na Fase 2 a partir de "arquivos stitch/kinetic_workstream/DESIGN.md". */
+/* =============================================================================
+   TOKENS — fonte UNICA de cor, espaco, tipografia, raio e sombra.
+   Derivado de "arquivos stitch/kinetic_workstream/DESIGN.md".
+
+   Tailwind v4 e CSS-first: este bloco @theme E a configuracao. Nao existe
+   tailwind.config. Isso elimina por construcao a duplicacao de tokens que a
+   Fase 4.1 do manual alerta — nao ha um segundo arquivo para divergir.
+
+   CORRECAO DE ACESSIBILIDADE sobre a paleta original do Stitch:
+   9 de 14 pares cor/texto reprovavam em WCAG 2.2 AA (o pior: branco sobre o
+   ambar "Em Revisao", 1.90:1 contra os 4.5:1 exigidos). Resolvido preferindo
+   trocar a cor do TEXTO a escurecer o fundo, o que preservou 5 das 8 cores
+   originais. Rode `npm run contrast` — e portao do verify, nao decoracao.
+   ============================================================================= */
+
+@theme {
+  /* --- Tipografia ------------------------------------------------------- */
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  --text-display: 2rem;          /* 32px */
+  --text-display--line-height: 2.5rem;
+  --text-display--font-weight: 700;
+  --text-display--letter-spacing: -0.02em;
+
+  --text-headline: 1.5rem;       /* 24px */
+  --text-headline--line-height: 2rem;
+  --text-headline--font-weight: 700;
+  --text-headline--letter-spacing: -0.015em;
+
+  --text-title: 1.125rem;        /* 18px */
+  --text-title--line-height: 1.5rem;
+  --text-title--font-weight: 600;
+  --text-title--letter-spacing: -0.01em;
+
+  --text-subtitle: 0.9375rem;    /* 15px */
+  --text-subtitle--line-height: 1.25rem;
+  --text-subtitle--font-weight: 600;
+
+  --text-body: 0.875rem;         /* 14px */
+  --text-body--line-height: 1.25rem;
+
+  --text-cell: 0.8125rem;        /* 13px — densidade de tabela */
+  --text-cell--line-height: 1.125rem;
+  --text-cell--font-weight: 500;
+
+  --text-label: 0.75rem;         /* 12px */
+  --text-label--line-height: 1rem;
+  --text-label--font-weight: 600;
+  --text-label--letter-spacing: 0.01em;
+
+  --text-micro: 0.6875rem;       /* 11px — badges compactos */
+  --text-micro--line-height: 0.875rem;
+  --text-micro--font-weight: 700;
+  --text-micro--letter-spacing: 0.02em;
+
+  /* --- Superficies ------------------------------------------------------ */
+  --color-canvas: #f6f7fb;        /* nivel 0: shell do app */
+  --color-surface: #ffffff;       /* nivel 1: tabelas, cards, paineis */
+  --color-surface-2: #f0f3f8;     /* nivel 2: sub-header, hover de linha */
+  --color-surface-3: #e7e9f2;     /* pressionado / selecionado */
+
+  --color-border: #e6e9ef;        /* divisor de grade — decorativo */
+  --color-border-strong: #898c97; /* limite de componente: 3:1 nos 3 fundos */
+
+  --color-sidebar: #1c1f33;
+  --color-sidebar-hover: #2a2e47;
+  --color-sidebar-fg: #f0efff;
+  --color-sidebar-fg-muted: #a9aec5;
+
+  /* --- Texto ------------------------------------------------------------ */
+  --color-ink: #323338;           /* 12.60:1 sobre surface */
+  --color-ink-muted: #676879;     /*  5.48:1 sobre surface */
+  --color-ink-inverse: #ffffff;
+
+  /* --- Acao ------------------------------------------------------------- */
+  --color-primary: #0073ea;       /* 4.53:1 com texto branco */
+  --color-primary-hover: #0060c2;
+  --color-primary-soft: #ebf3ff;  /* fundo de item ativo na navegacao */
+  --color-primary-fg: #ffffff;
+
+  /* --- Status ----------------------------------------------------------- *
+   * Cada status e um PAR fundo+texto ja validado em 4.5:1.
+   * Use sempre o -fg correspondente; nunca combine fundo de um com texto de outro.
+   * A cor nunca e o unico portador de significado: todo status tambem tem rotulo. */
+  --color-status-not-started: #c4c4c4;
+  --color-status-not-started-fg: #323338;   /* 7.86:1 — tinta, nao o #676879 do Stitch (3.14) */
+
+  --color-status-working: #0078d6;          /* Stitch #0086F0 escurecido: 3.70 -> 4.51 */
+  --color-status-working-fg: #ffffff;
+
+  --color-status-review: #fdab3d;           /* cor original preservada */
+  --color-status-review-fg: #323338;        /* 6.64:1 — a troca de texto salvou o ambar */
+
+  --color-status-done: #00ca72;             /* cor original preservada */
+  --color-status-done-fg: #323338;          /* 5.82:1 */
+
+  --color-status-stuck: #df304a;            /* Stitch #E2445C escurecido: 4.03 -> 4.51 */
+  --color-status-stuck-fg: #ffffff;
+
+  /* --- Prioridade ------------------------------------------------------- */
+  --color-priority-low: #579bfc;
+  --color-priority-low-fg: #323338;         /* 4.50:1 */
+  --color-priority-medium: #fdab3d;
+  --color-priority-medium-fg: #323338;
+  --color-priority-high: #df304a;
+  --color-priority-high-fg: #ffffff;
+  --color-priority-critical: #401694;
+  --color-priority-critical-fg: #ffffff;    /* 12.9:1 */
+
+  /* --- Identidade de grupo ---------------------------------------------- */
+  --color-group-azure: #579bfc;
+  --color-group-azure-fg: #323338;
+  --color-group-grape: #9c53da;             /* Stitch #A25DDC: 4.09 -> 4.50 */
+  --color-group-grape-fg: #ffffff;
+  --color-group-mint: #00c875;
+  --color-group-mint-fg: #323338;
+  --color-group-crimson: #df304a;
+  --color-group-crimson-fg: #ffffff;
+
+  /* --- Feedback --------------------------------------------------------- */
+  --color-danger: #ba1a1a;                  /* 6.37:1 com branco */
+  --color-danger-fg: #ffffff;
+  --color-danger-soft: #ffdad6;
+  --color-danger-ink: #93000a;              /* texto de erro sobre superficie clara */
+  --color-success: #00884b;
+  --color-success-fg: #ffffff;
+
+  /* --- Espacamento ------------------------------------------------------ */
+  --spacing-gutter: 1rem;
+  --spacing-margin: 1.5rem;
+
+  /* Alvo de toque minimo WCAG 2.2 AA (2.5.8). Use min-h-touch/min-w-touch. */
+  --spacing-touch: 2.75rem;                 /* 44px */
+
+  /* Densidades de linha da tabela (DESIGN.md: 36-40px, cabecalhos 44px) */
+  --spacing-row: 2.5rem;                    /* 40px */
+  --spacing-row-header: 2.75rem;            /* 44px */
+
+  /* --- Raio -------------------------------------------------------------- */
+  --radius-sm: 0.25rem;
+  --radius-DEFAULT: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+
+  /* --- Elevacao ---------------------------------------------------------- */
+  --shadow-drag: 0 4px 12px rgb(0 0 0 / 0.08);
+  --shadow-overlay: 0 8px 24px -4px rgb(0 0 0 / 0.12), 0 2px 6px -1px rgb(0 0 0 / 0.04);
+
+  /* --- Movimento --------------------------------------------------------- */
+  --duration-instant: 80ms;
+  --duration-fast: 140ms;
+  --duration-normal: 220ms;
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* --- Base ---------------------------------------------------------------- */
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    /* Numeros e datas alinham verticalmente em tabela densa (DESIGN.md). */
+    font-variant-numeric: tabular-nums;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+  }
+
+  /* Foco visivel em TUDO que recebe foco. Nao remova: e requisito WCAG 2.4.7
+     e a violacao mais comum em codigo gerado. */
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Respeita quem pediu menos movimento (WCAG 2.3.3). */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
