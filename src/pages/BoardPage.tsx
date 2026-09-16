@@ -1,6 +1,7 @@
 import { StateView } from '@/components/ui/StateView'
 import { estadoDaQuery } from '@/lib/estadoDaQuery'
 import { Button } from '@/components/ui/Button'
+import { BoardShell } from '@/components/features/BoardShell'
 import { TaskGroup } from '@/components/features/TaskGroup'
 import { useAtualizarTarefa, useBoardAtual, useGruposComTarefas, useMembros } from '@/hooks/useQuadro'
 
@@ -22,9 +23,7 @@ export default function BoardPage() {
   )
 
   return (
-    <main className="mx-auto max-w-[1440px] p-gutter md:p-margin">
-      <h1 className="mb-margin text-display">{board.data?.name ?? 'Quadro'}</h1>
-
+    <BoardShell titulo={board.data?.name ?? 'Quadro'}>
       {editar.isError && (
         <p role="alert" className="mb-gutter rounded bg-danger-soft px-space-md py-space-sm text-body text-danger-ink">
           {editar.error instanceof Error ? editar.error.message : 'Nao foi possivel salvar.'}
@@ -44,6 +43,6 @@ export default function BoardPage() {
           />
         ))}
       </StateView>
-    </main>
+    </BoardShell>
   )
 }
