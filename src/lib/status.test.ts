@@ -3,7 +3,7 @@ import { ORDEM_STATUS, PRIORIDADES, STATUS, rotuloPrioridade, rotuloStatus } fro
 
 describe('STATUS', () => {
   it('cobre exatamente os 5 valores do enum do banco', () => {
-    expect(Object.keys(STATUS).sort()).toEqual(
+    expect(Object.keys(STATUS).toSorted()).toEqual(
       ['done', 'not_started', 'review', 'stuck', 'working'],
     )
   })

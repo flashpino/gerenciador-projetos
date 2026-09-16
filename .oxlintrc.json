@@ -51,7 +51,13 @@
     ],
     "typescript/no-explicit-any": "error",
     "react/react-in-jsx-scope": "off",
-    "import/no-unassigned-import": "off"
+    "import/no-unassigned-import": "off",
+    "react/no-unstable-nested-components": [
+      "error",
+      {
+        "allowAsProps": true
+      }
+    ]
   },
   "ignorePatterns": [
     "dist",
@@ -67,6 +73,16 @@
       ],
       "rules": {
         "no-console": "off"
+      }
+    },
+    {
+      "files": [
+        "**/*.test.ts",
+        "**/*.test.tsx"
+      ],
+      "rules": {
+        "vitest/require-mock-type-parameters": "off",
+        "unicorn/consistent-function-scoping": "off"
       }
     }
   ]

@@ -13,7 +13,7 @@ import type { GroupComTarefas } from '@/types/domain'
  * Espalhar strings de chave pelo codigo e como espalhar hex: na hora de
  * invalidar, uma delas esta escrita diferente e o cache nao atualiza.
  */
-export const chaves = {
+const chaves = {
   board: ['board'] as const,
   membros: ['membros'] as const,
   grupos: (boardId: string) => ['grupos', boardId] as const,

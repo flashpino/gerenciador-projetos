@@ -188,3 +188,32 @@
     }
   }
 }
+
+/* --- <progress> nativo -----------------------------------------------------
+   Usar a tag nativa da o papel e o anuncio de graca (WCAG), mas cada motor
+   estiliza por um pseudo-elemento diferente. Estes 3 blocos sao o preco. */
+@layer components {
+  .barra-progresso {
+    appearance: none;
+    border: 0;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    background-color: var(--color-surface-3);
+  }
+  .barra-progresso::-webkit-progress-bar {
+    background-color: var(--color-surface-3);
+  }
+  .barra-progresso::-webkit-progress-value {
+    background-color: var(--color-primary);
+    transition: inline-size var(--duration-normal) var(--ease-out-soft);
+  }
+  .barra-progresso::-moz-progress-bar {
+    background-color: var(--color-primary);
+  }
+  .barra-progresso[data-completo]::-webkit-progress-value {
+    background-color: var(--color-status-done);
+  }
+  .barra-progresso[data-completo]::-moz-progress-bar {
+    background-color: var(--color-status-done);
+  }
+}

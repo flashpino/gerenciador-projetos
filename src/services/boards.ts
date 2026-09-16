@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import type { Group, GroupComTarefas, Profile, Task } from '@/types/domain'
+import type { GroupComTarefas, Profile, Task } from '@/types/domain'
 import { traduzirErro } from './erros'
 
 /**
@@ -74,26 +74,9 @@ export async function atualizarTarefa(id: string, campos: CamposEditaveis): Prom
   return data as Task
 }
 
-export async function criarTarefa(
-  entrada: { board_id: string; group_id: string; title: string } & CamposEditaveis,
-): Promise<Task> {
-  const { data, error } = await supabase.from('tasks').insert(entrada).select().single()
-  if (error) throw traduzirErro(error)
-  return data as Task
-}
-
-export async function removerTarefa(id: string): Promise<void> {
-  const { error } = await supabase.from('tasks').delete().eq('id', id)
-  if (error) throw traduzirErro(error)
-}
-
-export async function criarGrupo(boardId: string, name: string, position: number): Promise<Group> {
-  const { data, error } = await supabase
-    .from('groups')
-    .insert({ board_id: boardId, name, position })
-    .select()
-    .single()
-
-  if (error) throw traduzirErro(error)
-  return data as Group
-}
+/*
+ * criarTarefa, removerTarefa e criarGrupo foram escritas e APAGADAS aqui.
+ * Nada as consumia ainda — o knip apontou como export morto. Voltam no mesmo
+ * commit da feature que precisar delas (modal de tarefa, criacao de grupo).
+ * Escrever camada "para depois" e o boilerplate que o manual manda cortar.
+ */

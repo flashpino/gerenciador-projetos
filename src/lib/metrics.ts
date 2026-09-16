@@ -41,7 +41,11 @@ export function distribuicaoStatus(tarefas: readonly Task[]): FatiaStatus[] {
     if (alvo) base[alvo.i] = Math.round(((base[alvo.i] ?? 0) + sobra) * 10) / 10
   }
 
-  return presentes.map((f, i) => ({ ...f, percentual: base[i] ?? 0 }))
+  return presentes.map((f, i) => ({
+    status: f.status,
+    quantidade: f.quantidade,
+    percentual: base[i] ?? 0,
+  }))
 }
 
 /** Media do campo `progress`. 0 para grupo vazio. */
