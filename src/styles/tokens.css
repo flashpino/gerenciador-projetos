@@ -129,6 +129,14 @@
   --spacing-gutter: 1rem;
   --spacing-margin: 1.5rem;
 
+  /* Espacamento fino (Design.md 'spacing'), usado por *-space-{xs,sm,md,lg,xl} */
+  /* em todo o codigo — faltavam aqui, entao essas classes compilavam para nada. */
+  --spacing-space-xs: 0.25rem;
+  --spacing-space-sm: 0.5rem;
+  --spacing-space-md: 0.75rem;
+  --spacing-space-lg: 1.25rem;
+  --spacing-space-xl: 2rem;
+
   /* Alvo de toque minimo WCAG 2.2 AA (2.5.8). Use min-h-touch/min-w-touch. */
   --spacing-touch: 2.75rem;                 /* 44px */
 
