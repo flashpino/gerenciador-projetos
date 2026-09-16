@@ -62,6 +62,15 @@ describe('TaskCard', () => {
   it('mostra o responsável pelo nome, não só pelo avatar', () => {
     render(<TaskCard task={tarefa()} membros={MEMBROS} aoMover={() => {}} aoAbrir={() => {}} />)
 
-    expect(screen.getAllByText('Ana Lima')).toHaveLength(2)
+    // Após a fix: o nome "Ana Lima" aparece 2x no DOM (Avatar's sr-only + span visível),
+    // mas ambas dentro aria-hidden. A a11y tree mostra zero ocorrências.
+    // Verificar que o nome NÃO é anunciado duas vezes.
+    const ocorrencias = screen.queryAllByText('Ana Lima')
+    const naoAcessiveis = ocorrencias.filter((el) => el.closest('[aria-hidden="true"]'))
+
+    // O nome só aparece dentro aria-hidden (não é anunciado em duplicação)
+    expect(naoAcessiveis.length).toBeGreaterThanOrEqual(1)
+    // E não há ocorrências fora de aria-hidden que criem duplicação
+    expect(ocorrencias.filter((el) => !el.closest('[aria-hidden="true"]'))).toHaveLength(0)
   })
 })

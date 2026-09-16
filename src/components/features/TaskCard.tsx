@@ -71,8 +71,11 @@ export function TaskCard({ task, membros, aoMover, aoAbrir }: Props) {
       </div>
 
       <div className="mt-space-sm flex items-center gap-space-sm">
-        <Avatar users={responsavel ? [responsavel] : []} size="sm" />
-        {responsavel && <span className="text-cell text-ink-muted">{responsavel.full_name}</span>}
+        <span aria-hidden="true" className="flex items-center gap-space-sm">
+          <Avatar users={responsavel ? [responsavel] : []} size="sm" />
+          {responsavel && <span className="text-cell text-ink-muted">{responsavel.full_name}</span>}
+        </span>
+        {!responsavel && <span className="sr-only">Sem responsável</span>}
         <ProgressBar
           value={task.progress}
           label={`Progresso de ${task.title}`}
