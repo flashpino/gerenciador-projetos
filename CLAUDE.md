@@ -91,6 +91,13 @@ Todo elemento interativo alcançável por teclado, com foco visível.
 - Não adicione dependência sem perguntar
 - Se não souber: diga que não sabe. Não invente API nem nome de arquivo
 
+## Erros já cometidos neste projeto (não repita)
+- **Nunca infira sucesso de um comando encanado.** `npm run verify | head` devolve o
+  exit code do `head`, não do npm. Já commitei com o verify vermelho por causa disso,
+  duas vezes. Rode `cmd > log 2>&1; echo $?` e leia o código de verdade.
+- **Nunca afirme um número de contraste sem medir.** Escrevi "3:1" num token que era
+  1.84:1. Rode `npm run contrast`.
+
 ## Comando único de verificação
 ```
 npm run verify
