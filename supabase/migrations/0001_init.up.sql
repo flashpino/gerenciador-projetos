@@ -128,17 +128,33 @@ create or replace function handle_new_user() returns trigger
 language plpgsql security definer set search_path = public as $fn$
 declare
   ws_id uuid;
+  board_id uuid;
 begin
+  -- Tres niveis de fallback. `new.email` pode ser NULO (cadastro por telefone ou
+  -- por provedor que nao devolve email); split_part(null) devolve null e violaria
+  -- o NOT NULL de full_name, fazendo o CADASTRO INTEIRO falhar com erro opaco.
   insert into profiles (id, full_name)
   values (
     new.id,
-    coalesce(nullif(trim(new.raw_user_meta_data->>'full_name'), ''), split_part(new.email, '@', 1))
+    coalesce(
+      nullif(trim(new.raw_user_meta_data->>'full_name'), ''),
+      nullif(split_part(coalesce(new.email, ''), '@', 1), ''),
+      'Novo usuário'
+    )
   );
 
   -- v1: um workspace por usuario (docs/specs.md, secao 4).
   insert into workspaces (name, owner_id) values ('Meu Workspace', new.id) returning id into ws_id;
   insert into workspace_members (workspace_id, user_id) values (ws_id, new.id);
-  insert into boards (workspace_id, name) values (ws_id, 'Meu Primeiro Quadro');
+  insert into boards (workspace_id, name)
+  values (ws_id, 'Meu Primeiro Quadro')
+  returning id into board_id;
+
+  -- Sem ao menos um grupo, nao ha onde criar a primeira tarefa: `tasks.group_id`
+  -- e NOT NULL. O usuario cairia num estado vazio sem saida.
+  insert into groups (board_id, name, color, position)
+  values (board_id, 'A fazer', 'azure', 0);
+
   return new;
 end;
 $fn$;

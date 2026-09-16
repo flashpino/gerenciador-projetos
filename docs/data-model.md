@@ -114,81 +114,99 @@ linha avaliada por política. Sem esse índice, todo o RLS fica lento de uma vez
 ## Teste de isolamento — o que prova que funciona
 
 O manual exige "o teste que prova que o usuário A não lê os dados do usuário B".
-Rode isto no SQL Editor **depois** de aplicar a migration.
+
+**Pré-requisito:** crie **duas contas** pelo cadastro do app (ou em
+Authentication → Users no painel). Não insira direto em `auth.users`: as colunas
+obrigatórias dessa tabela mudam entre versões do Supabase, e o teste quebra por
+motivo errado.
+
+Pegue os dois IDs:
+
+```sql
+select id, email from auth.users order by created_at desc limit 2;
+```
+
+Cole os IDs nas duas primeiras linhas e rode no SQL Editor:
 
 ```sql
 -- =============================================================================
 -- TESTE DE ISOLAMENTO RLS
--- Usuarios e UUIDs sinteticos. Rode em ambiente de desenvolvimento.
+-- Nao escreve nada: roda dentro de uma transacao que termina em rollback.
 -- =============================================================================
 begin;
 
--- Dois usuarios ficticios, cada um com seu workspace (criado pelo trigger).
-insert into auth.users (id, email, raw_user_meta_data)
-values
-  ('11111111-1111-1111-1111-111111111111', 'a@teste.local', '{"full_name":"Usuario A"}'),
-  ('22222222-2222-2222-2222-222222222222', 'b@teste.local', '{"full_name":"Usuario B"}');
+-- >>> TROQUE PELOS SEUS DOIS IDS <<<
+create temp table _t (usuario_a uuid, usuario_b uuid) on commit drop;
+insert into _t values (
+  '00000000-0000-0000-0000-00000000000a',
+  '00000000-0000-0000-0000-00000000000b'
+);
 
--- Uma tarefa no board de cada um.
-insert into tasks (board_id, group_id, title)
-select b.id, g.id, 'Tarefa secreta de ' || w.owner_id
-from boards b
-join workspaces w on w.id = b.workspace_id
-join lateral (
-  insert into groups (board_id, name) values (b.id, 'Grupo') returning id
-) g on true;
-
--- --- Assume a identidade do usuario A ---
-set local role authenticated;
-set local request.jwt.claims = '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated"}';
-
--- A deve ver exatamente 1 tarefa: a dele.
 do $teste$
-declare n integer;
+declare
+  a uuid; b uuid;
+  tarefas_de_a integer; tarefas_de_b integer;
+  vistas integer; ws_vistos integer;
+  board_de_b uuid; grupo_de_b uuid;
 begin
-  select count(*) into n from tasks;
-  if n <> 1 then
-    raise exception 'FALHA: usuario A viu % tarefas, esperado 1. RLS NAO esta isolando.', n;
+  select usuario_a, usuario_b into a, b from _t;
+
+  -- Quanto cada um tem, visto SEM RLS (privilegios de owner no SQL Editor).
+  select count(*) into tarefas_de_a from tasks t join boards bo on bo.id = t.board_id
+    join workspace_members m on m.workspace_id = bo.workspace_id where m.user_id = a;
+  select count(*) into tarefas_de_b from tasks t join boards bo on bo.id = t.board_id
+    join workspace_members m on m.workspace_id = bo.workspace_id where m.user_id = b;
+
+  if tarefas_de_b = 0 then
+    raise exception 'INCONCLUSIVO: o usuario B nao tem nenhuma tarefa. Crie ao menos uma logada como B antes de rodar.';
   end if;
-  raise notice 'OK: usuario A ve apenas a propria tarefa';
-end;
-$teste$;
 
--- A nao deve ver o workspace de B.
-do $teste$
-declare n integer;
-begin
-  select count(*) into n from workspaces;
-  if n <> 1 then
-    raise exception 'FALHA: usuario A viu % workspaces, esperado 1.', n;
+  -- --- Assume a identidade do usuario A ---
+  set local role authenticated;
+  perform set_config('request.jwt.claims', json_build_object('sub', a, 'role', 'authenticated')::text, true);
+
+  -- 1. A ve so as proprias tarefas
+  select count(*) into vistas from tasks;
+  if vistas <> tarefas_de_a then
+    raise exception 'FALHA [leitura]: A viu % tarefas, deveria ver %. RLS NAO esta isolando.', vistas, tarefas_de_a;
   end if;
-  raise notice 'OK: usuario A ve apenas o proprio workspace';
-end;
-$teste$;
+  raise notice 'OK [leitura]: A ve % tarefas, todas dele', vistas;
 
--- A nao deve conseguir ESCREVER no board de B.
-do $teste$
-declare alvo uuid;
-begin
-  set local request.jwt.claims = '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated"}';
-  select board_id into alvo from tasks limit 1;
-  set local request.jwt.claims = '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated"}';
+  -- 2. A nao ve o workspace de B
+  select count(*) into ws_vistos from workspaces;
+  if ws_vistos <> 1 then
+    raise exception 'FALHA [workspace]: A viu % workspaces, esperado 1.', ws_vistos;
+  end if;
+  raise notice 'OK [workspace]: A ve apenas o proprio';
+
+  -- 3. A nao consegue ESCREVER no board de B
+  reset role;
+  perform set_config('request.jwt.claims', null, true);
+  select bo.id, g.id into board_de_b, grupo_de_b
+    from boards bo
+    join workspace_members m on m.workspace_id = bo.workspace_id and m.user_id = b
+    join groups g on g.board_id = bo.id
+    limit 1;
+
+  set local role authenticated;
+  perform set_config('request.jwt.claims', json_build_object('sub', a, 'role', 'authenticated')::text, true);
 
   begin
-    insert into tasks (board_id, group_id, title)
-    select alvo, g.id, 'invasao' from groups g where g.board_id = alvo limit 1;
-    raise exception 'FALHA: usuario A conseguiu escrever no board de B.';
-  exception when insufficient_privilege or check_violation then
-    raise notice 'OK: escrita cruzada bloqueada';
+    insert into tasks (board_id, group_id, title) values (board_de_b, grupo_de_b, 'invasao');
+    raise exception 'FALHA [escrita]: A conseguiu criar tarefa no board de B.';
+  exception
+    when insufficient_privilege then raise notice 'OK [escrita]: bloqueada pelo RLS';
   end;
+
+  reset role;
 end;
 $teste$;
 
-rollback;  -- nada persiste
+rollback;
 ```
 
-Se qualquer um dos três blocos levantar exceção, **o RLS está furado e o app não
-pode ir para produção.**
+Os três blocos devem imprimir `NOTICE ... OK`. **Qualquer `EXCEPTION` significa
+que o RLS está furado e o app não pode ir para produção.**
 
 ---
 
