@@ -42,7 +42,7 @@ export function TaskCard({ task, membros, aoMover, aoAbrir }: Props) {
   // "button" com botões dentro também é aninhamento interativo inválido em ARIA.
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: task.id,
-    attributes: { role: 'group' },
+    attributes: { role: 'group', tabIndex: -1 },
   })
 
   return (
