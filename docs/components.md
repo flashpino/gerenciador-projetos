@@ -63,6 +63,12 @@ discriminado e obriga os quatro: loading, erro, vazio, sucesso. "Esqueci o
 estado vazio" é o erro nº 3 do manual; com este componente ele deixa de ser
 possível por construção, não por disciplina.
 
+**#12 Tabs decide o elemento pelo `href` do item.** Item com `href` vira `<nav>`
++ link com `aria-current="page"`; sem `href` vira `role="tablist"` + `role="tab"`.
+Motivo: `role="tablist"` pressupõe painéis no mesmo documento. O seletor de views
+do board troca de ROTA — uma aba que navega faz o leitor anunciar "aba 2 de 4,
+selecionada" para algo que trocou a página inteira. Dois elementos, um primitivo.
+
 ### Deliberadamente FORA dos primitivos
 
 | Não vira primitivo | Por quê |
