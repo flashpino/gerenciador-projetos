@@ -1,3 +1,4 @@
+import { useDroppable } from '@dnd-kit/core'
 import { Badge } from '@/components/ui/Badge'
 import { cn } from '@/lib/cn'
 import type { ColunaKanban } from '@/lib/kanban'
@@ -14,11 +15,18 @@ interface Props {
 
 export function KanbanColumn({ coluna, membros, aoMover, aoAbrir, className }: Props) {
   const n = coluna.tarefas.length
+  const { setNodeRef, isOver } = useDroppable({ id: coluna.status })
 
   return (
     <section
+      ref={setNodeRef}
       aria-labelledby={`col-${coluna.status}`}
-      className={cn('flex min-w-0 flex-col rounded-md bg-surface-2 p-space-sm', className)}
+      className={cn(
+        'flex min-w-0 flex-col rounded-md bg-surface-2 p-space-sm',
+        // Realce do alvo: só visual. Quem não vê usa o menu, que não depende disto.
+        isOver && 'ring-2 ring-primary',
+        className,
+      )}
     >
       <header className="mb-space-sm flex items-center gap-space-sm px-space-xs">
         <h3 id={`col-${coluna.status}`} className="text-subtitle">

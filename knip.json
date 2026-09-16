@@ -9,7 +9,6 @@
   ],
   "ignoreDependencies": [
     "axe-core",
-    "@dnd-kit/core",
     "@dnd-kit/sortable",
     "@dnd-kit/utilities",
     "vite-plugin-pwa",

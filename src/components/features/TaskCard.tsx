@@ -1,3 +1,4 @@
+import { useDraggable } from '@dnd-kit/core'
 import { EllipsisVertical } from 'lucide-react'
 import { Avatar } from '@/components/ui/Avatar'
 import { Badge } from '@/components/ui/Badge'
@@ -34,8 +35,26 @@ export function TaskCard({ task, membros, aoMover, aoAbrir }: Props) {
     aoEscolher: () => aoMover(s),
   }))
 
+  // role: 'group' em vez do 'button' padrão do dnd-kit — o <article> já contém
+  // botões reais (título, menu de ações); role="button" faria o nome acessível
+  // ser computado do conteúdo (name-from-content), duplicando "Ações de …" e
+  // colidindo com o botão do menu em qualquer getByRole('button', {name}). Um
+  // "button" com botões dentro também é aninhamento interativo inválido em ARIA.
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: task.id,
+    attributes: { role: 'group' },
+  })
+
   return (
-    <article className="rounded-md border border-border bg-surface p-space-md shadow-drag">
+    <article
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
+      className={cn(
+        'rounded-md border border-border bg-surface p-space-md shadow-drag',
+        isDragging && 'opacity-50',
+      )}
+    >
       <div className="flex items-start gap-space-sm">
         <button
           type="button"

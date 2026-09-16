@@ -18,7 +18,6 @@ chama isso de código morto, Fase 6).
 | `react-router-dom` | Fase 3 (esqueleto) | rotas das 4 views + 404 |
 | `lucide-react` | Fase 2 (design system) | ícones, import individual |
 | `@testing-library/user-event` | Fase 4 (TDD) | interação em teste |
-| `@dnd-kit/core` | Fase 5 (Kanban) | drag-and-drop com suporte a teclado |
 | `@dnd-kit/sortable` | Fase 5 (Kanban) | reordenação dentro da coluna |
 | `@dnd-kit/utilities` | Fase 5 (Kanban) | helpers de transform do dnd-kit |
 | `vitest-axe` | Fase 7 (a11y) | asserção de violação WCAG |

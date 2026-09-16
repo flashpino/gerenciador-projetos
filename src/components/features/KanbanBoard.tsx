@@ -1,3 +1,4 @@
+import { DndContext, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core'
 import { useState } from 'react'
 import { Tabs, type ItemTab } from '@/components/ui/Tabs'
 import { colunasPorStatus } from '@/lib/kanban'
@@ -29,54 +30,85 @@ export function KanbanBoard({ grupos, membros, aoMover, aoAbrir }: Props) {
     if (tarefa) setAnuncio(`${tarefa.title} movida para ${STATUS[destino].rotulo}`)
   }
 
+  /**
+   * O arrastar não tem lógica própria: resolve id + destino e delega para
+   * `mover`, o mesmo caminho do menu. Um caminho, um anúncio, um rollback.
+   */
+  const aoSoltar = ({ active, over }: DragEndEvent) => {
+    if (!over) return
+    const destino = over.id as TaskStatus
+    const origem = colunas.find((c) => c.tarefas.some((t) => t.id === active.id))
+    if (origem?.status === destino) return // soltou na própria coluna: nada a fazer
+    mover(String(active.id), destino)
+  }
+
   const abas: ItemTab[] = colunas.map((c) => ({
     id: c.status,
     rotulo: c.rotulo,
     contagem: c.tarefas.length,
   }))
 
+  // Sem constraint de distância, o dnd-kit arma o arrastar já no pointerdown —
+  // inclusive o pointerdown que faz parte de um clique comum — e engole o clique
+  // que abriria "Ações de…". 8px é a folga padrão da própria documentação do
+  // dnd-kit para isto: clique continua clique, só vira arrastar quem move de fato.
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }))
+
+  // O dnd-kit anuncia o arrastar sozinho, em inglês, numa região viva própria
+  // (role="status"). Isso duplicaria o anúncio — e em outro idioma — do mesmo
+  // evento que `mover` já anuncia em `<output>` acima. "Um caminho, um anúncio":
+  // a região do dnd-kit é redirecionada para um nó nunca inserido no documento,
+  // então ela nunca chega a um leitor de tela nem colide com o <output> nosso.
+  const [regiaoDndOculta] = useState(() => document.createElement('div'))
+
   return (
-    <div>
-      {/*
-        Faixa de colunas. Em 375px ela é o navegador de coluna (F2.6); de 768px
-        para cima as colunas aparecem lado a lado e a faixa sai de cena.
-      */}
-      <Tabs
-        rotulo="Colunas do quadro"
-        variant="pill"
-        items={abas}
-        value={visivel}
-        onChange={(id) => setVisivel(id as TaskStatus)}
-        idPainel="painel-kanban"
-        className="mb-gutter md:hidden"
-      />
+    <DndContext
+      sensors={sensors}
+      onDragEnd={aoSoltar}
+      accessibility={{ container: regiaoDndOculta }}
+    >
+      <div>
+        {/*
+          Faixa de colunas. Em 375px ela é o navegador de coluna (F2.6); de 768px
+          para cima as colunas aparecem lado a lado e a faixa sai de cena.
+        */}
+        <Tabs
+          rotulo="Colunas do quadro"
+          variant="pill"
+          items={abas}
+          value={visivel}
+          onChange={(id) => setVisivel(id as TaskStatus)}
+          idPainel="painel-kanban"
+          className="mb-gutter md:hidden"
+        />
 
-      {/*
-        A mensagem é TEXTO real numa região viva. Sem isto, acionar "Mover para
-        Pronto" pelo teclado não produz retorno nenhum — o critério F2.3 exige o
-        anúncio, não só a mudança.
-      */}
-      <output aria-live="polite" className="sr-only">
-        {anuncio}
-      </output>
+        {/*
+          A mensagem é TEXTO real numa região viva. Sem isto, acionar "Mover para
+          Pronto" pelo teclado não produz retorno nenhum — o critério F2.3 exige o
+          anúncio, não só a mudança.
+        */}
+        <output aria-live="polite" className="sr-only">
+          {anuncio}
+        </output>
 
-      <div
-        id="painel-kanban"
-        className="grid grid-cols-1 gap-gutter md:grid-cols-2 md:overflow-x-auto lg:grid-cols-5"
-      >
-        {colunas.map((c) => (
-          <KanbanColumn
-            key={c.status}
-            coluna={c}
-            membros={membros}
-            aoMover={mover}
-            aoAbrir={aoAbrir}
-            // Abaixo de 768px só a coluna escolhida aparece. `hidden` remove do
-            // DOM acessível: o leitor nunca encontra 5 colunas onde o olho vê 1.
-            className={c.status === visivel ? '' : 'hidden md:flex'}
-          />
-        ))}
+        <div
+          id="painel-kanban"
+          className="grid grid-cols-1 gap-gutter md:grid-cols-2 md:overflow-x-auto lg:grid-cols-5"
+        >
+          {colunas.map((c) => (
+            <KanbanColumn
+              key={c.status}
+              coluna={c}
+              membros={membros}
+              aoMover={mover}
+              aoAbrir={aoAbrir}
+              // Abaixo de 768px só a coluna escolhida aparece. `hidden` remove do
+              // DOM acessível: o leitor nunca encontra 5 colunas onde o olho vê 1.
+              className={c.status === visivel ? '' : 'hidden md:flex'}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+    </DndContext>
   )
 }
