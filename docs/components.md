@@ -122,6 +122,12 @@ e existem separados de propósito. Uma tabela que "vira card" via CSS produz
 marcação de tabela sem semântica de tabela, que leitor de tela anuncia errado.
 Dois componentes, cada um com a semântica certa no seu breakpoint.
 
+**Nota sobre o Kanban:** `KanbanBoard` não tem hook nem serviço próprios. Ele
+recebe os mesmos `grupos` da Tabela Principal e chama `colunasPorStatus`
+(`src/lib/kanban.ts`) para recortar por status. Mover uma tarefa é
+`useAtualizarTarefa` com `{ status }` — o update otimista e o rollback (F2.4)
+vêm de graça do hook que a F1 já usa.
+
 ---
 
 ## Sem gráficos de terceiros

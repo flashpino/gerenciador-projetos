@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import BoardPage from '@/pages/BoardPage'
+import KanbanPage from '@/pages/KanbanPage'
 import NaoEncontrada from '@/pages/NaoEncontrada'
 
 const queryClient = new QueryClient({
@@ -22,6 +23,7 @@ export default function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<BoardPage />} />
+            <Route path="/kanban" element={<KanbanPage />} />
             <Route path="*" element={<NaoEncontrada />} />
           </Routes>
         </BrowserRouter>
