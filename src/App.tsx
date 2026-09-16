@@ -1,8 +1,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { RotaProtegida } from '@/components/RotaProtegida'
+import { SessaoProvider } from '@/components/SessaoProvider'
 import BoardPage from '@/pages/BoardPage'
 import KanbanPage from '@/pages/KanbanPage'
+import LoginPage from '@/pages/LoginPage'
 import NaoEncontrada from '@/pages/NaoEncontrada'
 
 const queryClient = new QueryClient({
@@ -21,11 +24,16 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary>
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<BoardPage />} />
-            <Route path="/kanban" element={<KanbanPage />} />
-            <Route path="*" element={<NaoEncontrada />} />
-          </Routes>
+          <SessaoProvider>
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route element={<RotaProtegida />}>
+                <Route path="/" element={<BoardPage />} />
+                <Route path="/kanban" element={<KanbanPage />} />
+              </Route>
+              <Route path="*" element={<NaoEncontrada />} />
+            </Routes>
+          </SessaoProvider>
         </BrowserRouter>
       </ErrorBoundary>
     </QueryClientProvider>

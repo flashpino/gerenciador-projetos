@@ -89,7 +89,7 @@ passam por `src/hooks/` → `src/services/`.
 
 | Componente | Compõe | Vive em |
 |---|---|---|
-| `BoardShell` | Tabs | todas as 4 views (layout comum) |
+| `BoardShell` | Tabs, Button | todas as 4 views (layout comum + botão "Sair") |
 | `StatusCell` | Badge, Menu | tabela, kanban, modal |
 | `PriorityCell` | Badge, Menu | tabela, modal |
 | `AssigneeCell` | Avatar, Menu | tabela, kanban, modal |

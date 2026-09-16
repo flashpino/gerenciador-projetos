@@ -1,6 +1,9 @@
 import type { ReactNode } from 'react'
 import { useLocation } from 'react-router-dom'
+import { LogOut } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 import { Tabs, type ItemTab } from '@/components/ui/Tabs'
+import { sair } from '@/services/auth'
 
 /**
  * Layout comum das views do board (docs/components.md, Tabela 2).
@@ -25,7 +28,16 @@ export function BoardShell({ titulo, children }: Props) {
 
   return (
     <main className="mx-auto max-w-canvas p-gutter md:p-margin">
-      <h1 className="mb-gutter text-display">{titulo}</h1>
+      <div className="mb-gutter flex items-center justify-between gap-space-md">
+        <h1 className="text-display">{titulo}</h1>
+        {/* ponytail: botao direto chamando o servico. Nao e leitura/escrita de
+            dado em cache (TanStack Query) — e uma acao global, o
+            SessaoProvider ja reage ao SIGNED_OUT e o RotaProtegida redireciona
+            sozinho. Sem falha esperada em signOut que valha superficie de erro. */}
+        <Button variant="ghost" size="sm" iconStart={<LogOut aria-hidden="true" className="size-4" />} onClick={() => void sair()}>
+          Sair
+        </Button>
+      </div>
       <Tabs
         rotulo="Visões do quadro"
         items={VIEWS}
