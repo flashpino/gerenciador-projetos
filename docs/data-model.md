@@ -1,11 +1,18 @@
 # Modelo de Dados e RLS
 
-**Fase do manual:** 4.6 · **ZONA VERMELHA** · Atualizado em 2026-09-15
+**Fase do manual:** 4.6 · **ZONA VERMELHA** · Atualizado em 2026-09-16
 
-> **Status: PROPOSTA. Nada foi aplicado ao banco.**
-> Os arquivos em `supabase/migrations/` foram escritos por assistente e aguardam
-> sua revisão linha a linha. O manual é explícito: *"Não aplique migration sem
-> minha aprovação explícita."*
+> **Status: APLICADO em 2026-09-16** no projeto `xgipcdxxvgzmbfycyzer`.
+> Aplicado por assistente via MCP, sob autorização explícita do humano nesta
+> sessão — o padrão da Zona Vermelha continua sendo "o agente escreve, não
+> executa". Foi uma exceção autorizada, não a nova regra.
+>
+> | Migration | O quê |
+> |---|---|
+> | `0001_init` | schema, 9 tabelas, índices, triggers, RLS |
+> | `0002_advisors` | correções dos advisors (ver "Advisors" abaixo) |
+>
+> O teste de isolamento passou nos 3 blocos **depois** do 0002.
 
 ---
 
@@ -207,6 +214,58 @@ rollback;
 
 Os três blocos devem imprimir `NOTICE ... OK`. **Qualquer `EXCEPTION` significa
 que o RLS está furado e o app não pode ir para produção.**
+
+### Resultado — 2026-09-16, após o 0002
+
+Semeado: A com 3 tarefas, B com 2, C com 0 (contagens **assimétricas** de
+propósito — se o RLS vazasse, todo mundo veria 5 e o teste não distinguiria
+"isolou" de "coincidiu").
+
+| Identidade | tasks | workspaces | ws_members | profiles |
+|---|---|---|---|---|
+| A | 3 | 1 | 1 | 1 |
+| B | 2 | 1 | 1 | 1 |
+| uuid desconhecido | 0 | 0 | 0 | 0 |
+
+Escrita de A no board de B: `insert` bloqueado com `insufficient_privilege`;
+`update` e `delete` atingiram **0 linhas**. Confirmado por contagem depois:
+zero linhas `invasao`, zero `sequestrada`, total intacto em 5.
+
+> **Nota de método:** `update`/`delete` sob RLS **não levantam erro** — o
+> filtro da política remove a linha antes, e o comando reporta sucesso com 0
+> linhas. Um teste que só procura exceção passa mesmo com RLS furado no
+> `update`. Por isso o bloco 3 checa `found`, e não só o `exception`.
+
+---
+
+## Advisors — o que o linter do Supabase apontou
+
+Rodados após cada migration (`get_advisors`, tipos `security` e `performance`).
+
+### Corrigido no `0002`
+
+| Achado | Nível | Correção |
+|---|---|---|
+| `auth_rls_initplan` × 9 | WARN | `auth.uid()` → `(select auth.uid())`. Solto, é reavaliado **por linha**; dentro de `select` vira InitPlan, 1× por query |
+| `multiple_permissive_policies` | WARN | `ws_members_write` era `for all`, e `all` inclui `select`. Virou 3 policies de escrita |
+| `function_search_path_mutable` | WARN | `set_updated_at` ganhou `set search_path = public` |
+| `handle_new_user` exposta em `/rest/v1/rpc/` | WARN | `revoke execute` de `public`, `anon`, `authenticated` |
+| `is_workspace_member` exposta ao `anon` | WARN | `revoke execute` de `public`, `anon` |
+
+### Aceito, com motivo
+
+| Achado | Nível | Por que fica |
+|---|---|---|
+| `is_workspace_member` executável por `authenticated` | WARN | **Obrigatório.** Toda policy a chama, e expressão de policy roda com os privilégios de quem consulta. Revogar quebra o RLS inteiro com `permission denied for function`. Revela só se você é membro de um workspace cujo id você já teria de conhecer |
+| `unindexed_foreign_keys` × 5 | INFO | É literalmente "índice por precaução", que a seção *Índices* deste documento rejeita. Entra quando existir a query que o paga |
+| `unused_index` × 4 | INFO | Banco quase vazio, sem tráfego. Reavaliar com dado real |
+| `rls_auto_enable` executável | WARN | Não é deste projeto. É um event trigger que liga RLS em tabela nova — guardrail alinhado à regra das 9/9. Chamar direto já falha (`0A000`) |
+
+### Pendente — decisão humana (Zona Vermelha)
+
+- **`auth_leaked_password_protection` desabilitado.** Ativa a checagem contra o
+  HaveIBeenPwned. É toggle de painel (Auth → Password security), não SQL, e
+  mexe no fluxo de autenticação. Proposto, não aplicado.
 
 ---
 
