@@ -75,7 +75,9 @@ export function TaskCard({ task, membros, aoMover, aoAbrir }: Props) {
           <Avatar users={responsavel ? [responsavel] : []} size="sm" />
           {responsavel && <span className="text-cell text-ink-muted">{responsavel.full_name}</span>}
         </span>
-        {!responsavel && <span className="sr-only">Sem responsável</span>}
+        <span className="sr-only">
+          {responsavel ? `Responsável: ${responsavel.full_name}` : 'Sem responsável'}
+        </span>
         <ProgressBar
           value={task.progress}
           label={`Progresso de ${task.title}`}
