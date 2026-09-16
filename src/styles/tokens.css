@@ -83,7 +83,7 @@
    * Use sempre o -fg correspondente; nunca combine fundo de um com texto de outro.
    * A cor nunca e o unico portador de significado: todo status tambem tem rotulo. */
   --color-status-not-started: #c4c4c4;
-  --color-status-not-started-fg: #323338;   /* 7.86:1 — tinta, nao o #676879 do Stitch (3.14) */
+  --color-status-not-started-fg: #323338;   /* 7.23:1 — tinta, nao o #676879 do Stitch (3.14) */
 
   --color-status-working: #0078d6;          /* Stitch #0086F0 escurecido: 3.70 -> 4.51 */
   --color-status-working-fg: #ffffff;
@@ -105,7 +105,7 @@
   --color-priority-high: #df304a;
   --color-priority-high-fg: #ffffff;
   --color-priority-critical: #401694;
-  --color-priority-critical-fg: #ffffff;    /* 12.9:1 */
+  --color-priority-critical-fg: #ffffff;    /* 11.93:1 */
 
   /* --- Identidade de grupo ---------------------------------------------- */
   --color-group-azure: #579bfc;
@@ -118,7 +118,7 @@
   --color-group-crimson-fg: #ffffff;
 
   /* --- Feedback --------------------------------------------------------- */
-  --color-danger: #ba1a1a;                  /* 6.37:1 com branco */
+  --color-danger: #ba1a1a;                  /* 6.46:1 com branco */
   --color-danger-fg: #ffffff;
   --color-danger-soft: #ffdad6;
   --color-danger-ink: #93000a;              /* texto de erro sobre superficie clara */
