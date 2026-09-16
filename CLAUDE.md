@@ -1,5 +1,34 @@
 # Gerenciador de Projetos
 
+## ⚠️ Protocolo obrigatório de início de sessão
+
+Antes de ler código, montar plano ou tocar em qualquer arquivo: leia
+`manual-vibecode-claude.md` por inteiro e confirme ao usuário, na primeira mensagem
+da sessão, que leu e vai segui-lo. Frase mínima: "Li o manual-vibecode-claude.md e
+vou seguir os passos dele nesta sessão." Sem essa confirmação, não prossiga.
+
+Isto existe porque uma sessão anterior implementou uma feature inteira (F2/Kanban)
+sem essa checagem e pulou, sem avisar, o que o manual manda fazer:
+
+- `/graphify query "já existe algo que faz [X]?"` **antes** de escrever qualquer
+  arquivo novo (manual §7.2) — não basta ter construído o grafo uma vez na sessão
+- `/ponytail-review` e `/ponytail-debt` como parte da Fase 6 (§8.2, §8.3) — a
+  revisão de uma skill de execução de plano (ex.: `subagent-driven-development`)
+  NÃO substitui essas duas, são coisas diferentes
+- Mostrar o diff **antes** do commit acontecer, não depois (§7.2) — se o fluxo
+  escolhido faz o subagente commitar dentro da própria tarefa (como
+  `subagent-driven-development` faz por design), isso é uma DIVERGÊNCIA do "mostre
+  o diff antes de commitar" e precisa ser dita ao usuário antes de começar, não
+  descoberta por ele depois
+- `npm run dup` / `npm run dead` isolados **antes** de pedir revisão conceitual ao
+  agente (§8.1), não só embutidos dentro de um `npm run verify` de terceiro
+- Reauditoria de arquitetura código-vs-doc depois de feature grande (§8.4)
+- `graphify update .` depois de qualquer leva de commits — grafo desatualizado
+  mente com confiança, é pior que não ter grafo
+
+Se uma skill tornar impraticável seguir um passo do manual à risca, diga isso ao
+usuário ANTES de prosseguir. Não substitua silenciosamente e narre depois.
+
 ## O que é
 Workspace de gestão de projetos no estilo Monday.com: um board de tarefas visto de 4 formas
 (tabela, kanban, gantt, dashboard). Público: squads multidisciplinares, PMs e liderança.
@@ -97,6 +126,12 @@ Todo elemento interativo alcançável por teclado, com foco visível.
   duas vezes. Rode `cmd > log 2>&1; echo $?` e leia o código de verdade.
 - **Nunca afirme um número de contraste sem medir.** Escrevi "3:1" num token que era
   1.84:1. Rode `npm run contrast`.
+- **Nunca implemente uma feature inteira sem confirmar que li o manual desta sessão.**
+  Fiz a F2 (Kanban), 6 tarefas, sem rodar `/graphify query` antes de cada uma, sem
+  `/ponytail-review`/`/ponytail-debt`, e sem mostrar diff antes de cada commit — a
+  skill de execução escolhida commitava dentro da própria tarefa do subagente e eu
+  não avisei que isso divergia da regra. Ver "Protocolo obrigatório de início de
+  sessão" no topo deste arquivo.
 
 ## Comando único de verificação
 ```
