@@ -93,7 +93,7 @@ celular. Está acessível pelo Dashboard.
 
 | Largura | Layout |
 |---|---|
-| **375** | Uma coluna. Os 4 cartões de métrica empilham. Donut acima da legenda. Barras por grupo em largura total |
+| **375** | Uma coluna. Os 2 cartões de métrica empilham. Donut acima da legenda. Barras por grupo em largura total |
 | **768** | Métricas em 2×2. Donut e progresso por grupo lado a lado |
 | **1440** | Métricas em linha de 4. Grade de 2 colunas como no Stitch |
 

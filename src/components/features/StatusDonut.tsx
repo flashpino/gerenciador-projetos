@@ -28,7 +28,7 @@ export function StatusDonut({ fatias }: Props) {
   const total = fatias.reduce((soma, f) => soma + f.quantidade, 0)
 
   return (
-    <div className="flex items-center gap-space-lg">
+    <div className="flex flex-col items-center gap-space-md md:flex-row md:gap-space-lg">
       <svg viewBox="0 0 36 36" aria-hidden="true" className="size-36 shrink-0 -rotate-90">
         <circle cx="18" cy="18" r={RAIO} fill="none" stroke="var(--color-surface-3)" strokeWidth="4" />
         {arcos.map((a) => (
