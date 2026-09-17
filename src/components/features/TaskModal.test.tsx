@@ -117,6 +117,37 @@ describe('TaskModal — modo edição', () => {
     expect(screen.getByLabelText('Descrição')).toHaveValue('Descrição existente')
   })
 
+  it('marcar "É um marco" sem prazo bloqueia salvar (pré-requisito do critério F3.4)', async () => {
+    const user = userEvent.setup()
+    render(
+      <TaskModal aberto aoFechar={vi.fn()} boardId="b1" taskId="t1" grupoInicialId="g1" grupos={grupos()} membros={membros()} />,
+    )
+
+    await user.clear(screen.getByLabelText('Prazo'))
+    await user.click(screen.getByRole('checkbox', { name: /É um marco/ }))
+    await user.click(screen.getByRole('button', { name: 'Salvar' }))
+
+    expect(screen.getByRole('alert')).toHaveTextContent('marco')
+    const salvar = vi.mocked(hooks.useAtualizarTarefa).mock.results[0]?.value.mutate
+    expect(salvar).not.toHaveBeenCalled()
+  })
+
+  it('marcar "É um marco" com prazo envia is_milestone: true', async () => {
+    const user = userEvent.setup()
+    render(
+      <TaskModal aberto aoFechar={vi.fn()} boardId="b1" taskId="t1" grupoInicialId="g1" grupos={grupos()} membros={membros()} />,
+    )
+
+    await user.click(screen.getByRole('checkbox', { name: /É um marco/ }))
+    await user.click(screen.getByRole('button', { name: 'Salvar' }))
+
+    const salvar = vi.mocked(hooks.useAtualizarTarefa).mock.results[0]?.value.mutate
+    expect(salvar).toHaveBeenCalledWith(
+      expect.objectContaining({ campos: expect.objectContaining({ is_milestone: true }) }),
+      expect.anything(),
+    )
+  })
+
   it('prazo antes do início bloqueia salvar (critério F5.4)', async () => {
     const user = userEvent.setup()
     render(

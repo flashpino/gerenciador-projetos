@@ -12,9 +12,9 @@ Fonte da verdade dos critérios: `docs/specs.md` seção 3.
 | F0 | Autenticação (pré-requisito) | ✅ concluída — commit `e5cdae6` |
 | F1 | Tabela Principal | ✅ concluída |
 | F2 | Kanban | ✅ concluída |
-| F3 | Cronograma Gantt | ⬜ não iniciada |
+| F3 | Cronograma Gantt | 🟡 código escrito e `npm run verify` verde — aguardando revisão e commit |
 | F4 | Dashboard de Métricas | ⬜ não iniciada |
-| F5 | Detalhe da Tarefa (modal) | 🟡 código escrito e `npm run verify` verde — aguardando revisão e commit |
+| F5 | Detalhe da Tarefa (modal) | ✅ concluída — commit `a529625` |
 
 **Infra:** migrations `0001_init` + `0002_advisors` aplicadas, RLS testado (3 blocos OK).
 PWA (`vite-plugin-pwa`) instalado, ainda não usado — fica para depois do MVP funcional (Fase 7 do manual).
@@ -44,13 +44,29 @@ Critérios F1.1–F1.6 do specs.md — implementados na fatia vertical (`docs/pa
 ## F2 — Kanban ✅
 Critérios F2.1–F2.6 do specs.md — drag via dnd-kit + alternativa por teclado.
 
-## F3 — Cronograma Gantt ⬜
-Nenhum arquivo criado ainda.
+## F3 — Cronograma Gantt 🟡
+
+- [x] `lib/gantt.ts` + teste — posicionamento puro (intervalo, barra, ticks), reusa `diasAte`/`parseDataSimples`
+- [x] `features/GanttRow.tsx`, `features/GanttChart.tsx` + testes
+- [x] `pages/GanttPage.tsx`, rota `/gantt` com `React.lazy` (code splitting, requisito não-funcional do specs.md)
+- [x] Aba "Gantt" em `BoardShell`
+- [x] `TaskModal.tsx` ganhou checkbox "É um marco" — sem isso F3.4 não tinha como ser testado pela UI real
+- [x] Critério F3.1 — barra posicionada/dimensionada pelo período (testado)
+- [x] Critério F3.2 — trocar escala reposiciona sem perder a tarefa (testado)
+- [x] Critério F3.3 — marcador "Hoje" (testado)
+- [x] Critério F3.4 — marco vira losango, não barra (testado)
+- [x] Critério F3.5 — tarefa sem data aparece como "sem período definido" (testado)
+- [x] Critério F3.6 — 375px: coluna de tarefas fixa via `sticky`, só a timeline rola (mesmo container de scroll, sem duas árvores de DOM pra alinhar)
+- [ ] Revisão + commit
+
+**Cortado do stitch (`arquivos stitch/quadro_de_projetos_cronograma_gantt`), fora de `docs/specs.md`:** setas de dependência entre tarefas (a tabela `task_dependencies` existe no schema, mas nenhum critério de F3 pede isso), zoom, escala de trimestre, filtro por responsável, busca no cronograma, painel de Capacidade & Alocação — esse é Zona Vermelha.
+
+**Desvios do planejado, registrados no `docs/components.md`:** `GanttScale` nunca virou arquivo — é `<Tabs variant="pill">` direto, sem wrapper. `GanttChart` não compõe `StateView` — quem trata os 4 estados é `GanttPage`, mesmo padrão de `BoardPage`/`KanbanPage`.
 
 ## F4 — Dashboard de Métricas ⬜
 Nenhum arquivo criado ainda.
 
-## F5 — Detalhe da Tarefa (modal) 🟡
+## F5 — Detalhe da Tarefa (modal) ✅
 
 - [x] `ui/Modal.tsx`, `ui/Select.tsx` — primitivos #9 e #6, faltava codar
 - [x] `ui/TextInput.tsx` — variante `multiline` (textarea)
@@ -65,7 +81,7 @@ Nenhum arquivo criado ainda.
 - [x] Critério F5.4 — prazo antes do início bloqueia salvar (testado)
 - [x] Critério F5.5 — contador de subtarefas atualiza imediatamente, update otimista (testado)
 - [x] Critério F5.6 — estado vazio de comentários (testado)
-- [ ] Revisão + commit
+- [x] Revisão + commit — `a529625`
 
 **Cortado do stitch (`arquivos stitch/modal_de_cadastro_e_edi_o_tarefa_e_projeto`), fora de `docs/specs.md`:**
 rich text, anexos, reações/thread, log automático de atividade, tags editáveis, cargo do comentarista — combinado com você antes de começar.

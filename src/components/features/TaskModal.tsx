@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
+import { Checkbox } from '@/components/ui/Checkbox'
 import { Field } from '@/components/ui/Field'
 import { Modal } from '@/components/ui/Modal'
 import { Select } from '@/components/ui/Select'
@@ -135,6 +136,7 @@ function FormularioTarefa({
   const [prazo, setPrazo] = useState(tarefaInicial?.due_date ?? '')
   const [horasEstimadas, setHorasEstimadas] = useState(tarefaInicial?.estimated_hours?.toString() ?? '')
   const [horasGastas, setHorasGastas] = useState(tarefaInicial?.logged_hours?.toString() ?? '')
+  const [isMarco, setIsMarco] = useState(tarefaInicial?.is_milestone ?? false)
   const [erroTitulo, setErroTitulo] = useState<string | null>(null)
   const [erroPeriodo, setErroPeriodo] = useState<string | null>(null)
 
@@ -147,6 +149,11 @@ function FormularioTarefa({
     // Mesma regra do constraint periodo_coerente do banco (0001_init.up.sql).
     if (inicio && prazo && prazo < inicio) {
       setErroPeriodo('O prazo não pode ser anterior à data de início.')
+      return
+    }
+    // Mesma regra do constraint marco_tem_data — um marco e uma data unica (F3.4).
+    if (isMarco && !prazo) {
+      setErroPeriodo('Um marco precisa de uma data de prazo.')
       return
     }
     setErroTitulo(null)
@@ -163,6 +170,7 @@ function FormularioTarefa({
       due_date: prazo || null,
       estimated_hours: horasEstimadas ? Number(horasEstimadas) : null,
       logged_hours: horasGastas ? Number(horasGastas) : null,
+      is_milestone: isMarco,
     }
 
     if (editando && taskId) {
@@ -203,12 +211,14 @@ function FormularioTarefa({
 
       <div className="grid grid-cols-2 gap-space-md">
         <Field label="Início">
-          <TextInput type="date" value={inicio} onChange={(e) => setInicio(e.target.value)} />
+          <TextInput type="date" value={inicio} onChange={(e) => setInicio(e.target.value)} disabled={isMarco} />
         </Field>
         <Field label="Prazo" error={erroPeriodo ?? undefined}>
           <TextInput type="date" value={prazo} onChange={(e) => setPrazo(e.target.value)} />
         </Field>
       </div>
+
+      <Checkbox checked={isMarco} onChange={setIsMarco} label="É um marco (data única, sem período)" />
 
       <div className="grid grid-cols-2 gap-space-md">
         <Field label="Horas estimadas">

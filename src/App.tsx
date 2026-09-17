@@ -1,12 +1,24 @@
+import { lazy, Suspense } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { RotaProtegida } from '@/components/RotaProtegida'
 import { SessaoProvider } from '@/components/SessaoProvider'
+import { StateView } from '@/components/ui/StateView'
 import BoardPage from '@/pages/BoardPage'
 import KanbanPage from '@/pages/KanbanPage'
 import LoginPage from '@/pages/LoginPage'
 import NaoEncontrada from '@/pages/NaoEncontrada'
+
+// Gantt (e Dashboard, quando existir) carregam por rota — nao pesam na
+// primeira tela (docs/specs.md, requisito de performance).
+const GanttPage = lazy(() => import('@/pages/GanttPage'))
+
+const carregandoRota = (
+  <StateView estado={{ tipo: 'carregando' }}>
+    <></>
+  </StateView>
+)
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,6 +42,14 @@ export default function App() {
               <Route element={<RotaProtegida />}>
                 <Route path="/" element={<BoardPage />} />
                 <Route path="/kanban" element={<KanbanPage />} />
+                <Route
+                  path="/gantt"
+                  element={
+                    <Suspense fallback={carregandoRota}>
+                      <GanttPage />
+                    </Suspense>
+                  }
+                />
               </Route>
               <Route path="*" element={<NaoEncontrada />} />
             </Routes>

@@ -100,8 +100,8 @@ passam por `src/hooks/` → `src/services/`.
 | `KanbanBoard` | Tabs, KanbanColumn | Kanban |
 | `KanbanColumn` | Badge, TaskCard | Kanban |
 | `TaskCard` | Badge, Avatar, ProgressBar, Menu, DueDateCell | Kanban |
-| `GanttChart` | StateView, GanttRow, GanttScale | Gantt |
-| `GanttRow` | Badge, Avatar | Gantt |
+| `GanttChart` | Tabs, GanttRow | Gantt |
+| `GanttRow` | — (div com token de status direto, sem Badge/Avatar) | Gantt |
 | `MetricTile` | Badge, ProgressBar | Dashboard |
 | `StatusDonut` | — (SVG próprio) | Dashboard |
 | `GroupProgressList` | ProgressBar | Dashboard |
@@ -127,6 +127,15 @@ recebe os mesmos `grupos` da Tabela Principal e chama `colunasPorStatus`
 (`src/lib/kanban.ts`) para recortar por status. Mover uma tarefa é
 `useAtualizarTarefa` com `{ status }` — o update otimista e o rollback (F2.4)
 vêm de graça do hook que a F1 já usa.
+
+**Nota sobre o Gantt:** `GanttChart` não compõe `StateView` — quem trata
+loading/erro/vazio é `GanttPage`, mesmo padrão de `BoardPage`/`KanbanPage`
+(nenhuma delas tem uma "TaskTable"/"KanbanBoardShell" com StateView embutido
+também). `GanttScale`, cogitado no planejamento, nunca virou arquivo: trocar
+de escala é `<Tabs variant="pill">` com 3 itens fixos, e um wrapper só pra
+isso seria uma camada sem comportamento próprio. O posicionamento das barras
+é lógica pura em `src/lib/gantt.ts` (testada sem renderizar nada), não em
+`GanttRow`.
 
 ---
 

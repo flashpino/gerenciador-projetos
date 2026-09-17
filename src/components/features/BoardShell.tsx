@@ -14,7 +14,8 @@ import { sair } from '@/services/auth'
 const VIEWS: ItemTab[] = [
   { id: '/', rotulo: 'Tabela Principal', href: '/' },
   { id: '/kanban', rotulo: 'Kanban', href: '/kanban' },
-  // F3 (Gantt) e F4 (Dashboard) acrescentam sua linha aqui quando existirem.
+  { id: '/gantt', rotulo: 'Gantt', href: '/gantt' },
+  // F4 (Dashboard) acrescenta sua linha aqui quando existir.
   // Aba que leva a 404 é pior que aba ausente.
 ]
 
