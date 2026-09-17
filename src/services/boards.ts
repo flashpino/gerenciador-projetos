@@ -25,6 +25,23 @@ export async function buscarBoardAtual(): Promise<{ id: string; name: string }> 
 }
 
 /**
+ * Workspace do usuario. Na v1 ha um workspace e um board por usuario
+ * (mesma nota de buscarBoardAtual) — usado pela Sidebar pra mostrar o
+ * nome (docs/superpowers/specs/2026-09-17-casca-sidebar-design.md).
+ */
+export async function buscarWorkspaceAtual(): Promise<{ id: string; name: string }> {
+  const { data, error } = await supabase
+    .from('workspaces')
+    .select('id, name')
+    .order('created_at', { ascending: true })
+    .limit(1)
+    .single()
+
+  if (error) throw traduzirErro(error)
+  return data
+}
+
+/**
  * Grupos do board com suas tarefas, prontos para a tabela.
  *
  * Uma query so, com join aninhado: o PostgREST resolve em um round-trip. Buscar
