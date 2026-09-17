@@ -38,7 +38,7 @@ Só entra aqui o que aparece em 2 ou mais telas.
 | 6 | **Select** | — | erro, desabilitado | `options`, `value`, `onChange` | modal |
 | 7 | **Checkbox** | — | checked, indeterminate, disabled | `checked`, `onChange`, `label` | tabela, modal |
 | 8 | **Menu** | — | aberto, item ativo, desabilitado | `trigger`, `items`, `align` | tabela, kanban, gantt, dashboard |
-| 9 | **Modal** | `md` · `lg` · `full` | aberto, fechando | `open`, `onClose`, `title`, `footer` | modal de tarefa, confirmações |
+| 9 | **Modal** | `md` · `lg` · `full` · `drawer` | aberto, fechando | `open`, `onClose`, `title`, `footer` | modal de tarefa, confirmações, drawer de navegação mobile |
 | 10 | **ProgressBar** | `solid` · `segmented` | — | `value` ou `segments[]`, `label` | tabela, kanban, gantt, dashboard |
 | 11 | **StateView** | `loading` · `error` · `empty` | — | `state`, `title`, `action`, `children` | **todas** |
 | 12 | **Tabs** | `underline` · `pill` | ativo, foco | `items`, `value`, `onChange` | shell do board, modal |
@@ -89,7 +89,7 @@ passam por `src/hooks/` → `src/services/`.
 
 | Componente | Compõe | Vive em |
 |---|---|---|
-| `BoardShell` | Tabs, Button | todas as 4 views (layout comum + botão "Sair") |
+| `BoardShell` | Tabs, Button | todas as 4 views (layout comum + ícones desabilitados da barra superior — Sair mora na Sidebar) |
 | `StatusCell` | Badge, Menu | tabela, kanban, modal |
 | `PriorityCell` | Badge, Menu | tabela, modal |
 | `AssigneeCell` | Avatar, Menu | tabela, kanban, modal |
@@ -108,6 +108,9 @@ passam por `src/hooks/` → `src/services/`.
 | `TaskModal` | Modal, Tabs, Field, TextInput, Select, *Cells | todas (é o ponto único de escrita rica) |
 | `SubtaskList` | Checkbox, Button, StateView | TaskModal |
 | `CommentList` | Avatar, TextInput, StateView | TaskModal |
+| `AppShell` | Sidebar | container de toda rota autenticada (docs/superpowers/specs/2026-09-17-casca-sidebar-design.md) |
+| `Sidebar` | Avatar, Button, Modal (`drawer`) | identidade do workspace, nav, rodapé — dentro do AppShell |
+| `EmConstrucaoPage` | StateView | 7 rotas "em construção" (Meus Painéis, Favoritos, Atividades, Modelos, Notificações, Ajuda, Configurações) |
 | `AppUpdatePrompt` | Button | shell (nova versão do PWA) |
 
 **Nota sobre `StatusCell` / `PriorityCell` / `AssigneeCell` / `DueDateCell`:**
