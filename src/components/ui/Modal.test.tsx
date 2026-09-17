@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { Modal } from './Modal'
@@ -57,5 +57,43 @@ describe('Modal', () => {
       </Modal>,
     )
     expect(screen.getByRole('button', { name: 'Salvar' })).toBeInTheDocument()
+  })
+
+  it('size="drawer" renderiza normalmente, ocupando a lateral', () => {
+    render(
+      <Modal open size="drawer" title="Menu" onClose={vi.fn()}>
+        <p>conteudo do menu</p>
+      </Modal>,
+    )
+    expect(screen.getByRole('dialog', { name: 'Menu' })).toBeInTheDocument()
+    expect(screen.getByText('conteudo do menu')).toBeInTheDocument()
+  })
+
+  it('clique fora do conteúdo (no backdrop) fecha e devolve o foco à origem', async () => {
+    const user = userEvent.setup()
+
+    function Cenario() {
+      const [aberto, setAberto] = useState(false)
+      return (
+        <>
+          <button onClick={() => setAberto(true)}>Abrir menu</button>
+          <Modal open={aberto} size="drawer" title="Menu" onClose={() => setAberto(false)}>
+            <p>conteudo</p>
+          </Modal>
+        </>
+      )
+    }
+
+    render(<Cenario />)
+    await user.click(screen.getByRole('button', { name: 'Abrir menu' }))
+    const dialog = await screen.findByRole('dialog')
+
+    // Clicar no próprio elemento <dialog> (não em um descendente) é
+    // exatamente o que acontece quando o clique cai no backdrop nativo —
+    // é o padrão documentado pela MDN pra detectar clique fora.
+    fireEvent.click(dialog)
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Abrir menu' })).toHaveFocus())
   })
 })

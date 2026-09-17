@@ -2,7 +2,7 @@ import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 
-type Tamanho = 'md' | 'lg' | 'full'
+type Tamanho = 'md' | 'lg' | 'full' | 'drawer'
 
 interface Props {
   open: boolean
@@ -17,6 +17,18 @@ const TAMANHOS: Record<Tamanho, string> = {
   md: 'w-[min(28rem,calc(100vw-2rem))]',
   lg: 'w-[min(42rem,calc(100vw-2rem))]',
   full: 'h-[calc(100vh-2rem)] w-[calc(100vw-2rem)]',
+  // Ocupa a lateral inteira — usado pelo drawer de navegação em 375px
+  // (docs/responsive.md:38, docs/superpowers/specs/2026-09-17-casca-
+  // sidebar-design.md). Mesmo <dialog>, trap de foco e Esc de graça; só a
+  // posição/tamanho mudam.
+  drawer: 'fixed inset-y-0 left-0 m-0 flex h-dvh w-[min(20rem,85vw)] max-w-none flex-col rounded-none',
+}
+
+// O conteúdo do drawer precisa preencher a altura toda, não ficar limitado
+// a 70vh como os tamanhos centralizados (md/lg/full mantêm o comportamento
+// de sempre — isto só adiciona um caso, não muda os outros três).
+const ALTURA_CONTEUDO: Partial<Record<Tamanho, string>> = {
+  drawer: 'flex-1 overflow-y-auto p-space-lg',
 }
 
 /**
@@ -24,7 +36,8 @@ const TAMANHOS: Record<Tamanho, string> = {
  * superior vem de graca do navegador. Devolver o foco a origem e a UNICA
  * parte manual (F5.1) — guardamos o elemento ativo no instante em que o
  * modal abre e focamos ele de volta quando o evento `close` dispara, seja
- * por Esc, pelo botao "Fechar" ou por uma chamada a close() vinda de fora.
+ * por Esc, pelo botao "Fechar", por clique fora ou por uma chamada a
+ * close() vinda de fora.
  */
 export function Modal({ open, onClose, title, children, footer, size = 'md' }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null)
@@ -53,6 +66,19 @@ export function Modal({ open, onClose, title, children, footer, size = 'md' }: P
     return () => dialog.removeEventListener('close', aoFecharNativo)
   }, [onClose])
 
+  // Clique no backdrop nativo chega como clique no próprio <dialog> (não
+  // num descendente) — o ::backdrop não é um nó do DOM. Padrão documentado
+  // pela MDN. Atachado uma vez só; um dialog fechado não recebe clique.
+  useEffect(() => {
+    const dialog = dialogRef.current
+    if (!dialog) return
+    const aoClicarFora = (e: MouseEvent) => {
+      if (e.target === dialog) dialog.close()
+    }
+    dialog.addEventListener('click', aoClicarFora)
+    return () => dialog.removeEventListener('click', aoClicarFora)
+  }, [])
+
   return (
     <dialog
       ref={dialogRef}
@@ -76,7 +102,7 @@ export function Modal({ open, onClose, title, children, footer, size = 'md' }: P
         </button>
       </div>
 
-      <div className="max-h-[70vh] overflow-y-auto p-space-lg">{children}</div>
+      <div className={ALTURA_CONTEUDO[size] ?? 'max-h-[70vh] overflow-y-auto p-space-lg'}>{children}</div>
 
       {footer && (
         <div className="flex justify-end gap-space-sm border-t border-border px-space-lg py-space-md">{footer}</div>
