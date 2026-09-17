@@ -21,7 +21,14 @@ const TAMANHOS: Record<Tamanho, string> = {
   // (docs/responsive.md:38, docs/superpowers/specs/2026-09-17-casca-
   // sidebar-design.md). Mesmo <dialog>, trap de foco e Esc de graça; só a
   // posição/tamanho mudam.
-  drawer: 'fixed inset-y-0 left-0 m-0 flex h-dvh w-[min(20rem,85vw)] max-w-none flex-col rounded-none',
+  //
+  // `hidden` + `open:flex`, NUNCA `flex` puro: `flex` é regra de AUTOR
+  // (Tailwind) e vence a regra nativa `dialog:not([open]) { display: none }`
+  // do navegador — um `flex` incondicional deixava o drawer visível mesmo
+  // FECHADO, sobrepondo a sidebar de verdade (achado em checagem manual no
+  // navegador; invisível no jsdom porque o ambiente de teste roda com
+  // `css: false`, sem CSS real carregado).
+  drawer: 'fixed inset-y-0 left-0 m-0 hidden h-dvh w-[min(20rem,85vw)] max-w-none flex-col rounded-none open:flex',
 }
 
 // O conteúdo do drawer precisa preencher a altura toda, não ficar limitado
