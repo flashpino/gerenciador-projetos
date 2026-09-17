@@ -1,15 +1,39 @@
+import { useState } from 'react'
 import { StateView } from '@/components/ui/StateView'
 import { estadoDaQuery } from '@/lib/estadoDaQuery'
 import { Button } from '@/components/ui/Button'
 import { BoardShell } from '@/components/features/BoardShell'
 import { TaskGroup } from '@/components/features/TaskGroup'
+import { TaskModal } from '@/components/features/TaskModal'
 import { useAtualizarTarefa, useBoardAtual, useGruposComTarefas, useMembros } from '@/hooks/useQuadro'
+import type { Task } from '@/types/domain'
 
 export default function BoardPage() {
   const board = useBoardAtual()
   const grupos = useGruposComTarefas(board.data?.id)
   const membros = useMembros()
   const editar = useAtualizarTarefa(board.data?.id)
+
+  // null = modal fechado. string = editando essa tarefa. '' = criando (o
+  // grupo alvo vai em grupoParaCriar).
+  const [taskIdModal, setTaskIdModal] = useState<string | null>(null)
+  const [grupoParaCriar, setGrupoParaCriar] = useState<string | null>(null)
+  const modalAberto = taskIdModal !== null || grupoParaCriar !== null
+
+  function abrirParaEditar(task: Task) {
+    setTaskIdModal(task.id)
+    setGrupoParaCriar(null)
+  }
+
+  function abrirParaCriar(groupId: string) {
+    setTaskIdModal(null)
+    setGrupoParaCriar(groupId)
+  }
+
+  function fecharModal() {
+    setTaskIdModal(null)
+    setGrupoParaCriar(null)
+  }
 
   // Os QUATRO estados, num lugar so. Nenhuma tela do app inventa a propria regra.
   const estado = estadoDaQuery(
@@ -37,12 +61,23 @@ export default function BoardPage() {
             grupo={g}
             membros={membros.data ?? []}
             aoEditar={(id, campos) => editar.mutate({ id, campos })}
-            aoAbrir={() => {
-              /* modal de detalhe entra na proxima fatia (F5) */
-            }}
+            aoAbrir={abrirParaEditar}
+            aoCriar={() => abrirParaCriar(g.id)}
           />
         ))}
       </StateView>
+
+      {board.data && (
+        <TaskModal
+          aberto={modalAberto}
+          aoFechar={fecharModal}
+          boardId={board.data.id}
+          taskId={taskIdModal}
+          grupoInicialId={grupoParaCriar ?? grupos.data?.[0]?.id ?? ''}
+          grupos={(grupos.data ?? []).map((g) => ({ id: g.id, name: g.name }))}
+          membros={membros.data ?? []}
+        />
+      )}
     </BoardShell>
   )
 }

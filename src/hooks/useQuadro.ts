@@ -1,12 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import type { CamposEditaveis } from '@/services/boards'
+import type { CamposEditaveis, NovaTarefa } from '@/services/boards'
 import {
+  atualizarSubtarefa,
   atualizarTarefa,
   buscarBoardAtual,
   buscarGruposComTarefas,
   buscarMembros,
+  buscarTarefaDetalhe,
+  criarComentario,
+  criarSubtarefa,
+  criarTarefa,
+  removerSubtarefa,
 } from '@/services/boards'
-import type { GroupComTarefas } from '@/types/domain'
+import type { GroupComTarefas, Subtask, TaskComDetalhe } from '@/types/domain'
 
 /**
  * Chaves de cache centralizadas.
@@ -17,6 +23,7 @@ const chaves = {
   board: ['board'] as const,
   membros: ['membros'] as const,
   grupos: (boardId: string) => ['grupos', boardId] as const,
+  tarefa: (taskId: string) => ['tarefa', taskId] as const,
 }
 
 export function useBoardAtual() {
@@ -83,6 +90,118 @@ export function useAtualizarTarefa(boardId: string | undefined) {
       // Reconcilia com o servidor em sucesso E em erro: o banco pode ter
       // normalizado algo (trigger de updated_at, constraint) que o otimista nao sabe.
       void qc.invalidateQueries({ queryKey: chave })
+    },
+  })
+}
+
+/**
+ * Tarefa com subtarefas e comentarios — so o que o TaskModal (F5) precisa.
+ * Query separada de useGruposComTarefas: pedir subtasks/comments de toda
+ * tarefa visivel na tabela buscaria dado que ninguem olha na maior parte
+ * do tempo.
+ */
+export function useTarefaDetalhe(taskId: string | undefined) {
+  return useQuery({
+    queryKey: chaves.tarefa(taskId ?? ''),
+    queryFn: () => buscarTarefaDetalhe(taskId as string),
+    enabled: Boolean(taskId),
+  })
+}
+
+/**
+ * Cria uma tarefa. SEM update otimista: diferente da edicao inline (onde
+ * latencia percebida importa a cada clique, docs/specs.md persona), criar
+ * pelo modal e uma acao deliberada — o botao "Salvar" ja mostra `loading`
+ * e o usuario espera o resultado antes de fechar. Otimista aqui exigiria
+ * inserir um id temporario dentro do grupo certo em GroupComTarefas[] pra
+ * um ganho de percepcao que ninguem vai notar num clique de "Salvar".
+ */
+export function useCriarTarefa(boardId: string | undefined) {
+  const qc = useQueryClient()
+
+  return useMutation({
+    mutationFn: (campos: NovaTarefa) => criarTarefa(campos),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: chaves.grupos(boardId ?? '') })
+    },
+  })
+}
+
+export interface MutacaoSubtarefa {
+  id: string
+  campos: Partial<Pick<Subtask, 'title' | 'done'>>
+}
+
+/**
+ * Alterna/edita subtarefa com UPDATE OTIMISTA — o contador "4/6" tem que
+ * atualizar IMEDIATAMENTE (criterio F5.5). Mesmo padrao de useAtualizarTarefa.
+ */
+export function useAtualizarSubtarefa(taskId: string | undefined) {
+  const qc = useQueryClient()
+  const chave = chaves.tarefa(taskId ?? '')
+
+  return useMutation({
+    mutationFn: ({ id, campos }: MutacaoSubtarefa) => atualizarSubtarefa(id, campos),
+
+    onMutate: async ({ id, campos }) => {
+      await qc.cancelQueries({ queryKey: chave })
+      const anterior = qc.getQueryData<TaskComDetalhe>(chave)
+
+      qc.setQueryData<TaskComDetalhe>(
+        chave,
+        (tarefa) =>
+          tarefa && {
+            ...tarefa,
+            subtasks: tarefa.subtasks.map((s) => (s.id === id ? { ...s, ...campos } : s)),
+          },
+      )
+
+      return { anterior }
+    },
+
+    onError: (_erro, _vars, ctx) => {
+      if (ctx?.anterior) qc.setQueryData(chave, ctx.anterior)
+    },
+
+    onSettled: () => {
+      void qc.invalidateQueries({ queryKey: chave })
+    },
+  })
+}
+
+/** Sem otimismo: adicionar item e mais raro que marcar feito, o ganho nao paga a complexidade. */
+export function useCriarSubtarefa(taskId: string | undefined) {
+  const qc = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ title, position }: { title: string; position: number }) =>
+      criarSubtarefa(taskId as string, title, position),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: chaves.tarefa(taskId ?? '') })
+    },
+  })
+}
+
+export function useRemoverSubtarefa(taskId: string | undefined) {
+  const qc = useQueryClient()
+
+  return useMutation({
+    mutationFn: (id: string) => removerSubtarefa(id),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: chaves.tarefa(taskId ?? '') })
+    },
+  })
+}
+
+/** `authorId` vem de useSessao() no componente — este hook nao conhece auth. */
+export function useCriarComentario(taskId: string | undefined) {
+  const qc = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ authorId, body }: { authorId: string; body: string }) =>
+      criarComentario(taskId as string, authorId, body),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: chaves.tarefa(taskId ?? '') })
     },
   })
 }

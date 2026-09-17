@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import type { GroupComTarefas, Profile, Task } from '@/types/domain'
+import type { Comment, GroupComTarefas, Profile, Subtask, Task, TaskComDetalhe } from '@/types/domain'
 import { traduzirErro } from './erros'
 
 /**
@@ -74,9 +74,77 @@ export async function atualizarTarefa(id: string, campos: CamposEditaveis): Prom
   return data as Task
 }
 
+export type NovaTarefa = Omit<CamposEditaveis, 'title' | 'group_id'> & {
+  board_id: string
+  group_id: string
+  title: string
+}
+
+/** Criada pelo modal (F5) — unico ponto de escrita rica do app. */
+export async function criarTarefa(campos: NovaTarefa): Promise<Task> {
+  const { data, error } = await supabase.from('tasks').insert(campos).select().single()
+  if (error) throw traduzirErro(error)
+  return data as Task
+}
+
+/**
+ * Tarefa com subtarefas e comentarios — so o que o modal de detalhe (F5)
+ * precisa. A tabela/kanban usam buscarGruposComTarefas, que nao traz isso:
+ * pedir subtasks/comments de toda tarefa visivel seria buscar dado que
+ * ninguem olha na maior parte do tempo.
+ */
+export async function buscarTarefaDetalhe(taskId: string): Promise<TaskComDetalhe> {
+  const { data, error } = await supabase
+    .from('tasks')
+    .select('*, subtasks(*), comments(*, author:profiles(id, full_name, avatar_url))')
+    .eq('id', taskId)
+    .order('position', { referencedTable: 'subtasks', ascending: true })
+    .order('created_at', { referencedTable: 'comments', ascending: false })
+    .single()
+
+  if (error) throw traduzirErro(error)
+  return data as TaskComDetalhe
+}
+
+/** `position` vem de quem chama (tamanho da lista atual) — evita round-trip so pra calcular a proxima posicao. */
+export async function criarSubtarefa(taskId: string, title: string, position: number): Promise<Subtask> {
+  const { data, error } = await supabase
+    .from('subtasks')
+    .insert({ task_id: taskId, title, position })
+    .select()
+    .single()
+
+  if (error) throw traduzirErro(error)
+  return data as Subtask
+}
+
+export async function atualizarSubtarefa(
+  id: string,
+  campos: Partial<Pick<Subtask, 'title' | 'done'>>,
+): Promise<Subtask> {
+  const { data, error } = await supabase.from('subtasks').update(campos).eq('id', id).select().single()
+  if (error) throw traduzirErro(error)
+  return data as Subtask
+}
+
+export async function removerSubtarefa(id: string): Promise<void> {
+  const { error } = await supabase.from('subtasks').delete().eq('id', id)
+  if (error) throw traduzirErro(error)
+}
+
+/** `authorId` vem de useSessao() — o RLS rejeita qualquer valor que nao seja o proprio usuario logado. */
+export async function criarComentario(taskId: string, authorId: string, body: string): Promise<Comment> {
+  const { data, error } = await supabase
+    .from('comments')
+    .insert({ task_id: taskId, author_id: authorId, body })
+    .select('*, author:profiles(id, full_name, avatar_url)')
+    .single()
+
+  if (error) throw traduzirErro(error)
+  return data as Comment
+}
+
 /*
- * criarTarefa, removerTarefa e criarGrupo foram escritas e APAGADAS aqui.
- * Nada as consumia ainda — o knip apontou como export morto. Voltam no mesmo
- * commit da feature que precisar delas (modal de tarefa, criacao de grupo).
- * Escrever camada "para depois" e o boilerplate que o manual manda cortar.
+ * removerTarefa e criarGrupo continuam nao escritas — nada as consome ainda.
+ * Voltam no commit da feature que precisar delas.
  */

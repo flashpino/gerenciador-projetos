@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { BoardShell } from '@/components/features/BoardShell'
 import { KanbanBoard } from '@/components/features/KanbanBoard'
+import { TaskModal } from '@/components/features/TaskModal'
 import { Button } from '@/components/ui/Button'
 import { StateView } from '@/components/ui/StateView'
 import { estadoDaQuery } from '@/lib/estadoDaQuery'
@@ -10,6 +12,7 @@ export default function KanbanPage() {
   const grupos = useGruposComTarefas(board.data?.id)
   const membros = useMembros()
   const editar = useAtualizarTarefa(board.data?.id)
+  const [taskIdModal, setTaskIdModal] = useState<string | null>(null)
 
   const estado = estadoDaQuery(
     board.isPending ? { ...grupos, isPending: true } : grupos,
@@ -39,11 +42,20 @@ export default function KanbanPage() {
           grupos={grupos.data ?? []}
           membros={membros.data ?? []}
           aoMover={(id, status) => editar.mutate({ id, campos: { status } })}
-          aoAbrir={() => {
-            /* modal de detalhe entra na F5 */
-          }}
+          aoAbrir={(t) => setTaskIdModal(t.id)}
         />
       </StateView>
+
+      {board.data && (
+        <TaskModal
+          aberto={taskIdModal !== null}
+          aoFechar={() => setTaskIdModal(null)}
+          boardId={board.data.id}
+          taskId={taskIdModal}
+          grupos={(grupos.data ?? []).map((g) => ({ id: g.id, name: g.name }))}
+          membros={membros.data ?? []}
+        />
+      )}
     </BoardShell>
   )
 }

@@ -1,24 +1,36 @@
-import type { InputHTMLAttributes } from 'react'
+import type { InputHTMLAttributes, TextareaHTMLAttributes } from 'react'
 import { cn } from '@/lib/cn'
 
-// ponytail: so a variante `text` (inclui email/password/etc via `type`). A
-// variante `textarea` do inventario (docs/components.md #5) entra quando o
-// TaskModal (F5) precisar de descricao multilinha — sem uso hoje.
-type Props = InputHTMLAttributes<HTMLInputElement> & {
-  invalid?: boolean
-}
+type PropsInput = InputHTMLAttributes<HTMLInputElement> & { invalid?: boolean; multiline?: false }
+type PropsTextarea = TextareaHTMLAttributes<HTMLTextAreaElement> & { invalid?: boolean; multiline: true }
+type Props = PropsInput | PropsTextarea
 
-export function TextInput({ invalid, className, ...rest }: Props) {
+const base = (className: string | undefined) =>
+  cn(
+    'w-full rounded border border-border-strong bg-surface px-space-md text-body text-ink',
+    'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
+    'aria-invalid:border-danger',
+    'disabled:cursor-not-allowed disabled:opacity-50',
+    className,
+  )
+
+export function TextInput(props: Props) {
+  if (props.multiline) {
+    const { invalid, multiline: _multiline, className, ...rest } = props
+    return (
+      <textarea
+        aria-invalid={invalid || undefined}
+        className={cn(base(className), 'min-h-24 py-space-sm')}
+        {...rest}
+      />
+    )
+  }
+
+  const { invalid, multiline: _multiline, className, ...rest } = props
   return (
     <input
       aria-invalid={invalid || undefined}
-      className={cn(
-        'min-h-touch w-full rounded border border-border-strong bg-surface px-space-md text-body text-ink md:min-h-8',
-        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-        'aria-invalid:border-danger',
-        'disabled:cursor-not-allowed disabled:opacity-50',
-        className,
-      )}
+      className={cn(base(className), 'min-h-touch md:min-h-8')}
       {...rest}
     />
   )

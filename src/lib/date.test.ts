@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { diasAte, estaAtrasada, formatarIntervalo, parseDataSimples } from './date'
+import { diasAte, estaAtrasada, formatarIntervalo, parseDataSimples, tempoRelativo } from './date'
 
 describe('parseDataSimples', () => {
   it('interpreta YYYY-MM-DD como meia-noite LOCAL, nao UTC', () => {
@@ -70,5 +70,25 @@ describe('formatarIntervalo', () => {
 
   it('devolve texto explicito quando nao ha periodo — a tarefa nao some', () => {
     expect(formatarIntervalo(null, null)).toBe('Sem prazo')
+  })
+})
+
+describe('tempoRelativo', () => {
+  const agora = new Date(2026, 8, 15, 12, 0, 0)
+
+  it('minutos atras', () => {
+    expect(tempoRelativo(new Date(2026, 8, 15, 11, 40, 0).toISOString(), agora)).toBe('há 20 minutos')
+  })
+
+  it('horas atras', () => {
+    expect(tempoRelativo(new Date(2026, 8, 15, 11, 0, 0).toISOString(), agora)).toBe('há 1 hora')
+  })
+
+  it('dias atras', () => {
+    expect(tempoRelativo(new Date(2026, 8, 13, 12, 0, 0).toISOString(), agora)).toBe('anteontem')
+  })
+
+  it('agora mesmo', () => {
+    expect(tempoRelativo(agora.toISOString(), agora)).toBe('agora mesmo')
   })
 })

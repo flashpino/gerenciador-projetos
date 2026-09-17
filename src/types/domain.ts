@@ -43,3 +43,25 @@ export interface Task {
 export interface GroupComTarefas extends Group {
   tasks: Task[]
 }
+
+export interface Subtask {
+  id: string
+  task_id: string
+  title: string
+  done: boolean
+  position: number
+}
+
+export interface Comment {
+  id: string
+  task_id: string
+  body: string
+  created_at: string
+  author: Pick<Profile, 'id' | 'full_name' | 'avatar_url'>
+}
+
+/** Tarefa com o que só o modal de detalhe (F5) precisa — não a tabela/kanban. */
+export interface TaskComDetalhe extends Task {
+  subtasks: Subtask[]
+  comments: Comment[]
+}

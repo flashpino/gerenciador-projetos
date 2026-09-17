@@ -32,9 +32,10 @@ interface Props {
   membros: Profile[]
   aoEditar: (id: string, campos: CamposEditaveis) => void
   aoAbrir: (task: Task) => void
+  aoCriar: () => void
 }
 
-export function TaskGroup({ grupo, membros, aoEditar, aoAbrir }: Props) {
+export function TaskGroup({ grupo, membros, aoEditar, aoAbrir, aoCriar }: Props) {
   const [aberto, setAberto] = useState(true)
   const tarefas = grupo.tasks
   const progresso = progressoDoGrupo(tarefas)
@@ -222,6 +223,7 @@ export function TaskGroup({ grupo, membros, aoEditar, aoAbrir }: Props) {
               variant="ghost"
               size="sm"
               iconStart={<Plus aria-hidden="true" className="size-4" />}
+              onClick={aoCriar}
             >
               Adicionar item
             </Button>

@@ -67,6 +67,25 @@ function diaMes(d: Date): string {
  * "15 – 28 set" no mesmo mes, "28 set – 5 out" quando cruza.
  * Sem periodo devolve "Sem prazo" — a tarefa nunca some da tela (criterio F3.5).
  */
+const RTF = new Intl.RelativeTimeFormat('pt-BR', { numeric: 'auto' })
+
+/**
+ * "há 20 minutos", "há 1 hora", "anteontem" — usa Intl.RelativeTimeFormat
+ * nativo, sem lib de datas. `iso` e timestamptz (com timezone embutido),
+ * diferente do `date` puro de parseDataSimples: `new Date()` aqui e seguro.
+ */
+export function tempoRelativo(iso: string, agora = new Date()): string {
+  const diffMin = Math.round((new Date(iso).getTime() - agora.getTime()) / 60_000)
+  if (diffMin === 0) return 'agora mesmo'
+  if (Math.abs(diffMin) < 60) return RTF.format(diffMin, 'minute')
+
+  const diffHoras = Math.round(diffMin / 60)
+  if (Math.abs(diffHoras) < 24) return RTF.format(diffHoras, 'hour')
+
+  const diffDias = Math.round(diffHoras / 24)
+  return RTF.format(diffDias, 'day')
+}
+
 export function formatarIntervalo(
   inicio: string | null | undefined,
   fim: string | null | undefined,

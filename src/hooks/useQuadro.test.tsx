@@ -11,10 +11,25 @@ vi.mock('@/services/boards', () => ({
   criarTarefa: vi.fn(),
   removerTarefa: vi.fn(),
   criarGrupo: vi.fn(),
+  buscarTarefaDetalhe: vi.fn(),
+  atualizarSubtarefa: vi.fn(),
+  criarSubtarefa: vi.fn(),
+  removerSubtarefa: vi.fn(),
+  criarComentario: vi.fn(),
 }))
 
+import type { TaskComDetalhe } from '@/types/domain'
 import * as servico from '@/services/boards'
-import { useAtualizarTarefa, useGruposComTarefas } from './useQuadro'
+import {
+  useAtualizarSubtarefa,
+  useAtualizarTarefa,
+  useCriarComentario,
+  useCriarSubtarefa,
+  useCriarTarefa,
+  useGruposComTarefas,
+  useRemoverSubtarefa,
+  useTarefaDetalhe,
+} from './useQuadro'
 
 const grupos = (): GroupComTarefas[] => [
   {
@@ -108,5 +123,125 @@ describe('useAtualizarTarefa — update otimista', () => {
     await waitFor(() => expect(result.current.mutar.isError).toBe(true))
     // Voltou ao valor anterior: a celula nao pode ficar num estado mentiroso.
     expect(result.current.lista.data?.[0]?.tasks[0]?.status).toBe('working')
+  })
+})
+
+const tarefaDetalhe = (): TaskComDetalhe => ({
+  id: 't1', board_id: 'b1', group_id: 'g1', title: 'Refatorar arquitetura',
+  description: null, status: 'working', priority: 'high', assignee_id: null,
+  start_date: null, due_date: null, progress: 65, estimated_hours: null,
+  logged_hours: null, is_milestone: false, tags: [], position: 0,
+  created_at: '', updated_at: '',
+  subtasks: [
+    { id: 's1', task_id: 't1', title: 'Mapear módulos', done: false, position: 0 },
+  ],
+  comments: [],
+})
+
+describe('useTarefaDetalhe', () => {
+  beforeEach(() => vi.resetAllMocks())
+
+  it('carrega a tarefa com subtarefas e comentários', async () => {
+    vi.mocked(servico.buscarTarefaDetalhe).mockResolvedValue(tarefaDetalhe())
+    const { wrapper } = criarWrapper()
+    const { result } = renderHook(() => useTarefaDetalhe('t1'), { wrapper })
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(result.current.data?.subtasks[0]?.title).toBe('Mapear módulos')
+  })
+
+  it('não busca enquanto o taskId for indefinido', () => {
+    const { wrapper } = criarWrapper()
+    renderHook(() => useTarefaDetalhe(undefined), { wrapper })
+    expect(servico.buscarTarefaDetalhe).not.toHaveBeenCalled()
+  })
+})
+
+describe('useCriarTarefa', () => {
+  beforeEach(() => vi.resetAllMocks())
+
+  it('cria a tarefa e invalida a lista de grupos', async () => {
+    vi.mocked(servico.criarTarefa).mockResolvedValue({ id: 't2' } as never)
+    const { wrapper } = criarWrapper()
+    const { result } = renderHook(() => useCriarTarefa('b1'), { wrapper })
+
+    result.current.mutate({ board_id: 'b1', group_id: 'g1', title: 'Nova tarefa' })
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(servico.criarTarefa).toHaveBeenCalledWith({ board_id: 'b1', group_id: 'g1', title: 'Nova tarefa' })
+  })
+})
+
+describe('useAtualizarSubtarefa — update otimista (critério F5.5)', () => {
+  beforeEach(() => vi.resetAllMocks())
+
+  it('marca como feita IMEDIATAMENTE, antes da resposta do servidor', async () => {
+    vi.mocked(servico.buscarTarefaDetalhe).mockResolvedValue(tarefaDetalhe())
+    vi.mocked(servico.atualizarSubtarefa).mockImplementation(() => new Promise(() => {}))
+
+    const { wrapper } = criarWrapper()
+    const { result } = renderHook(
+      () => ({ detalhe: useTarefaDetalhe('t1'), mutar: useAtualizarSubtarefa('t1') }),
+      { wrapper },
+    )
+    await waitFor(() => expect(result.current.detalhe.isSuccess).toBe(true))
+
+    result.current.mutar.mutate({ id: 's1', campos: { done: true } })
+
+    await waitFor(() => expect(result.current.detalhe.data?.subtasks[0]?.done).toBe(true))
+  })
+
+  it('desfaz quando o servidor falha', async () => {
+    vi.mocked(servico.buscarTarefaDetalhe).mockResolvedValue(tarefaDetalhe())
+    vi.mocked(servico.atualizarSubtarefa).mockRejectedValue(new Error('500'))
+
+    const { wrapper } = criarWrapper()
+    const { result } = renderHook(
+      () => ({ detalhe: useTarefaDetalhe('t1'), mutar: useAtualizarSubtarefa('t1') }),
+      { wrapper },
+    )
+    await waitFor(() => expect(result.current.detalhe.isSuccess).toBe(true))
+
+    result.current.mutar.mutate({ id: 's1', campos: { done: true } })
+
+    await waitFor(() => expect(result.current.mutar.isError).toBe(true))
+    expect(result.current.detalhe.data?.subtasks[0]?.done).toBe(false)
+  })
+})
+
+describe('useCriarSubtarefa / useRemoverSubtarefa / useCriarComentario', () => {
+  beforeEach(() => vi.resetAllMocks())
+
+  it('useCriarSubtarefa chama o serviço com a posição informada', async () => {
+    vi.mocked(servico.criarSubtarefa).mockResolvedValue({ id: 's2' } as never)
+    const { wrapper } = criarWrapper()
+    const { result } = renderHook(() => useCriarSubtarefa('t1'), { wrapper })
+
+    result.current.mutate({ title: 'Nova subtarefa', position: 1 })
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(servico.criarSubtarefa).toHaveBeenCalledWith('t1', 'Nova subtarefa', 1)
+  })
+
+  it('useRemoverSubtarefa chama o serviço com o id', async () => {
+    vi.mocked(servico.removerSubtarefa).mockResolvedValue(undefined)
+    const { wrapper } = criarWrapper()
+    const { result } = renderHook(() => useRemoverSubtarefa('t1'), { wrapper })
+
+    result.current.mutate('s1')
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(servico.removerSubtarefa).toHaveBeenCalledWith('s1')
+  })
+
+  it('useCriarComentario repassa o authorId de quem chama, não conhece auth sozinho', async () => {
+    vi.mocked(servico.criarComentario).mockResolvedValue({ id: 'c1' } as never)
+    const { wrapper } = criarWrapper()
+    const { result } = renderHook(() => useCriarComentario('t1'), { wrapper })
+
+    result.current.mutate({ authorId: 'u1', body: 'Comentário' })
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(servico.criarComentario).toHaveBeenCalledWith('t1', 'u1', 'Comentário')
   })
 })
