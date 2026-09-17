@@ -7,6 +7,7 @@ import {
   buscarGruposComTarefas,
   buscarMembros,
   buscarTarefaDetalhe,
+  buscarWorkspaceAtual,
   criarComentario,
   criarSubtarefa,
   criarTarefa,
@@ -20,10 +21,15 @@ import type { GroupComTarefas, Subtask, TaskComDetalhe } from '@/types/domain'
  * invalidar, uma delas esta escrita diferente e o cache nao atualiza.
  */
 const chaves = {
+  workspace: ['workspace'] as const,
   board: ['board'] as const,
   membros: ['membros'] as const,
   grupos: (boardId: string) => ['grupos', boardId] as const,
   tarefa: (taskId: string) => ['tarefa', taskId] as const,
+}
+
+export function useWorkspaceAtual() {
+  return useQuery({ queryKey: chaves.workspace, queryFn: buscarWorkspaceAtual })
 }
 
 export function useBoardAtual() {
