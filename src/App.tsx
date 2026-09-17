@@ -10,9 +10,10 @@ import KanbanPage from '@/pages/KanbanPage'
 import LoginPage from '@/pages/LoginPage'
 import NaoEncontrada from '@/pages/NaoEncontrada'
 
-// Gantt (e Dashboard, quando existir) carregam por rota — nao pesam na
-// primeira tela (docs/specs.md, requisito de performance).
+// Gantt e Dashboard carregam por rota — nao pesam na primeira tela
+// (docs/specs.md, requisito de performance).
 const GanttPage = lazy(() => import('@/pages/GanttPage'))
+const DashboardPage = lazy(() => import('@/pages/DashboardPage'))
 
 const carregandoRota = (
   <StateView estado={{ tipo: 'carregando' }}>
@@ -47,6 +48,14 @@ export default function App() {
                   element={
                     <Suspense fallback={carregandoRota}>
                       <GanttPage />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <Suspense fallback={carregandoRota}>
+                      <DashboardPage />
                     </Suspense>
                   }
                 />

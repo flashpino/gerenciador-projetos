@@ -15,8 +15,7 @@ const VIEWS: ItemTab[] = [
   { id: '/', rotulo: 'Tabela Principal', href: '/' },
   { id: '/kanban', rotulo: 'Kanban', href: '/kanban' },
   { id: '/gantt', rotulo: 'Gantt', href: '/gantt' },
-  // F4 (Dashboard) acrescenta sua linha aqui quando existir.
-  // Aba que leva a 404 é pior que aba ausente.
+  { id: '/dashboard', rotulo: 'Dashboard', href: '/dashboard' },
 ]
 
 interface Props {
