@@ -8,8 +8,6 @@
     "scripts/**/*.mjs"
   ],
   "ignoreDependencies": [
-    "@dnd-kit/sortable",
-    "@dnd-kit/utilities",
     "vite-plugin-pwa"
   ]
 }
