@@ -18,12 +18,13 @@ const RAIO = 15.9155
 export function StatusDonut({ fatias }: Props) {
   if (fatias.length === 0) return null
 
-  let acumulado = 0
-  const arcos = fatias.map((f) => {
-    const offset = -acumulado
-    acumulado += f.percentual
-    return { ...f, offset }
-  })
+  const { arcos } = fatias.reduce<{ acumulado: number; arcos: (FatiaStatus & { offset: number })[] }>(
+    (estado, f) => ({
+      acumulado: estado.acumulado + f.percentual,
+      arcos: [...estado.arcos, { ...f, offset: -estado.acumulado }],
+    }),
+    { acumulado: 0, arcos: [] },
+  )
   const total = fatias.reduce((soma, f) => soma + f.quantidade, 0)
 
   return (
