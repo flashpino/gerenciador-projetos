@@ -8,10 +8,8 @@
     "scripts/**/*.mjs"
   ],
   "ignoreDependencies": [
-    "axe-core",
     "@dnd-kit/sortable",
     "@dnd-kit/utilities",
-    "vite-plugin-pwa",
-    "vitest-axe"
+    "vite-plugin-pwa"
   ]
 }

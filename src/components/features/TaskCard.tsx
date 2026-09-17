@@ -49,7 +49,10 @@ export function TaskCard({ task, membros, aoMover, aoAbrir }: Props) {
   })
 
   return (
-    <article
+    // div, não <article>: ARIA-in-HTML não permite role="group" em <article>
+    // (achado do axe em src/test/a11y.test.tsx, regra aria-allowed-role). O
+    // role="group" em si é deliberado — ver comentário acima sobre dnd-kit.
+    <div
       ref={setNodeRef}
       {...attributes}
       {...listeners}
@@ -106,6 +109,6 @@ export function TaskCard({ task, membros, aoMover, aoAbrir }: Props) {
           className="ml-auto w-16"
         />
       </div>
-    </article>
+    </div>
   )
 }

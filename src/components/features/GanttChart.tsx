@@ -77,7 +77,11 @@ export function GanttChart({ grupos }: Props) {
                   className="sticky left-0 z-10 flex shrink-0 items-center truncate border-r border-border bg-surface-2 px-space-md py-space-xs"
                   style={{ width: LARGURA_NOMES }}
                 >
-                  <h3 className="truncate text-label font-semibold text-ink">{g.name}</h3>
+                  {/* h2, não h3: a página (BoardShell) já usa h1 para o título do
+                      board; TaskGroup (Tabela Principal) usa h2 para o mesmo nível
+                      de grupo — pular para h3 aqui quebrava a ordem de headings
+                      (achado do axe em src/test/a11y.test.tsx, regra heading-order). */}
+                  <h2 className="truncate text-label font-semibold text-ink">{g.name}</h2>
                 </div>
                 <div style={{ width: larguraTimeline }} />
               </div>

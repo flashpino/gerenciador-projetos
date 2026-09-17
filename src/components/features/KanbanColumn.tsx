@@ -29,9 +29,12 @@ export function KanbanColumn({ coluna, membros, aoMover, aoAbrir, className }: P
       )}
     >
       <header className="mb-space-sm flex items-center gap-space-sm px-space-xs">
-        <h3 id={`col-${coluna.status}`} className="text-subtitle">
+        {/* h2, não h3: mesma correção de GanttChart.tsx — nenhuma h2 existe
+            entre o h1 da página (BoardShell) e este cabeçalho de coluna
+            (achado do axe em src/test/a11y.test.tsx, regra heading-order). */}
+        <h2 id={`col-${coluna.status}`} className="text-subtitle">
           {coluna.rotulo}
-        </h3>
+        </h2>
         <Badge variant="soft">
           <span className="sr-only">{n} {n === 1 ? 'tarefa' : 'tarefas'}</span>
           <span aria-hidden="true">{n}</span>
