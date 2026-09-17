@@ -31,5 +31,19 @@ export const PRIORIDADE: Record<TaskPriority, { rotulo: string; classe: string }
 
 export const PRIORIDADES: readonly TaskPriority[] = ['low', 'medium', 'high', 'critical']
 
+/**
+ * Cor do arco do StatusDonut, por status. Aponta para a MESMA variavel CSS
+ * que STATUS[s].classe usa via Tailwind — fonte unica, sem duplicar hex aqui.
+ * SVG nao aceita classe Tailwind em `stroke`, so string de cor — por isso
+ * este mapa existe separado de STATUS.classe.
+ */
+export const CORES_STATUS: Record<TaskStatus, string> = {
+  not_started: 'var(--color-status-not-started)',
+  working: 'var(--color-status-working)',
+  review: 'var(--color-status-review)',
+  done: 'var(--color-status-done)',
+  stuck: 'var(--color-status-stuck)',
+}
+
 export const rotuloStatus = (s: TaskStatus): string => STATUS[s].rotulo
 export const rotuloPrioridade = (p: TaskPriority): string => PRIORIDADE[p].rotulo

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ORDEM_STATUS, PRIORIDADES, STATUS, rotuloPrioridade, rotuloStatus } from './status'
+import { CORES_STATUS, ORDEM_STATUS, PRIORIDADES, STATUS, rotuloPrioridade, rotuloStatus } from './status'
 
 describe('STATUS', () => {
   it('cobre exatamente os 5 valores do enum do banco', () => {
@@ -32,5 +32,19 @@ describe('STATUS', () => {
   it('a ordem do kanban comeca em nao iniciado e termina em travado', () => {
     expect(ORDEM_STATUS[0]).toBe('not_started')
     expect(ORDEM_STATUS.at(-1)).toBe('stuck')
+  })
+})
+
+describe('CORES_STATUS', () => {
+  it('cobre exatamente os 5 valores do enum do banco', () => {
+    expect(Object.keys(CORES_STATUS).toSorted()).toEqual(
+      ['done', 'not_started', 'review', 'stuck', 'working'],
+    )
+  })
+
+  it('aponta para variavel CSS, nunca cor literal — mesma fonte unica que STATUS.classe', () => {
+    for (const s of ORDEM_STATUS) {
+      expect(CORES_STATUS[s]).toMatch(/^var\(--color-status-/)
+    }
   })
 })
