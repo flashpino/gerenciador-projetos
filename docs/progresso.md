@@ -13,7 +13,7 @@ Fonte da verdade dos critérios: `docs/specs.md` seção 3.
 | F1 | Tabela Principal | ✅ concluída |
 | F2 | Kanban | ✅ concluída |
 | F3 | Cronograma Gantt | 🟡 código escrito e `npm run verify` verde — aguardando revisão e commit |
-| F4 | Dashboard de Métricas | ⬜ não iniciada |
+| F4 | Dashboard de Métricas | ✅ concluída (bloco A) — commit `c739e2a` |
 | F5 | Detalhe da Tarefa (modal) | ✅ concluída — commit `a529625` |
 
 **Infra:** migrations `0001_init` + `0002_advisors` aplicadas, RLS testado (3 blocos OK).
@@ -63,8 +63,20 @@ Critérios F2.1–F2.6 do specs.md — drag via dnd-kit + alternativa por teclad
 
 **Desvios do planejado, registrados no `docs/components.md`:** `GanttScale` nunca virou arquivo — é `<Tabs variant="pill">` direto, sem wrapper. `GanttChart` não compõe `StateView` — quem trata os 4 estados é `GanttPage`, mesmo padrão de `BoardPage`/`KanbanPage`.
 
-## F4 — Dashboard de Métricas ⬜
-Nenhum arquivo criado ainda.
+## F4 — Dashboard de Métricas ✅ (bloco A)
+
+- [x] `lib/status.ts` — `CORES_STATUS`, cor por status compartilhada com o donut
+- [x] `features/MetricTile.tsx` + teste — KPI com selo de atenção e barra de progresso opcionais
+- [x] `features/StatusDonut.tsx` + teste — anel via SVG puro (`stroke-dasharray`), sem lib de gráfico de terceiros
+- [x] `features/GroupProgressList.tsx` + teste — uma linha por grupo, progresso médio das tarefas dele
+- [x] `pages/DashboardPage.tsx`, rota `/dashboard` com `React.lazy` (code splitting, requisito não-funcional do specs.md), aba "Dashboard" em `BoardShell`
+- [x] Critério F4.1 — taxa de conclusão, atrasadas e distribuição por status, todas derivadas das tarefas reais (testado em `lib/metrics.test.ts`)
+- [x] Critério F4.2 — a distribuição do donut também está disponível em texto ao lado do gráfico, não só visualmente (testado em `StatusDonut.test.tsx`)
+- [x] Critério F4.3 — board/grupo sem nenhuma tarefa mostra estado vazio ("Nenhuma tarefa ainda"), nunca "0%"/"NaN" — `DashboardPage` monta o `estadoDaQuery` sobre a lista de TAREFAS achatada (`flatMap` dos grupos), não sobre a lista de grupos, porque um board pode ter grupos vazios e ainda assim precisar do estado vazio
+- [x] Critério F4.4 — taxa de conclusão arredondada a uma casa decimal; percentuais da distribuição somam exatamente 100% (método do maior resto, testado em `lib/metrics.test.ts`)
+- [x] Revisão + commit — `c739e2a` (página/rota/aba); `4e77ba9` corrigiu, antes disso, um lint pré-existente em `StatusDonut.tsx` (variável mutável reatribuída durante o render)
+
+**Cortado do stitch (`arquivos stitch/quadro_de_projetos_dashboard_de_m_tricas`), fora de `docs/specs.md`:** feed de atividades no dashboard, carga de trabalho/capacidade da equipe (Zona Vermelha) e filtros de período/sprint — ver `docs/specs.md`, seção "Fora de escopo da v1", que já registra o porquê de cada corte.
 
 ## F5 — Detalhe da Tarefa (modal) ✅
 
