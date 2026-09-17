@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import type { GroupComTarefas, Task } from '@/types/domain'
+import type { GroupComTarefas } from '@/types/domain'
 import { criarWrapper } from '@/test/query'
+import { criarTarefaFixture as tarefa } from '@/test/fixtures'
 
 vi.mock('@/services/boards', () => ({
   buscarBoardAtual: vi.fn(),
@@ -13,16 +14,6 @@ vi.mock('@/services/auth', () => ({ sair: vi.fn() }))
 
 import * as servico from '@/services/boards'
 import DashboardPage from './DashboardPage'
-
-function tarefa(extra: Partial<Task> = {}): Task {
-  return {
-    id: crypto.randomUUID(), board_id: 'b1', group_id: 'g1', title: 't',
-    description: null, status: 'working', priority: 'medium', assignee_id: null,
-    start_date: null, due_date: null, progress: 0, estimated_hours: null,
-    logged_hours: null, is_milestone: false, tags: [], position: 0,
-    created_at: '', updated_at: '', ...extra,
-  }
-}
 
 function renderizar() {
   const { wrapper: QueryWrapper } = criarWrapper()
