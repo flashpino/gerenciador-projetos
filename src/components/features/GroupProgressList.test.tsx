@@ -25,8 +25,8 @@ describe('GroupProgressList', () => {
     render(<GroupProgressList grupos={[grupo('Backend', [40, 60]), grupo('Frontend', [100])]} />)
 
     expect(screen.getByText('Backend')).toBeInTheDocument()
-    expect(screen.getByText('50%')).toBeInTheDocument()
     expect(screen.getByText('Frontend')).toBeInTheDocument()
-    expect(screen.getByText('100%')).toBeInTheDocument()
+    expect(screen.getByRole('progressbar', { name: 'Progresso de Backend' })).toHaveAttribute('value', '50')
+    expect(screen.getByRole('progressbar', { name: 'Progresso de Frontend' })).toHaveAttribute('value', '100')
   })
 })

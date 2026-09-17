@@ -18,7 +18,7 @@ export function GroupProgressList({ grupos }: Props) {
               <span className="font-semibold">{g.name}</span>
               <span className="text-ink-muted">{progresso}%</span>
             </div>
-            <ProgressBar label={`Progresso de ${g.name}`} />
+            <ProgressBar value={progresso} label={`Progresso de ${g.name}`} />
           </li>
         )
       })}
