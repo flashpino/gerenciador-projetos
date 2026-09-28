@@ -8,6 +8,8 @@ import { criarWrapper } from '@/test/query'
 vi.mock('@/services/boards', () => ({
   buscarWorkspaceAtual: vi.fn(),
   buscarMembros: vi.fn(),
+  criarBoard: vi.fn(),
+  renomearBoard: vi.fn(),
 }))
 vi.mock('@/services/auth', () => ({ sair: vi.fn() }))
 vi.mock('@/hooks/useSessao', () => ({ useSessao: vi.fn() }))
@@ -84,5 +86,23 @@ describe('Sidebar', () => {
 
     fireEvent.click(dialog)
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('"Novo Painel" abre o formulário de criação e cria no workspace atual', async () => {
+    vi.mocked(servico.criarBoard).mockResolvedValue({ id: 'b9', name: 'Roadmap', created_at: '' })
+    const user = userEvent.setup()
+    renderizar()
+
+    const botao = await screen.findByRole('button', { name: 'Novo Painel' })
+    expect(botao).toBeEnabled()
+    await user.click(botao)
+
+    await screen.findByRole('dialog', { name: 'Novo painel' })
+    await user.type(screen.getByLabelText('Nome do painel'), 'Roadmap')
+    const criar = await screen.findByRole('button', { name: 'Criar painel' })
+    await vi.waitFor(() => expect(criar).toBeEnabled())
+    await user.click(criar)
+
+    expect(servico.criarBoard).toHaveBeenCalledWith('w1', 'Roadmap')
   })
 })

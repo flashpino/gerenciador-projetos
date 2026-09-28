@@ -19,6 +19,7 @@ import { cn } from '@/lib/cn'
 import { useMembros, useWorkspaceAtual } from '@/hooks/useQuadro'
 import { useSessao } from '@/hooks/useSessao'
 import { sair } from '@/services/auth'
+import { BoardFormModal } from './BoardFormModal'
 
 interface ItemNav {
   href: string
@@ -58,6 +59,7 @@ function classeRotulo(tipo: 'aside' | 'drawer') {
  */
 export function Sidebar() {
   const [aberto, setAberto] = useState(false)
+  const [criandoBoard, setCriandoBoard] = useState(false)
   const { pathname } = useLocation()
   const workspace = useWorkspaceAtual()
   const membros = useMembros()
@@ -100,8 +102,11 @@ export function Sidebar() {
             size="sm"
             className="w-full justify-start"
             iconStart={<Plus aria-hidden="true" className="size-4" />}
-            disabled
-            aria-label="Criar novo painel — em breve"
+            onClick={() => {
+              // Fecha o drawer antes: dois <dialog> modais empilhados no mobile.
+              setAberto(false)
+              setCriandoBoard(true)
+            }}
           >
             <span className={rotulo}>Novo Painel</span>
           </Button>
@@ -158,6 +163,9 @@ export function Sidebar() {
       <Modal size="drawer" open={aberto} onClose={() => setAberto(false)} title={workspace.data?.name ?? 'Workspace'}>
         <div className="flex min-h-full flex-col bg-sidebar">{conteudo('drawer')}</div>
       </Modal>
+
+      {/* Fora de conteudo(): ele renderiza duas vezes (aside + drawer) e o formulário é um só. */}
+      <BoardFormModal aberto={criandoBoard} aoFechar={() => setCriandoBoard(false)} board={null} />
     </>
   )
 }
