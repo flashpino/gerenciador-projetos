@@ -13,10 +13,14 @@ interface Props {
   size?: Tamanho
 }
 
+// `m-auto` nos três centralizados: o preflight do Tailwind zera o margin de
+// todo elemento, inclusive o `margin: auto` nativo que centraliza o <dialog>.
+// Sem ele o modal abre colado no canto superior esquerdo (visto no navegador;
+// invisível no jsdom, que roda com `css: false`).
 const TAMANHOS: Record<Tamanho, string> = {
-  md: 'w-[min(28rem,calc(100vw-2rem))]',
-  lg: 'w-[min(42rem,calc(100vw-2rem))]',
-  full: 'h-[calc(100vh-2rem)] w-[calc(100vw-2rem)]',
+  md: 'm-auto w-[min(28rem,calc(100vw-2rem))]',
+  lg: 'm-auto w-[min(42rem,calc(100vw-2rem))]',
+  full: 'm-auto h-[calc(100vh-2rem)] w-[calc(100vw-2rem)]',
   // Ocupa a lateral inteira — usado pelo drawer de navegação em 375px
   // (docs/responsive.md:38, docs/superpowers/specs/2026-09-17-casca-
   // sidebar-design.md). Mesmo <dialog>, trap de foco e Esc de graça; só a
