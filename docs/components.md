@@ -89,7 +89,7 @@ passam por `src/hooks/` → `src/services/`.
 
 | Componente | Compõe | Vive em |
 |---|---|---|
-| `BoardShell` | Tabs, Button | todas as 4 views (layout comum + ícones desabilitados da barra superior — Sair mora na Sidebar) |
+| `BoardShell` | Tabs, Button, FavoritoToggle | todas as 4 views (layout comum + estrela de favorito + ícones desabilitados da barra superior — Sair mora na Sidebar) |
 | `StatusCell` | Badge, Menu | tabela, kanban, modal |
 | `PriorityCell` | Badge, Menu | tabela, modal |
 | `AssigneeCell` | Avatar, Menu | tabela, kanban, modal |
@@ -110,7 +110,8 @@ passam por `src/hooks/` → `src/services/`.
 | `CommentList` | Avatar, TextInput, StateView | TaskModal |
 | `AppShell` | Sidebar | container de toda rota autenticada (docs/superpowers/specs/2026-09-17-casca-sidebar-design.md) |
 | `Sidebar` | Avatar, Button, Modal (`drawer`) | identidade do workspace, nav, rodapé — dentro do AppShell |
-| `EmConstrucaoPage` | StateView | 6 rotas "em construção" (Favoritos, Atividades, Modelos, Notificações, Ajuda, Configurações) |
+| `EmConstrucaoPage` | StateView | 5 rotas "em construção" (Atividades, Modelos, Notificações, Ajuda, Configurações) |
+| `FavoritoToggle` | Button (`ghost`, `iconOnly`) | estrela de favorito autossuficiente (lê e alterna sozinha) — BoardShell e BoardCard |
 | `BoardCard` | Menu | um board em Meus Painéis — link pro board + menu Renomear/Excluir |
 | `BoardFormModal` | Modal, Field, TextInput, Button | criar e renomear board (PaineisPage, Sidebar) — mesma dualidade criar/editar do TaskModal |
 | `ExcluirBoardDialog` | Modal, Field, TextInput, Button (`danger`) | exclusão definitiva de board, confirmada digitando o nome. Separado do BoardFormModal: regra destrutiva diferente, nada em comum além do Modal |

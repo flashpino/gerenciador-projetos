@@ -11,6 +11,7 @@
 > |---|---|
 > | `0001_init` | schema, 9 tabelas, índices, triggers, RLS |
 > | `0002_advisors` | correções dos advisors (ver "Advisors" abaixo) |
+> | `0003_board_favorites` | favoritos por pessoa — aplicada pelo humano em 2026-09-28; RLS verificado pela API (6 checagens OK) |
 >
 > O teste de isolamento passou nos 3 blocos **depois** do 0002.
 
@@ -23,7 +24,7 @@ DevTools. Isso é por design e é seguro — **desde que** o Row Level Security 
 ativo. Uma tabela sem RLS com a anon key exposta significa que qualquer pessoa na
 internet lê o banco inteiro. Esse é o vazamento padrão de app vibecoded com Supabase.
 
-Por isso: **9 tabelas, 9 `enable row level security`, zero exceção.**
+Por isso: **10 tabelas, 10 `enable row level security`, zero exceção.**
 
 ---
 
@@ -113,6 +114,7 @@ não paga leitura nenhuma.
 | `comments (task_id, created_at desc)` | conversa do modal, mais recente primeiro |
 | `groups (board_id, position)` | ordem dos grupos |
 | `workspace_members (user_id)` | a função `is_workspace_member`, chamada em toda policy |
+| `board_favorites (board_id)` | cascata ao excluir um board (a PK `(user_id, board_id)` já serve "meus favoritos") |
 
 O último é o mais importante para performance: `is_workspace_member` roda em cada
 linha avaliada por política. Sem esse índice, todo o RLS fica lento de uma vez.
@@ -363,7 +365,7 @@ Rodados após cada migration (`get_advisors`, tipos `security` e `performance`).
 Antes de aplicar, leia o `.up.sql` e confirme cada item **olhando o código**:
 
 ```
-[ ] Todas as 9 tabelas têm `enable row level security`
+[ ] Todas as 10 tabelas têm `enable row level security`
 [ ] Nenhuma política usa `to public` ou `using (true)`
 [ ] `is_workspace_member` tem `set search_path = public`
 [ ] `handle_new_user` tem `set search_path = public`

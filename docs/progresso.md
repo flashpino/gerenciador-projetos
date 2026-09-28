@@ -113,6 +113,17 @@ Spec: `docs/superpowers/specs/2026-09-25-multiplos-boards-design.md` · Plano: `
 **Cortado:** arquivar (exigiria migration), contagem de tarefas no card, reordenar boards.
 **Limitação aceita:** o bloqueio de excluir o último board é só no cliente.
 
+## Sub-projeto 3/6 — Favoritos ✅
+
+Spec: `docs/superpowers/specs/2026-09-28-favoritos-design.md` · Plano: `docs/superpowers/plans/2026-09-28-favoritos.md`
+
+- [x] Migration `0003_board_favorites` (Zona Vermelha): escrita pelo agente, aplicada pelo humano; RLS verificado pela API real com as contas A e B
+- [x] Estrela de favorito no título do board e no card de Meus Painéis (update otimista, volta se o servidor recusar)
+- [x] `/favoritos` lista os favoritos, com estado vazio próprio
+- [x] Favorito por pessoa — `user_id default auth.uid()`, o cliente não afirma quem é
+
+**Cortado:** atalhos de favoritos na Sidebar, ordenar favoritos, favoritar tarefa.
+
 ---
 
 ## Como isto é mantido
