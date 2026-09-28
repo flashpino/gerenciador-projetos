@@ -121,7 +121,9 @@ describe('Acessibilidade automatizada (axe) — telas principais do MVP', () => 
     const { container, findAllByText } = renderComProviders(<BoardPage />)
     await findAllByText('Refatorar arquitetura')
     expect(await axe(container)).toHaveNoViolations()
-  })
+    // Mesmo motivo do Gantt abaixo: sob `test:cov` o scan das duas árvores
+    // passa dos 5s padrão (medido 5.9s). Timeout, não asserção.
+  }, 30_000)
 
   it('KanbanPage (F2) não tem violação WCAG', async () => {
     const { container, findByText } = renderComProviders(<KanbanPage />)
