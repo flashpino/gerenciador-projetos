@@ -5,6 +5,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { criarWrapper } from '@/test/query'
 
 vi.mock('@/services/boards', () => ({
+  buscarFavoritos: vi.fn(),
+  favoritar: vi.fn(),
+  desfavoritar: vi.fn(),
   buscarBoards: vi.fn(),
   buscarWorkspaceAtual: vi.fn(),
   criarBoard: vi.fn(),
@@ -34,6 +37,7 @@ function renderizar() {
 describe('PaineisPage', () => {
   beforeEach(() => {
     vi.resetAllMocks()
+    vi.mocked(servico.buscarFavoritos).mockResolvedValue([])
     vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace' })
   })
 

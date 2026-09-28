@@ -2,6 +2,15 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
+import { criarWrapper } from '@/test/query'
+
+// Sem resetAllMocks neste arquivo, então o valor do factory persiste.
+vi.mock('@/services/boards', () => ({
+  buscarFavoritos: vi.fn().mockResolvedValue(['b1']),
+  favoritar: vi.fn(),
+  desfavoritar: vi.fn(),
+}))
+
 import { BoardCard } from './BoardCard'
 
 const BOARD = { id: 'b1', name: 'Sprint Alpha', created_at: '2026-09-01T10:00:00Z' }
@@ -9,15 +18,24 @@ const BOARD = { id: 'b1', name: 'Sprint Alpha', created_at: '2026-09-01T10:00:00
 function renderizar() {
   const aoRenomear = vi.fn()
   const aoExcluir = vi.fn()
+  const { wrapper: QueryWrapper } = criarWrapper()
   render(
-    <MemoryRouter>
-      <BoardCard board={BOARD} aoRenomear={aoRenomear} aoExcluir={aoExcluir} />
-    </MemoryRouter>,
+    <QueryWrapper>
+      <MemoryRouter>
+        <BoardCard board={BOARD} aoRenomear={aoRenomear} aoExcluir={aoExcluir} />
+      </MemoryRouter>
+    </QueryWrapper>,
   )
   return { aoRenomear, aoExcluir }
 }
 
 describe('BoardCard', () => {
+  it('mostra a estrela de favorito do board, já marcada quando favoritado', async () => {
+    renderizar()
+    const estrela = await screen.findByRole('button', { name: 'Favoritar Sprint Alpha' })
+    await vi.waitFor(() => expect(estrela).toHaveAttribute('aria-pressed', 'true'))
+  })
+
   it('o card é um link para o board', () => {
     renderizar()
     expect(screen.getByRole('link', { name: /Sprint Alpha/ })).toHaveAttribute('href', '/boards/b1')

@@ -3,6 +3,7 @@ import { EllipsisVertical } from 'lucide-react'
 import { Menu } from '@/components/ui/Menu'
 import { tempoRelativo } from '@/lib/date'
 import type { Board } from '@/types/domain'
+import { FavoritoToggle } from './FavoritoToggle'
 
 interface Props {
   board: Board
@@ -24,6 +25,8 @@ export function BoardCard({ board, aoRenomear, aoExcluir }: Props) {
         <span className="truncate text-title text-ink">{board.name}</span>
         <span className="text-label text-ink-muted">Criado {tempoRelativo(board.created_at)}</span>
       </Link>
+
+      <FavoritoToggle boardId={board.id} nome={board.name} />
 
       <Menu
         rotulo={`Ações de ${board.name}`}

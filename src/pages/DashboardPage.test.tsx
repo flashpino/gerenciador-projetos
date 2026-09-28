@@ -6,6 +6,7 @@ import { criarWrapper } from '@/test/query'
 import { criarTarefaFixture as tarefa } from '@/test/fixtures'
 
 vi.mock('@/services/boards', () => ({
+  buscarFavoritos: vi.fn(),
   buscarBoard: vi.fn(),
   buscarGruposComTarefas: vi.fn(),
   buscarMembros: vi.fn(),
@@ -29,7 +30,10 @@ function renderizar() {
 }
 
 describe('DashboardPage', () => {
-  beforeEach(() => vi.resetAllMocks())
+  beforeEach(() => {
+    vi.resetAllMocks()
+    vi.mocked(servico.buscarFavoritos).mockResolvedValue([])
+  })
 
   it('F4.3: board com grupo presente mas sem tarefas mostra o estado vazio, não 0%/NaN', async () => {
     vi.mocked(servico.buscarBoard).mockResolvedValue({ id: 'b1', name: 'Meu Board' })

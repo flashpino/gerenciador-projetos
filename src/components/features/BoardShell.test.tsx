@@ -1,20 +1,36 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { criarWrapper } from '@/test/query'
+
+vi.mock('@/services/boards', () => ({
+  buscarFavoritos: vi.fn(),
+  favoritar: vi.fn(),
+  desfavoritar: vi.fn(),
+}))
+
+import * as servico from '@/services/boards'
 import { BoardShell } from './BoardShell'
 
 function renderizar(rota = '/boards/b1') {
+  const { wrapper: QueryWrapper } = criarWrapper()
   return render(
-    <MemoryRouter initialEntries={[rota]}>
-      <Routes>
-        <Route path="/boards/:boardId/*" element={<BoardShell titulo="Sprint Alpha">conteudo</BoardShell>} />
-      </Routes>
-    </MemoryRouter>,
+    <QueryWrapper>
+      <MemoryRouter initialEntries={[rota]}>
+        <Routes>
+          <Route path="/boards/:boardId/*" element={<BoardShell titulo="Sprint Alpha">conteudo</BoardShell>} />
+        </Routes>
+      </MemoryRouter>
+    </QueryWrapper>,
   )
 }
 
 describe('BoardShell', () => {
-  beforeEach(() => localStorage.clear())
+  beforeEach(() => {
+    localStorage.clear()
+    vi.resetAllMocks()
+    vi.mocked(servico.buscarFavoritos).mockResolvedValue([])
+  })
 
   it('abas apontam para as views DESTE board', () => {
     renderizar()
@@ -34,10 +50,15 @@ describe('BoardShell', () => {
     expect(localStorage.getItem('ultimoBoardId')).toBe('b1')
   })
 
-  it('mostra os ícones da barra superior desabilitados, cada um com aria-label explicando o motivo', () => {
+  it('estrela de favorito funcional, com o nome do board', async () => {
+    renderizar()
+    const estrela = await screen.findByRole('button', { name: 'Favoritar Sprint Alpha' })
+    expect(estrela).toHaveAttribute('aria-pressed', 'false')
+  })
+
+  it('os ícones ainda não implementados seguem desabilitados, com o motivo', () => {
     renderizar()
     for (const nome of [
-      'Favoritar — em breve',
       'Buscar neste quadro — em breve',
       'Filtrar — em breve',
       'Convidar integrantes — em breve',

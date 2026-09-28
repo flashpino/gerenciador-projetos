@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { criarWrapper } from '@/test/query'
 
 vi.mock('@/services/boards', () => ({
+  buscarFavoritos: vi.fn(),
   buscarBoard: vi.fn(),
   buscarGruposComTarefas: vi.fn(),
   buscarMembros: vi.fn(),
@@ -26,6 +27,7 @@ const PAGINAS: [string, ComponentType][] = [
 describe('board da URL que não existe mais (apagado, ou de outro workspace)', () => {
   beforeEach(() => {
     vi.resetAllMocks()
+    vi.mocked(servico.buscarFavoritos).mockResolvedValue([])
     vi.mocked(servico.buscarBoard).mockRejectedValue(new Error('Não encontrado.'))
     vi.mocked(servico.buscarGruposComTarefas).mockResolvedValue([])
     vi.mocked(servico.buscarMembros).mockResolvedValue([])

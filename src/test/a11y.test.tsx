@@ -23,6 +23,7 @@ import { criarTarefaFixture as tarefa } from '@/test/fixtures'
  */
 
 vi.mock('@/services/boards', () => ({
+  buscarFavoritos: vi.fn(),
   buscarBoard: vi.fn(),
   buscarBoards: vi.fn(),
   buscarWorkspaceAtual: vi.fn(),
@@ -96,6 +97,7 @@ function renderComProviders(ui: React.ReactElement) {
 describe('Acessibilidade automatizada (axe) — telas principais do MVP', () => {
   beforeEach(() => {
     vi.resetAllMocks()
+    vi.mocked(servico.buscarFavoritos).mockResolvedValue([])
     vi.mocked(servico.buscarBoard).mockResolvedValue({ id: 'b1', name: 'Sprint Alpha Q3' })
     vi.mocked(servico.buscarGruposComTarefas).mockResolvedValue(grupos())
     vi.mocked(servico.buscarMembros).mockResolvedValue(MEMBROS)

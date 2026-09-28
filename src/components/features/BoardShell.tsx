@@ -1,9 +1,10 @@
 import { useEffect, type ReactNode } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
-import { Filter, Plus, Search, Star, UserPlus } from 'lucide-react'
+import { Filter, Plus, Search, UserPlus } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Tabs, type ItemTab } from '@/components/ui/Tabs'
 import { lembrarUltimoBoard } from '@/lib/ultimoBoard'
+import { FavoritoToggle } from './FavoritoToggle'
 
 interface Props {
   titulo: string
@@ -38,22 +39,15 @@ export function BoardShell({ titulo, children }: Props) {
       <div className="mb-gutter flex items-center justify-between gap-space-md">
         <h1 className="text-display">{titulo}</h1>
         {/*
-          Ícones do Stitch (favoritar/buscar/filtrar/convidar/novo item),
-          todos desabilitados por enquanto — cada um liga quando chegar a
-          vez do seu sub-projeto ou item da auditoria
+          Ícones do Stitch (buscar/filtrar/convidar/novo item) desabilitados
+          por enquanto — a estrela de favorito já funciona (sub-projeto 3).
+          Cada um liga quando chegar a vez do seu sub-projeto ou item da auditoria
           (docs/superpowers/specs/2026-09-17-casca-sidebar-design.md,
           seção "Barra superior do board"). "Sair" saiu daqui — mora no
           rodapé da Sidebar agora (docs/components.md, nota de BoardShell).
         */}
         <div className="flex items-center gap-space-xs">
-          <Button
-            variant="ghost"
-            size="sm"
-            iconOnly
-            disabled
-            aria-label="Favoritar — em breve"
-            iconStart={<Star aria-hidden="true" className="size-4" />}
-          />
+          <FavoritoToggle boardId={boardId} nome={titulo} />
           <Button
             variant="ghost"
             size="sm"
