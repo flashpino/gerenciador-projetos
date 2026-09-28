@@ -4,11 +4,9 @@ import { Field } from '@/components/ui/Field'
 import { Modal } from '@/components/ui/Modal'
 import { TextInput } from '@/components/ui/TextInput'
 import { useExcluirBoard } from '@/hooks/useQuadro'
+import type { Board } from '@/types/domain'
 
-interface BoardAlvo {
-  id: string
-  name: string
-}
+type BoardAlvo = Pick<Board, 'id' | 'name'>
 
 interface Props {
   /** null = fechado. */

@@ -11,20 +11,10 @@ import type { Board } from '@/types/domain'
 
 export default function PaineisPage() {
   const boards = useBoards()
-  const [formAberto, setFormAberto] = useState(false)
-  // null com o form aberto = criando. Mesma ideia de taskIdModal em BoardPage.
-  const [boardEmEdicao, setBoardEmEdicao] = useState<Board | null>(null)
+  // null = fechado, 'novo' = criando, um Board = renomeando.
+  const [form, setForm] = useState<Board | 'novo' | null>(null)
   const [boardParaExcluir, setBoardParaExcluir] = useState<Board | null>(null)
-
-  function abrirCriacao() {
-    setBoardEmEdicao(null)
-    setFormAberto(true)
-  }
-
-  function abrirRenomear(board: Board) {
-    setBoardEmEdicao(board)
-    setFormAberto(true)
-  }
+  const abrirCriacao = () => setForm('novo')
 
   const estado = estadoDaQuery(
     boards,
@@ -58,13 +48,17 @@ export default function PaineisPage() {
         <ul className="grid grid-cols-1 gap-space-md md:grid-cols-2 lg:grid-cols-3">
           {boards.data?.map((b) => (
             <li key={b.id}>
-              <BoardCard board={b} aoRenomear={abrirRenomear} aoExcluir={setBoardParaExcluir} />
+              <BoardCard board={b} aoRenomear={setForm} aoExcluir={setBoardParaExcluir} />
             </li>
           ))}
         </ul>
       </StateView>
 
-      <BoardFormModal aberto={formAberto} aoFechar={() => setFormAberto(false)} board={boardEmEdicao} />
+      <BoardFormModal
+        aberto={form !== null}
+        aoFechar={() => setForm(null)}
+        board={form === 'novo' ? null : form}
+      />
       <ExcluirBoardDialog
         board={boardParaExcluir}
         aoFechar={() => setBoardParaExcluir(null)}

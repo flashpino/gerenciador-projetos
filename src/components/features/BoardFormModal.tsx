@@ -5,11 +5,9 @@ import { Field } from '@/components/ui/Field'
 import { Modal } from '@/components/ui/Modal'
 import { TextInput } from '@/components/ui/TextInput'
 import { useCriarBoard, useRenomearBoard, useWorkspaceAtual } from '@/hooks/useQuadro'
+import type { Board } from '@/types/domain'
 
-interface BoardEditavel {
-  id: string
-  name: string
-}
+type BoardEditavel = Pick<Board, 'id' | 'name'>
 
 interface Props {
   aberto: boolean
