@@ -9,6 +9,12 @@ export interface Profile {
   avatar_url: string | null
 }
 
+export interface Board {
+  id: string
+  name: string
+  created_at: string
+}
+
 // Nao exportado: so serve de base para GroupComTarefas, no mesmo arquivo.
 interface Group {
   id: string

@@ -3,15 +3,20 @@ import type { CamposEditaveis, NovaTarefa } from '@/services/boards'
 import {
   atualizarSubtarefa,
   atualizarTarefa,
+  buscarBoard,
   buscarBoardAtual,
+  buscarBoards,
   buscarGruposComTarefas,
   buscarMembros,
   buscarTarefaDetalhe,
   buscarWorkspaceAtual,
+  criarBoard,
   criarComentario,
   criarSubtarefa,
   criarTarefa,
+  removerBoard,
   removerSubtarefa,
+  renomearBoard,
 } from '@/services/boards'
 import type { GroupComTarefas, Subtask, TaskComDetalhe } from '@/types/domain'
 
@@ -22,7 +27,8 @@ import type { GroupComTarefas, Subtask, TaskComDetalhe } from '@/types/domain'
  */
 const chaves = {
   workspace: ['workspace'] as const,
-  board: ['board'] as const,
+  boards: ['boards'] as const,
+  board: (boardId: string) => ['board', boardId] as const,
   membros: ['membros'] as const,
   grupos: (boardId: string) => ['grupos', boardId] as const,
   tarefa: (taskId: string) => ['tarefa', taskId] as const,
@@ -33,7 +39,54 @@ export function useWorkspaceAtual() {
 }
 
 export function useBoardAtual() {
-  return useQuery({ queryKey: chaves.board, queryFn: buscarBoardAtual })
+  return useQuery({ queryKey: ['board-atual'] as const, queryFn: buscarBoardAtual })
+}
+
+export function useBoards() {
+  return useQuery({ queryKey: chaves.boards, queryFn: buscarBoards })
+}
+
+export function useBoard(boardId: string | undefined) {
+  return useQuery({
+    queryKey: chaves.board(boardId ?? ''),
+    queryFn: () => buscarBoard(boardId as string),
+    enabled: Boolean(boardId),
+  })
+}
+
+/**
+ * Criar/renomear/excluir board são ações deliberadas, com botão em `loading` —
+ * sem update otimista, mesmo motivo de useCriarTarefa.
+ */
+export function useCriarBoard() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ workspaceId, name }: { workspaceId: string; name: string }) => criarBoard(workspaceId, name),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: chaves.boards })
+    },
+  })
+}
+
+export function useRenomearBoard() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, name }: { id: string; name: string }) => renomearBoard(id, name),
+    onSuccess: (_board, { id }) => {
+      void qc.invalidateQueries({ queryKey: chaves.boards })
+      void qc.invalidateQueries({ queryKey: chaves.board(id) })
+    },
+  })
+}
+
+export function useExcluirBoard() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => removerBoard(id),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: chaves.boards })
+    },
+  })
 }
 
 export function useMembros() {

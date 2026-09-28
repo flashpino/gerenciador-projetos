@@ -16,6 +16,11 @@ vi.mock('@/services/boards', () => ({
   criarSubtarefa: vi.fn(),
   removerSubtarefa: vi.fn(),
   criarComentario: vi.fn(),
+  buscarBoards: vi.fn(),
+  buscarBoard: vi.fn(),
+  criarBoard: vi.fn(),
+  renomearBoard: vi.fn(),
+  removerBoard: vi.fn(),
 }))
 
 import type { TaskComDetalhe } from '@/types/domain'
@@ -23,11 +28,16 @@ import * as servico from '@/services/boards'
 import {
   useAtualizarSubtarefa,
   useAtualizarTarefa,
+  useBoard,
+  useBoards,
+  useCriarBoard,
   useCriarComentario,
   useCriarSubtarefa,
   useCriarTarefa,
+  useExcluirBoard,
   useGruposComTarefas,
   useRemoverSubtarefa,
+  useRenomearBoard,
   useTarefaDetalhe,
 } from './useQuadro'
 
@@ -243,5 +253,60 @@ describe('useCriarSubtarefa / useRemoverSubtarefa / useCriarComentario', () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
     expect(servico.criarComentario).toHaveBeenCalledWith('t1', 'u1', 'Comentário')
+  })
+})
+
+describe('boards — lista, um board e CRUD', () => {
+  beforeEach(() => vi.resetAllMocks())
+
+  it('useBoards devolve a lista na ordem que o serviço entregou', async () => {
+    vi.mocked(servico.buscarBoards).mockResolvedValue([
+      { id: 'b1', name: 'Sprint Alpha', created_at: '2026-09-01T10:00:00Z' },
+      { id: 'b2', name: 'Roadmap', created_at: '2026-09-10T10:00:00Z' },
+    ])
+    const { wrapper } = criarWrapper()
+    const { result } = renderHook(() => useBoards(), { wrapper })
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(result.current.data?.map((b) => b.id)).toEqual(['b1', 'b2'])
+  })
+
+  it('useBoard não busca enquanto o boardId for indefinido', () => {
+    const { wrapper } = criarWrapper()
+    renderHook(() => useBoard(undefined), { wrapper })
+    expect(servico.buscarBoard).not.toHaveBeenCalled()
+  })
+
+  it('useCriarBoard repassa workspaceId e nome ao serviço', async () => {
+    vi.mocked(servico.criarBoard).mockResolvedValue({ id: 'b3', name: 'Novo', created_at: '' })
+    const { wrapper } = criarWrapper()
+    const { result } = renderHook(() => useCriarBoard(), { wrapper })
+
+    result.current.mutate({ workspaceId: 'w1', name: 'Novo' })
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(servico.criarBoard).toHaveBeenCalledWith('w1', 'Novo')
+  })
+
+  it('useRenomearBoard repassa id e nome', async () => {
+    vi.mocked(servico.renomearBoard).mockResolvedValue({ id: 'b1', name: 'Outro', created_at: '' })
+    const { wrapper } = criarWrapper()
+    const { result } = renderHook(() => useRenomearBoard(), { wrapper })
+
+    result.current.mutate({ id: 'b1', name: 'Outro' })
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(servico.renomearBoard).toHaveBeenCalledWith('b1', 'Outro')
+  })
+
+  it('useExcluirBoard repassa o id', async () => {
+    vi.mocked(servico.removerBoard).mockResolvedValue(undefined)
+    const { wrapper } = criarWrapper()
+    const { result } = renderHook(() => useExcluirBoard(), { wrapper })
+
+    result.current.mutate('b1')
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(servico.removerBoard).toHaveBeenCalledWith('b1')
   })
 })

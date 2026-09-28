@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import type { Comment, GroupComTarefas, Profile, Subtask, Task, TaskComDetalhe } from '@/types/domain'
+import type { Board, Comment, GroupComTarefas, Profile, Subtask, Task, TaskComDetalhe } from '@/types/domain'
 import { traduzirErro } from './erros'
 
 /**
@@ -39,6 +39,62 @@ export async function buscarWorkspaceAtual(): Promise<{ id: string; name: string
 
   if (error) throw traduzirErro(error)
   return data
+}
+
+/** Boards do workspace (RLS isola). Ordem de criação: o primeiro é o fallback da raiz `/`. */
+export async function buscarBoards(): Promise<Board[]> {
+  const { data, error } = await supabase
+    .from('boards')
+    .select('id, name, created_at')
+    .order('created_at', { ascending: true })
+
+  if (error) throw traduzirErro(error)
+  return data ?? []
+}
+
+export async function buscarBoard(id: string): Promise<{ id: string; name: string }> {
+  const { data, error } = await supabase.from('boards').select('id, name').eq('id', id).single()
+  if (error) throw traduzirErro(error)
+  return data
+}
+
+/**
+ * Board + grupo "A fazer", espelhando handle_new_user (0001_init.up.sql): sem
+ * grupo, `tasks.group_id` NOT NULL deixa o board sem onde criar tarefa. Dois
+ * inserts e não RPC — uma function atômica seria migration (Zona Vermelha).
+ */
+export async function criarBoard(workspaceId: string, name: string): Promise<Board> {
+  const { data: board, error } = await supabase
+    .from('boards')
+    .insert({ workspace_id: workspaceId, name })
+    .select('id, name, created_at')
+    .single()
+  if (error) throw traduzirErro(error)
+
+  const { error: erroGrupo } = await supabase
+    .from('groups')
+    .insert({ board_id: board.id, name: 'A fazer', color: 'azure', position: 0 })
+  if (erroGrupo) throw traduzirErro(erroGrupo)
+
+  return board
+}
+
+export async function renomearBoard(id: string, name: string): Promise<Board> {
+  const { data, error } = await supabase
+    .from('boards')
+    .update({ name })
+    .eq('id', id)
+    .select('id, name, created_at')
+    .single()
+
+  if (error) throw traduzirErro(error)
+  return data
+}
+
+/** O `on delete cascade` do schema leva grupos, tarefas, subtarefas e comentários junto. */
+export async function removerBoard(id: string): Promise<void> {
+  const { error } = await supabase.from('boards').delete().eq('id', id)
+  if (error) throw traduzirErro(error)
 }
 
 /**
