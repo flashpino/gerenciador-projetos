@@ -35,7 +35,8 @@ export function BoardShell({ titulo, children }: Props) {
   ]
 
   return (
-    <main className="mx-auto max-w-canvas p-gutter md:p-margin">
+    // <div>, não <main>: o AppShell já é o landmark main de toda rota autenticada.
+    <div className="mx-auto max-w-canvas p-gutter md:p-margin">
       <div className="mb-gutter flex items-center justify-between gap-space-md">
         <h1 className="text-display">{titulo}</h1>
         {/*
@@ -89,6 +90,6 @@ export function BoardShell({ titulo, children }: Props) {
         className="mb-margin border-b border-border"
       />
       {children}
-    </main>
+    </div>
   )
 }

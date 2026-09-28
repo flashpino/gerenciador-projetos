@@ -45,6 +45,11 @@ describe('BoardShell', () => {
     expect(screen.getByRole('link', { name: 'Kanban' })).toHaveAttribute('aria-current', 'page')
   })
 
+  it('não cria um segundo landmark main — o do AppShell já envolve a rota', () => {
+    renderizar()
+    expect(screen.queryByRole('main')).not.toBeInTheDocument()
+  })
+
   it('lembra o board visitado, pra raiz / voltar nele', () => {
     renderizar()
     expect(localStorage.getItem('ultimoBoardId')).toBe('b1')
