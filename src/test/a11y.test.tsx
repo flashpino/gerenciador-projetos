@@ -24,6 +24,8 @@ import { criarTarefaFixture as tarefa } from '@/test/fixtures'
 
 vi.mock('@/services/boards', () => ({
   buscarBoard: vi.fn(),
+  buscarBoards: vi.fn(),
+  buscarWorkspaceAtual: vi.fn(),
   buscarGruposComTarefas: vi.fn(),
   buscarMembros: vi.fn(),
   buscarTarefaDetalhe: vi.fn(),
@@ -46,6 +48,7 @@ import DashboardPage from '@/pages/DashboardPage'
 import GanttPage from '@/pages/GanttPage'
 import KanbanPage from '@/pages/KanbanPage'
 import LoginPage from '@/pages/LoginPage'
+import PaineisPage from '@/pages/PaineisPage'
 import { TaskModal } from '@/components/features/TaskModal'
 
 // Objetos hoisted: JSX `value={{...}}` inline reconstrói a cada render e o
@@ -139,6 +142,24 @@ describe('Acessibilidade automatizada (axe) — telas principais do MVP', () => 
   it('DashboardPage (F4) não tem violação WCAG', async () => {
     const { container, findByText } = renderComProviders(<DashboardPage />)
     await findByText('Distribuição por Status')
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
+  it('PaineisPage (Meus Painéis) não tem violação WCAG', async () => {
+    vi.mocked(servico.buscarBoards).mockResolvedValue([
+      { id: 'b1', name: 'Sprint Alpha Q3', created_at: '2026-09-01T10:00:00Z' },
+      { id: 'b2', name: 'Roadmap', created_at: '2026-09-10T10:00:00Z' },
+    ])
+    vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace' })
+    const { wrapper: QueryWrapper } = criarWrapper()
+    const { container, findByText } = render(
+      <MemoryRouter>
+        <QueryWrapper>
+          <PaineisPage />
+        </QueryWrapper>
+      </MemoryRouter>,
+    )
+    await findByText('Roadmap')
     expect(await axe(container)).toHaveNoViolations()
   })
 

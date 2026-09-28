@@ -12,6 +12,7 @@ import BoardPage from '@/pages/BoardPage'
 import KanbanPage from '@/pages/KanbanPage'
 import LoginPage from '@/pages/LoginPage'
 import NaoEncontrada from '@/pages/NaoEncontrada'
+import PaineisPage from '@/pages/PaineisPage'
 
 // Gantt e Dashboard carregam por rota — nao pesam na primeira tela
 // (docs/specs.md, requisito de performance).
@@ -67,15 +68,7 @@ export default function App() {
                   {/* Rotas "em construção" — cada sub-projeto da auditoria
                       (docs/superpowers/specs/2026-09-17-casca-sidebar-design.md)
                       substitui a sua por conteúdo real quando chegar a vez. */}
-                  <Route
-                    path="/paineis"
-                    element={
-                      <EmConstrucaoPage
-                        titulo="Meus Painéis"
-                        descricao="Vários painéis por workspace chegam no próximo sub-projeto."
-                      />
-                    }
-                  />
+                  <Route path="/paineis" element={<PaineisPage />} />
                   <Route
                     path="/favoritos"
                     element={
