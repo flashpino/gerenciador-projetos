@@ -1,12 +1,12 @@
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { GroupComTarefas } from '@/types/domain'
 import { criarWrapper } from '@/test/query'
 import { criarTarefaFixture as tarefa } from '@/test/fixtures'
 
 vi.mock('@/services/boards', () => ({
-  buscarBoardAtual: vi.fn(),
+  buscarBoard: vi.fn(),
   buscarGruposComTarefas: vi.fn(),
   buscarMembros: vi.fn(),
 }))
@@ -18,9 +18,11 @@ import DashboardPage from './DashboardPage'
 function renderizar() {
   const { wrapper: QueryWrapper } = criarWrapper()
   return render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={['/boards/b1/dashboard']}>
       <QueryWrapper>
-        <DashboardPage />
+        <Routes>
+          <Route path="/boards/:boardId/dashboard" element={<DashboardPage />} />
+        </Routes>
       </QueryWrapper>
     </MemoryRouter>,
   )
@@ -30,7 +32,7 @@ describe('DashboardPage', () => {
   beforeEach(() => vi.resetAllMocks())
 
   it('F4.3: board com grupo presente mas sem tarefas mostra o estado vazio, não 0%/NaN', async () => {
-    vi.mocked(servico.buscarBoardAtual).mockResolvedValue({ id: 'b1', name: 'Meu Board' })
+    vi.mocked(servico.buscarBoard).mockResolvedValue({ id: 'b1', name: 'Meu Board' })
     const grupoVazio: GroupComTarefas[] = [
       { id: 'g1', board_id: 'b1', name: 'Grupo Vazio', color: 'azure', position: 0, tasks: [] },
     ]
@@ -44,7 +46,7 @@ describe('DashboardPage', () => {
   })
 
   it('renderiza as métricas reais quando o board tem tarefas', async () => {
-    vi.mocked(servico.buscarBoardAtual).mockResolvedValue({ id: 'b1', name: 'Meu Board' })
+    vi.mocked(servico.buscarBoard).mockResolvedValue({ id: 'b1', name: 'Meu Board' })
     const grupos: GroupComTarefas[] = [
       {
         id: 'g1', board_id: 'b1', name: 'Em Execução', color: 'azure', position: 0,

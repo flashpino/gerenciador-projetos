@@ -4,7 +4,6 @@ import {
   atualizarSubtarefa,
   atualizarTarefa,
   buscarBoard,
-  buscarBoardAtual,
   buscarBoards,
   buscarGruposComTarefas,
   buscarMembros,
@@ -36,10 +35,6 @@ const chaves = {
 
 export function useWorkspaceAtual() {
   return useQuery({ queryKey: chaves.workspace, queryFn: buscarWorkspaceAtual })
-}
-
-export function useBoardAtual() {
-  return useQuery({ queryKey: ['board-atual'] as const, queryFn: buscarBoardAtual })
 }
 
 export function useBoards() {

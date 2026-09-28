@@ -1,3 +1,4 @@
+import { Navigate, useParams } from 'react-router-dom'
 import { BoardShell } from '@/components/features/BoardShell'
 import { GroupProgressList } from '@/components/features/GroupProgressList'
 import { MetricTile } from '@/components/features/MetricTile'
@@ -6,11 +7,16 @@ import { Button } from '@/components/ui/Button'
 import { StateView } from '@/components/ui/StateView'
 import { estadoDaQuery } from '@/lib/estadoDaQuery'
 import { contarAtrasadas, distribuicaoStatus, taxaDeConclusao } from '@/lib/metrics'
-import { useBoardAtual, useGruposComTarefas } from '@/hooks/useQuadro'
+import { useBoard, useGruposComTarefas } from '@/hooks/useQuadro'
 
 export default function DashboardPage() {
-  const board = useBoardAtual()
-  const grupos = useGruposComTarefas(board.data?.id)
+  const { boardId } = useParams<{ boardId: string }>()
+  const board = useBoard(boardId)
+  const grupos = useGruposComTarefas(boardId)
+
+  // Board apagado ou de outro workspace: "tentar de novo" não o traz de volta.
+  if (board.isError) return <Navigate to="/paineis" replace />
+
   const tarefas = grupos.data?.flatMap((g) => g.tasks)
 
   // "Vazio" aqui e ZERO TAREFAS, nao zero grupos (diferente de BoardPage/GanttPage) —

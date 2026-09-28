@@ -11,23 +11,9 @@ import { traduzirErro } from './erros'
  *  - nao conhece React: nada de hook, estado ou cache aqui dentro
  */
 
-/** Board default do usuario. Na v1 ha um workspace e um board por usuario. */
-export async function buscarBoardAtual(): Promise<{ id: string; name: string }> {
-  const { data, error } = await supabase
-    .from('boards')
-    .select('id, name')
-    .order('created_at', { ascending: true })
-    .limit(1)
-    .single()
-
-  if (error) throw traduzirErro(error)
-  return data
-}
-
 /**
- * Workspace do usuario. Na v1 ha um workspace e um board por usuario
- * (mesma nota de buscarBoardAtual) — usado pela Sidebar pra mostrar o
- * nome (docs/superpowers/specs/2026-09-17-casca-sidebar-design.md).
+ * Workspace do usuario. Na v1 ha um workspace por usuario — usado pela Sidebar
+ * pra mostrar o nome e pelo BoardFormModal pra criar board nele.
  */
 export async function buscarWorkspaceAtual(): Promise<{ id: string; name: string }> {
   const { data, error } = await supabase

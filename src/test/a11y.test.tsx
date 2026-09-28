@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { axe } from 'vitest-axe'
 import { SessaoContext } from '@/hooks/sessaoContext'
@@ -23,7 +23,7 @@ import { criarTarefaFixture as tarefa } from '@/test/fixtures'
  */
 
 vi.mock('@/services/boards', () => ({
-  buscarBoardAtual: vi.fn(),
+  buscarBoard: vi.fn(),
   buscarGruposComTarefas: vi.fn(),
   buscarMembros: vi.fn(),
   buscarTarefaDetalhe: vi.fn(),
@@ -80,8 +80,12 @@ function grupos(): GroupComTarefas[] {
 function renderComProviders(ui: React.ReactElement) {
   const { wrapper: QueryWrapper } = criarWrapper()
   return render(
-    <MemoryRouter>
-      <QueryWrapper>{ui}</QueryWrapper>
+    <MemoryRouter initialEntries={['/boards/b1']}>
+      <QueryWrapper>
+        <Routes>
+          <Route path="/boards/:boardId" element={ui} />
+        </Routes>
+      </QueryWrapper>
     </MemoryRouter>,
   )
 }
@@ -89,7 +93,7 @@ function renderComProviders(ui: React.ReactElement) {
 describe('Acessibilidade automatizada (axe) — telas principais do MVP', () => {
   beforeEach(() => {
     vi.resetAllMocks()
-    vi.mocked(servico.buscarBoardAtual).mockResolvedValue({ id: 'b1', name: 'Sprint Alpha Q3' })
+    vi.mocked(servico.buscarBoard).mockResolvedValue({ id: 'b1', name: 'Sprint Alpha Q3' })
     vi.mocked(servico.buscarGruposComTarefas).mockResolvedValue(grupos())
     vi.mocked(servico.buscarMembros).mockResolvedValue(MEMBROS)
   })

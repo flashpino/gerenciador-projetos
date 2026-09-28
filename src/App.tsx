@@ -7,6 +7,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { RotaProtegida } from '@/components/RotaProtegida'
 import { SessaoProvider } from '@/components/SessaoProvider'
 import { StateView } from '@/components/ui/StateView'
+import AberturaPage from '@/pages/AberturaPage'
 import BoardPage from '@/pages/BoardPage'
 import KanbanPage from '@/pages/KanbanPage'
 import LoginPage from '@/pages/LoginPage'
@@ -44,10 +45,11 @@ export default function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route element={<RotaProtegida />}>
                 <Route element={<AppShell />}>
-                  <Route path="/" element={<BoardPage />} />
-                  <Route path="/kanban" element={<KanbanPage />} />
+                  <Route path="/" element={<AberturaPage />} />
+                  <Route path="/boards/:boardId" element={<BoardPage />} />
+                  <Route path="/boards/:boardId/kanban" element={<KanbanPage />} />
                   <Route
-                    path="/gantt"
+                    path="/boards/:boardId/gantt"
                     element={
                       <Suspense fallback={carregandoRota}>
                         <GanttPage />
@@ -55,7 +57,7 @@ export default function App() {
                     }
                   />
                   <Route
-                    path="/dashboard"
+                    path="/boards/:boardId/dashboard"
                     element={
                       <Suspense fallback={carregandoRota}>
                         <DashboardPage />

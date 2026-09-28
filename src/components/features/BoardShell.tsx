@@ -1,8 +1,14 @@
-import type { ReactNode } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useEffect, type ReactNode } from 'react'
+import { useLocation, useParams } from 'react-router-dom'
 import { Filter, Plus, Search, Star, UserPlus } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Tabs, type ItemTab } from '@/components/ui/Tabs'
+import { lembrarUltimoBoard } from '@/lib/ultimoBoard'
+
+interface Props {
+  titulo: string
+  children: ReactNode
+}
 
 /**
  * Layout comum das views do board (docs/components.md, Tabela 2).
@@ -10,20 +16,22 @@ import { Tabs, type ItemTab } from '@/components/ui/Tabs'
  * As quatro views são leituras do MESMO dado; o que muda é a renderização.
  * O que não muda — título e seletor de visão — vive aqui, uma vez só.
  */
-const VIEWS: ItemTab[] = [
-  { id: '/', rotulo: 'Tabela Principal', href: '/' },
-  { id: '/kanban', rotulo: 'Kanban', href: '/kanban' },
-  { id: '/gantt', rotulo: 'Gantt', href: '/gantt' },
-  { id: '/dashboard', rotulo: 'Dashboard', href: '/dashboard' },
-]
-
-interface Props {
-  titulo: string
-  children: ReactNode
-}
-
 export function BoardShell({ titulo, children }: Props) {
   const { pathname } = useLocation()
+  const { boardId = '' } = useParams<{ boardId: string }>()
+
+  // Único ponto comum às 4 views — é aqui que a raiz `/` aprende pra onde voltar.
+  useEffect(() => {
+    if (boardId) lembrarUltimoBoard(boardId)
+  }, [boardId])
+
+  const base = `/boards/${boardId}`
+  const views: ItemTab[] = [
+    { id: base, rotulo: 'Tabela Principal', href: base },
+    { id: `${base}/kanban`, rotulo: 'Kanban', href: `${base}/kanban` },
+    { id: `${base}/gantt`, rotulo: 'Gantt', href: `${base}/gantt` },
+    { id: `${base}/dashboard`, rotulo: 'Dashboard', href: `${base}/dashboard` },
+  ]
 
   return (
     <main className="mx-auto max-w-canvas p-gutter md:p-margin">
@@ -82,7 +90,7 @@ export function BoardShell({ titulo, children }: Props) {
       </div>
       <Tabs
         rotulo="Visões do quadro"
-        items={VIEWS}
+        items={views}
         value={pathname}
         className="mb-margin border-b border-border"
       />

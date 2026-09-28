@@ -4,7 +4,6 @@ import type { GroupComTarefas } from '@/types/domain'
 import { criarWrapper } from '@/test/query'
 
 vi.mock('@/services/boards', () => ({
-  buscarBoardAtual: vi.fn(),
   buscarGruposComTarefas: vi.fn(),
   buscarMembros: vi.fn(),
   atualizarTarefa: vi.fn(),

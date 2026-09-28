@@ -1,18 +1,23 @@
 import { useState } from 'react'
+import { Navigate, useParams } from 'react-router-dom'
 import { BoardShell } from '@/components/features/BoardShell'
 import { KanbanBoard } from '@/components/features/KanbanBoard'
 import { TaskModal } from '@/components/features/TaskModal'
 import { Button } from '@/components/ui/Button'
 import { StateView } from '@/components/ui/StateView'
 import { estadoDaQuery } from '@/lib/estadoDaQuery'
-import { useAtualizarTarefa, useBoardAtual, useGruposComTarefas, useMembros } from '@/hooks/useQuadro'
+import { useAtualizarTarefa, useBoard, useGruposComTarefas, useMembros } from '@/hooks/useQuadro'
 
 export default function KanbanPage() {
-  const board = useBoardAtual()
-  const grupos = useGruposComTarefas(board.data?.id)
+  const { boardId } = useParams<{ boardId: string }>()
+  const board = useBoard(boardId)
+  const grupos = useGruposComTarefas(boardId)
   const membros = useMembros()
-  const editar = useAtualizarTarefa(board.data?.id)
+  const editar = useAtualizarTarefa(boardId)
   const [taskIdModal, setTaskIdModal] = useState<string | null>(null)
+
+  // Board apagado ou de outro workspace: "tentar de novo" não o traz de volta.
+  if (board.isError) return <Navigate to="/paineis" replace />
 
   const estado = estadoDaQuery(
     board.isPending ? { ...grupos, isPending: true } : grupos,

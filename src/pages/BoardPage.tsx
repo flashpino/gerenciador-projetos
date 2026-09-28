@@ -1,18 +1,20 @@
 import { useState } from 'react'
+import { Navigate, useParams } from 'react-router-dom'
 import { StateView } from '@/components/ui/StateView'
 import { estadoDaQuery } from '@/lib/estadoDaQuery'
 import { Button } from '@/components/ui/Button'
 import { BoardShell } from '@/components/features/BoardShell'
 import { TaskGroup } from '@/components/features/TaskGroup'
 import { TaskModal } from '@/components/features/TaskModal'
-import { useAtualizarTarefa, useBoardAtual, useGruposComTarefas, useMembros } from '@/hooks/useQuadro'
+import { useAtualizarTarefa, useBoard, useGruposComTarefas, useMembros } from '@/hooks/useQuadro'
 import type { Task } from '@/types/domain'
 
 export default function BoardPage() {
-  const board = useBoardAtual()
-  const grupos = useGruposComTarefas(board.data?.id)
+  const { boardId } = useParams<{ boardId: string }>()
+  const board = useBoard(boardId)
+  const grupos = useGruposComTarefas(boardId)
   const membros = useMembros()
-  const editar = useAtualizarTarefa(board.data?.id)
+  const editar = useAtualizarTarefa(boardId)
 
   // null = modal fechado. string = editando essa tarefa. '' = criando (o
   // grupo alvo vai em grupoParaCriar).
@@ -34,6 +36,9 @@ export default function BoardPage() {
     setTaskIdModal(null)
     setGrupoParaCriar(null)
   }
+
+  // Board apagado ou de outro workspace: "tentar de novo" não o traz de volta.
+  if (board.isError) return <Navigate to="/paineis" replace />
 
   // Os QUATRO estados, num lugar so. Nenhuma tela do app inventa a propria regra.
   const estado = estadoDaQuery(
