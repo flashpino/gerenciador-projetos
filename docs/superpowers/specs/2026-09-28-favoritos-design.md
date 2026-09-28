@@ -26,7 +26,7 @@ migration estar no ar.
 
 ```sql
 create table board_favorites (
-  user_id    uuid not null references profiles(id) on delete cascade,
+  user_id    uuid not null default auth.uid() references profiles(id) on delete cascade,
   board_id   uuid not null references boards(id)   on delete cascade,
   created_at timestamptz not null default now(),
   primary key (user_id, board_id)
@@ -63,10 +63,14 @@ create policy board_favorites_delete on board_favorites for delete to authentica
 | Função | O quê |
 |---|---|
 | `buscarFavoritos(): Promise<string[]>` | ids dos boards favoritados pela pessoa (RLS filtra) |
-| `favoritar(userId, boardId): Promise<void>` | insert |
-| `desfavoritar(userId, boardId): Promise<void>` | delete por `user_id` + `board_id` |
+| `favoritar(boardId): Promise<void>` | insert só com `board_id` — `user_id` vem do `default auth.uid()` |
+| `desfavoritar(boardId): Promise<void>` | delete por `board_id`; o RLS já restringe aos favoritos da própria pessoa |
 
-`userId` vem de `useSessao()` no componente — mesmo padrão de `criarComentario`.
+**Revisão de 2026-09-28 (antes de aplicar a migration):** a primeira versão mandava
+`userId` do cliente via `useSessao()`. Como `useSessao` lança fora do
+`<SessaoProvider>`, o `FavoritoToggle` obrigaria todo teste de `BoardShell`/`BoardCard`
+a montar a sessão. Com `default auth.uid()` o cliente nem afirma quem é — mais simples
+e mais seguro.
 
 **Hooks (`src/hooks/useQuadro.ts`):** `useFavoritos()` (chave `['favoritos']`) e
 `useAlternarFavorito()` → `mutate({ boardId, favorito: boolean })`. **Update otimista**:
@@ -80,7 +84,7 @@ cache própria e o otimismo não mexe na lista de boards.
 
 | Componente | Onde | Detalhe |
 |---|---|---|
-| `features/FavoritoToggle` (novo) | `BoardShell` (substitui "Favoritar — em breve") e `BoardCard` (ao lado do "⋮") | `FavoritoToggle({ boardId, nome })` — **autossuficiente**: lê `useFavoritos()`, `useSessao()` e chama `useAlternarFavorito()` sozinho; quem o usa só passa id e nome. `<button aria-pressed>` com `aria-label` "Favoritar {nome}"; ícone `Star` preenchido quando ativo. Consequência: testes de `BoardShell`/`BoardCard` passam a precisar do wrapper de query e do mock de `buscarFavoritos` |
+| `features/FavoritoToggle` (novo) | `BoardShell` (substitui "Favoritar — em breve") e `BoardCard` (ao lado do "⋮") | `FavoritoToggle({ boardId, nome })` — **autossuficiente**: lê `useFavoritos()` e chama `useAlternarFavorito()` sozinho (sem `useSessao`); quem o usa só passa id e nome. `<button aria-pressed>` com `aria-label` "Favoritar {nome}"; ícone `Star` preenchido quando ativo. Consequência: testes de `BoardShell`/`BoardCard` passam a precisar do wrapper de query e do mock de `buscarFavoritos` |
 | `pages/PaineisPage` | ganha prop `filtro: 'todos' \| 'favoritos'` (padrão `'todos'`) | `/favoritos` monta `<PaineisPage filtro="favoritos" />`: título "Favoritos", grid filtrado pelos ids favoritados, vazio "Nenhum favorito ainda" com link para Meus Painéis |
 
 `/favoritos` é **variante** da `PaineisPage`, não página nova — reusa os modais de

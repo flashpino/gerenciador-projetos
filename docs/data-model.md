@@ -272,13 +272,14 @@ begin
   set local role authenticated;
   perform set_config('request.jwt.claims', json_build_object('sub', a, 'role', 'authenticated')::text, true);
 
-  -- 1. A favorita o proprio board
-  insert into board_favorites (user_id, board_id) values (a, board_a);
-  select count(*) into vistos from board_favorites;
+  -- 1. A favorita o proprio board SEM mandar user_id — como o app faz. O
+  --    default auth.uid() tem que preencher com A.
+  insert into board_favorites (board_id) values (board_a);
+  select count(*) into vistos from board_favorites where user_id = a;
   if vistos <> 1 then
-    raise exception 'FALHA [proprio]: A deveria ver 1 favorito, viu %.', vistos;
+    raise exception 'FALHA [proprio]: A deveria ver 1 favorito dele, viu %.', vistos;
   end if;
-  raise notice 'OK [proprio]: A favoritou e ve o proprio board';
+  raise notice 'OK [proprio]: default auth.uid() preencheu com A';
 
   -- 2. A nao favorita board do workspace de B
   begin

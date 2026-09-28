@@ -11,7 +11,9 @@
 -- =============================================================================
 
 create table board_favorites (
-  user_id    uuid not null references profiles(id) on delete cascade,
+  -- Default auth.uid(): o cliente nao manda o user_id — o banco preenche com
+  -- quem esta logado, e a policy de insert confere. Cliente nao afirma quem e.
+  user_id    uuid not null default auth.uid() references profiles(id) on delete cascade,
   board_id   uuid not null references boards(id)   on delete cascade,
   created_at timestamptz not null default now(),
   -- Impede favorito duplicado e ja serve a query "meus favoritos" (por user_id).
