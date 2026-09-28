@@ -12,6 +12,7 @@
 > | `0001_init` | schema, 9 tabelas, índices, triggers, RLS |
 > | `0002_advisors` | correções dos advisors (ver "Advisors" abaixo) |
 > | `0003_board_favorites` | favoritos por pessoa — aplicada pelo humano em 2026-09-28; RLS verificado pela API (6 checagens OK) |
+> | `0004_activities` | feed de atividades gravado por gatilhos — **escrita, aguardando aplicação** |
 >
 > O teste de isolamento passou nos 3 blocos **depois** do 0002.
 
@@ -42,6 +43,7 @@ Por isso: **10 tabelas, 10 `enable row level security`, zero exceção.**
 | `comments` | conversa na tarefa | lê quem é do workspace; escreve só o autor |
 | `task_dependencies` | setas do Gantt | task → board → workspace |
 | `board_favorites` | estrela de favorito, **por pessoa** (0003) | só a própria pessoa lê/grava; insert exige ser membro do workspace do board |
+| `activities` | feed: tarefa criada, status alterado, comentário (0004) | lê quem é do workspace do board; **ninguém escreve pela API** — só os gatilhos `security definer` |
 
 **Isolamento é por pertencer ao workspace, não por `owner_id`.** Se fosse por dono,
 colaboração não funcionaria — e colaboração é o produto.
@@ -326,6 +328,93 @@ rollback;
 ```
 
 Os cinco blocos devem imprimir `NOTICE ... OK`. Qualquer `EXCEPTION` = RLS furado.
+
+---
+
+## Teste — `activities` e seus gatilhos (migration 0004)
+
+Rodar **depois** de aplicar `0004_activities.up.sql`. Transação com `rollback`: a
+mudança de status e o comentário de teste não ficam gravados.
+
+```sql
+begin;
+
+-- >>> TROQUE PELOS IDS DE A E B <<<
+create temp table _t (usuario_a uuid, usuario_b uuid) on commit drop;
+insert into _t values (
+  '00000000-0000-0000-0000-00000000000a',
+  '00000000-0000-0000-0000-00000000000b'
+);
+
+do $teste$
+declare
+  a uuid; b uuid; tarefa_a uuid; board_a uuid; status_antes task_status;
+  n integer; ev activities%rowtype;
+begin
+  select usuario_a, usuario_b into a, b from _t;
+  select t.id, t.board_id, t.status into tarefa_a, board_a, status_antes
+    from tasks t join boards bo on bo.id = t.board_id
+    join workspace_members m on m.workspace_id = bo.workspace_id and m.user_id = a limit 1;
+  if tarefa_a is null then
+    raise exception 'INCONCLUSIVO: A precisa de ao menos uma tarefa.';
+  end if;
+
+  -- --- Como A ---
+  set local role authenticated;
+  perform set_config('request.jwt.claims', json_build_object('sub', a, 'role', 'authenticated')::text, true);
+
+  -- 1. Mudar status gera 1 evento status_changed, com A como autor e de/para certos
+  update tasks set status = case when status_antes = 'done' then 'working' else 'done' end
+    where id = tarefa_a;
+  select * into ev from activities where task_id = tarefa_a order by id desc limit 1;
+  if ev.kind is distinct from 'status_changed' or ev.actor_id is distinct from a
+     or ev.from_status is distinct from status_antes then
+    raise exception 'FALHA [status]: evento errado: kind=% actor=% from=%', ev.kind, ev.actor_id, ev.from_status;
+  end if;
+  raise notice 'OK [status]: status_changed de % para % por A', ev.from_status, ev.to_status;
+
+  -- 2. Gravar o MESMO status nao gera evento
+  select count(*) into n from activities where task_id = tarefa_a;
+  update tasks set status = status where id = tarefa_a;
+  if (select count(*) from activities where task_id = tarefa_a) <> n then
+    raise exception 'FALHA [mesmo status]: update sem mudança gerou evento.';
+  end if;
+  raise notice 'OK [mesmo status]: nenhum evento';
+
+  -- 3. Comentar gera comment_added com o trecho
+  insert into comments (task_id, author_id, body) values (tarefa_a, a, 'comentario de teste do gatilho');
+  select * into ev from activities where task_id = tarefa_a order by id desc limit 1;
+  if ev.kind is distinct from 'comment_added' or ev.comment_excerpt is distinct from 'comentario de teste do gatilho' then
+    raise exception 'FALHA [comentario]: evento errado: kind=% excerpt=%', ev.kind, ev.comment_excerpt;
+  end if;
+  raise notice 'OK [comentario]: comment_added com o trecho';
+
+  -- 4. A nao escreve direto em activities
+  begin
+    insert into activities (board_id, kind, task_title) values (board_a, 'task_created', 'forjado');
+    raise exception 'FALHA [forjar]: A inseriu direto em activities.';
+  exception when insufficient_privilege then
+    raise notice 'OK [forjar]: insert direto bloqueado pelo RLS';
+  end;
+
+  -- --- Como B ---
+  perform set_config('request.jwt.claims', json_build_object('sub', b, 'role', 'authenticated')::text, true);
+
+  -- 5. B nao ve eventos do workspace de A
+  select count(*) into n from activities where board_id = board_a;
+  if n <> 0 then
+    raise exception 'FALHA [leitura]: B viu % evento(s) do board de A.', n;
+  end if;
+  raise notice 'OK [leitura]: B nao ve eventos de A';
+
+  reset role;
+end;
+$teste$;
+
+rollback;
+```
+
+Os cinco blocos devem imprimir `NOTICE ... OK`.
 
 ---
 
