@@ -99,4 +99,37 @@ describe('PaineisPage', () => {
     await screen.findByRole('dialog', { name: 'Excluir painel' })
     expect(screen.getByLabelText('Digite "Roadmap" para confirmar')).toBeInTheDocument()
   })
+
+  it('variante favoritos: título próprio e só os boards favoritados', async () => {
+    vi.mocked(servico.buscarBoards).mockResolvedValue(BOARDS)
+    vi.mocked(servico.buscarFavoritos).mockResolvedValue(['b2'])
+    const { wrapper: QueryWrapper } = criarWrapper()
+    render(
+      <QueryWrapper>
+        <MemoryRouter>
+          <PaineisPage filtro="favoritos" />
+        </MemoryRouter>
+      </QueryWrapper>,
+    )
+
+    expect(screen.getByRole('heading', { name: 'Favoritos' })).toBeInTheDocument()
+    expect(await screen.findByRole('link', { name: /Roadmap/ })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Sprint Alpha/ })).not.toBeInTheDocument()
+  })
+
+  it('variante favoritos sem nenhum favorito: estado vazio próprio, com link pra Meus Painéis', async () => {
+    vi.mocked(servico.buscarBoards).mockResolvedValue(BOARDS)
+    vi.mocked(servico.buscarFavoritos).mockResolvedValue([])
+    const { wrapper: QueryWrapper } = criarWrapper()
+    render(
+      <QueryWrapper>
+        <MemoryRouter>
+          <PaineisPage filtro="favoritos" />
+        </MemoryRouter>
+      </QueryWrapper>,
+    )
+
+    expect(await screen.findByText('Nenhum favorito ainda')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Ver Meus Painéis' })).toHaveAttribute('href', '/paineis')
+  })
 })

@@ -167,6 +167,25 @@ describe('Acessibilidade automatizada (axe) — telas principais do MVP', () => 
     expect(await axe(container)).toHaveNoViolations()
   })
 
+  it('PaineisPage variante Favoritos não tem violação WCAG', async () => {
+    vi.mocked(servico.buscarBoards).mockResolvedValue([
+      { id: 'b1', name: 'Sprint Alpha Q3', created_at: '2026-09-01T10:00:00Z' },
+      { id: 'b2', name: 'Roadmap', created_at: '2026-09-10T10:00:00Z' },
+    ])
+    vi.mocked(servico.buscarFavoritos).mockResolvedValue(['b2'])
+    vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace' })
+    const { wrapper: QueryWrapper } = criarWrapper()
+    const { container, findByText } = render(
+      <MemoryRouter>
+        <QueryWrapper>
+          <PaineisPage filtro="favoritos" />
+        </QueryWrapper>
+      </MemoryRouter>,
+    )
+    await findByText('Roadmap')
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('TaskModal aberto em edição (F5) não tem violação WCAG', async () => {
     const detalhe: TaskComDetalhe = {
       ...tarefa({ id: 't1', title: 'Refatorar arquitetura', status: 'working', priority: 'high', progress: 65 }),

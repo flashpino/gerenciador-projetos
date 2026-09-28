@@ -69,15 +69,7 @@ export default function App() {
                       (docs/superpowers/specs/2026-09-17-casca-sidebar-design.md)
                       substitui a sua por conteúdo real quando chegar a vez. */}
                   <Route path="/paineis" element={<PaineisPage />} />
-                  <Route
-                    path="/favoritos"
-                    element={
-                      <EmConstrucaoPage
-                        titulo="Favoritos"
-                        descricao="Marcar painéis como favoritos chega em breve."
-                      />
-                    }
-                  />
+                  <Route path="/favoritos" element={<PaineisPage filtro="favoritos" />} />
                   <Route
                     path="/atividades"
                     element={
