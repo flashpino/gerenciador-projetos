@@ -32,14 +32,19 @@ const TAMANHOS: Record<Tamanho, string> = {
   // FECHADO, sobrepondo a sidebar de verdade (achado em checagem manual no
   // navegador; invisível no jsdom porque o ambiente de teste roda com
   // `css: false`, sem CSS real carregado).
-  drawer: 'fixed inset-y-0 left-0 m-0 hidden h-dvh w-[min(20rem,85vw)] max-w-none flex-col rounded-none open:flex',
+  //
+  // `max-h-none`: o estilo padrão do navegador (`dialog:modal { max-height:
+  // calc(100% - 6px - 2em) }`) cortava o h-dvh e deixava um vão no rodapé.
+  drawer: 'fixed inset-y-0 left-0 m-0 hidden h-dvh max-h-none w-[min(20rem,85vw)] max-w-none flex-col rounded-none open:flex',
 }
 
 // O conteúdo do drawer precisa preencher a altura toda, não ficar limitado
 // a 70vh como os tamanhos centralizados (md/lg/full mantêm o comportamento
 // de sempre — isto só adiciona um caso, não muda os outros três).
+// Sem padding: quem usa o drawer (a Sidebar) pinta o próprio fundo até a
+// borda — o padding virava uma moldura branca em volta dele.
 const ALTURA_CONTEUDO: Partial<Record<Tamanho, string>> = {
-  drawer: 'flex-1 overflow-y-auto p-space-lg',
+  drawer: 'flex-1 overflow-y-auto',
 }
 
 /**
