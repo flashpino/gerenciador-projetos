@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient, type QueryKey } from '@tanstack/react-query'
 import type { CamposEditaveis, NovaTarefa } from '@/services/boards'
 import {
   atualizarSubtarefa,
@@ -35,6 +35,46 @@ const chaves = {
   membros: ['membros'] as const,
   grupos: (boardId: string) => ['grupos', boardId] as const,
   tarefa: (taskId: string) => ['tarefa', taskId] as const,
+}
+
+/**
+ * UPDATE OTIMISTA — o padrão de toda edição por clique (docs/patterns.md).
+ * A UI muda na hora e só depois o servidor confirma; se falhar, o valor
+ * anterior volta. Sem o rollback a tela fica num estado mentiroso: mostra
+ * "Pronto" para algo que o banco nunca aceitou.
+ *
+ * Extraído na 3ª ocorrência (regra dos três): tarefa, subtarefa, favorito.
+ * `aplicar` recebe o dado atual da cache e as variáveis e devolve o novo.
+ */
+function useMutacaoOtimista<TDado, TVars>(
+  chave: QueryKey,
+  mutationFn: (vars: TVars) => Promise<unknown>,
+  aplicar: (atual: TDado | undefined, vars: TVars) => TDado | undefined,
+) {
+  const qc = useQueryClient()
+
+  return useMutation({
+    mutationFn,
+
+    onMutate: async (vars: TVars) => {
+      // Cancela refetches em voo: um deles poderia chegar depois e sobrescrever
+      // o valor otimista com o dado velho.
+      await qc.cancelQueries({ queryKey: chave })
+      const anterior = qc.getQueryData<TDado>(chave)
+      qc.setQueryData<TDado>(chave, (atual) => aplicar(atual, vars))
+      return { anterior }
+    },
+
+    onError: (_erro, _vars, ctx) => {
+      if (ctx?.anterior) qc.setQueryData(chave, ctx.anterior)
+    },
+
+    onSettled: () => {
+      // Reconcilia com o servidor em sucesso E em erro: o banco pode ter
+      // normalizado algo (trigger de updated_at, constraint) que o otimista nao sabe.
+      void qc.invalidateQueries({ queryKey: chave })
+    },
+  })
 }
 
 export function useWorkspaceAtual() {
@@ -94,35 +134,13 @@ export function useFavoritos() {
   return useQuery({ queryKey: chaves.favoritos, queryFn: buscarFavoritos })
 }
 
-/**
- * Estrela é clique de alternância, como a célula da F1: UPDATE OTIMISTA —
- * muda na hora e volta se o servidor recusar.
- */
+/** Estrela é clique de alternância, como a célula da F1 — otimista. */
 export function useAlternarFavorito() {
-  const qc = useQueryClient()
-  const chave = chaves.favoritos
-
-  return useMutation({
-    mutationFn: ({ boardId, favorito }: { boardId: string; favorito: boolean }) =>
-      favorito ? favoritar(boardId) : desfavoritar(boardId),
-
-    onMutate: async ({ boardId, favorito }) => {
-      await qc.cancelQueries({ queryKey: chave })
-      const anterior = qc.getQueryData<string[]>(chave)
-      qc.setQueryData<string[]>(chave, (ids = []) =>
-        favorito ? [...ids, boardId] : ids.filter((id) => id !== boardId),
-      )
-      return { anterior }
-    },
-
-    onError: (_erro, _vars, ctx) => {
-      if (ctx?.anterior) qc.setQueryData(chave, ctx.anterior)
-    },
-
-    onSettled: () => {
-      void qc.invalidateQueries({ queryKey: chave })
-    },
-  })
+  return useMutacaoOtimista<string[], { boardId: string; favorito: boolean }>(
+    chaves.favoritos,
+    ({ boardId, favorito }) => (favorito ? favoritar(boardId) : desfavoritar(boardId)),
+    (ids = [], { boardId, favorito }) => (favorito ? [...ids, boardId] : ids.filter((id) => id !== boardId)),
+  )
 }
 
 export function useMembros() {
@@ -144,49 +162,17 @@ export interface MutacaoTarefa {
   campos: CamposEditaveis
 }
 
-/**
- * Atualiza uma tarefa com UPDATE OTIMISTA.
- *
- * A UI muda na hora e so depois o servidor confirma. Se falhar, o valor anterior
- * volta (criterio F1.3). Sem o rollback a celula fica num estado mentiroso: mostra
- * "Pronto" para algo que o banco nunca aceitou.
- *
- * Este e o padrao que TODAS as mutacoes do app seguem. Ver docs/patterns.md.
- */
+/** Edição de célula (F1.3): otimista, com rollback se o servidor recusar. */
 export function useAtualizarTarefa(boardId: string | undefined) {
-  const qc = useQueryClient()
-  const chave = chaves.grupos(boardId ?? '')
-
-  return useMutation({
-    mutationFn: ({ id, campos }: MutacaoTarefa) => atualizarTarefa(id, campos),
-
-    onMutate: async ({ id, campos }) => {
-      // Cancela refetches em voo: um deles poderia chegar depois e sobrescrever
-      // o valor otimista com o dado velho.
-      await qc.cancelQueries({ queryKey: chave })
-      const anterior = qc.getQueryData<GroupComTarefas[]>(chave)
-
-      qc.setQueryData<GroupComTarefas[]>(chave, (grupos) =>
-        grupos?.map((g) => ({
-          ...g,
-          tasks: g.tasks.map((t) => (t.id === id ? { ...t, ...campos } : t)),
-        })),
-      )
-
-      return { anterior }
-    },
-
-    onError: (_erro, _vars, ctx) => {
-      // Rollback. `ctx.anterior` e o snapshot tirado no onMutate.
-      if (ctx?.anterior) qc.setQueryData(chave, ctx.anterior)
-    },
-
-    onSettled: () => {
-      // Reconcilia com o servidor em sucesso E em erro: o banco pode ter
-      // normalizado algo (trigger de updated_at, constraint) que o otimista nao sabe.
-      void qc.invalidateQueries({ queryKey: chave })
-    },
-  })
+  return useMutacaoOtimista<GroupComTarefas[], MutacaoTarefa>(
+    chaves.grupos(boardId ?? ''),
+    ({ id, campos }) => atualizarTarefa(id, campos),
+    (grupos, { id, campos }) =>
+      grupos?.map((g) => ({
+        ...g,
+        tasks: g.tasks.map((t) => (t.id === id ? { ...t, ...campos } : t)),
+      })),
+  )
 }
 
 /**
@@ -227,41 +213,17 @@ export interface MutacaoSubtarefa {
   campos: Partial<Pick<Subtask, 'title' | 'done'>>
 }
 
-/**
- * Alterna/edita subtarefa com UPDATE OTIMISTA — o contador "4/6" tem que
- * atualizar IMEDIATAMENTE (criterio F5.5). Mesmo padrao de useAtualizarTarefa.
- */
+/** Subtarefa: o contador "4/6" tem que atualizar IMEDIATAMENTE (F5.5) — otimista. */
 export function useAtualizarSubtarefa(taskId: string | undefined) {
-  const qc = useQueryClient()
-  const chave = chaves.tarefa(taskId ?? '')
-
-  return useMutation({
-    mutationFn: ({ id, campos }: MutacaoSubtarefa) => atualizarSubtarefa(id, campos),
-
-    onMutate: async ({ id, campos }) => {
-      await qc.cancelQueries({ queryKey: chave })
-      const anterior = qc.getQueryData<TaskComDetalhe>(chave)
-
-      qc.setQueryData<TaskComDetalhe>(
-        chave,
-        (tarefa) =>
-          tarefa && {
-            ...tarefa,
-            subtasks: tarefa.subtasks.map((s) => (s.id === id ? { ...s, ...campos } : s)),
-          },
-      )
-
-      return { anterior }
-    },
-
-    onError: (_erro, _vars, ctx) => {
-      if (ctx?.anterior) qc.setQueryData(chave, ctx.anterior)
-    },
-
-    onSettled: () => {
-      void qc.invalidateQueries({ queryKey: chave })
-    },
-  })
+  return useMutacaoOtimista<TaskComDetalhe, MutacaoSubtarefa>(
+    chaves.tarefa(taskId ?? ''),
+    ({ id, campos }) => atualizarSubtarefa(id, campos),
+    (tarefa, { id, campos }) =>
+      tarefa && {
+        ...tarefa,
+        subtasks: tarefa.subtasks.map((s) => (s.id === id ? { ...s, ...campos } : s)),
+      },
+  )
 }
 
 /** Sem otimismo: adicionar item e mais raro que marcar feito, o ganho nao paga a complexidade. */
