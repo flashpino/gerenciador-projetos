@@ -100,6 +100,19 @@ rich text, anexos, reações/thread, log automático de atividade, tags editáve
 
 **Desvio registrado de `docs/patterns.md` ("update otimista é obrigatório pra toda escrita"):** criar tarefa, criar/remover subtarefa e postar comentário usam invalidate-only, sem otimismo. Só o toggle de subtarefa (F5.5) é otimista, porque é o único com critério de aceite exigindo atualização imediata. Ver comentários em `hooks/useQuadro.ts`.
 
+## Sub-projeto 2/6 — Múltiplos boards ✅
+
+Spec: `docs/superpowers/specs/2026-09-25-multiplos-boards-design.md` · Plano: `docs/superpowers/plans/2026-09-25-multiplos-boards.md`
+
+- [x] Rotas por board: `/boards/:boardId` (+ `/kanban`, `/gantt`, `/dashboard`); `/` redireciona pro último board visitado
+- [x] Meus Painéis (`/paineis`): lista, criar, renomear, excluir com confirmação por digitação
+- [x] "Novo Painel" da Sidebar funcional
+- [x] Board inexistente na URL volta pra `/paineis`
+- [x] Sem migration — schema e cascade já suportavam
+
+**Cortado:** arquivar (exigiria migration), contagem de tarefas no card, reordenar boards.
+**Limitação aceita:** o bloqueio de excluir o último board é só no cliente.
+
 ---
 
 ## Como isto é mantido
