@@ -40,6 +40,7 @@ Por isso: **9 tabelas, 9 `enable row level security`, zero exceção.**
 | `subtasks` | checklist de uma tarefa | task → board → workspace |
 | `comments` | conversa na tarefa | lê quem é do workspace; escreve só o autor |
 | `task_dependencies` | setas do Gantt | task → board → workspace |
+| `board_favorites` | estrela de favorito, **por pessoa** (0003) | só a própria pessoa lê/grava; insert exige ser membro do workspace do board |
 
 **Isolamento é por pertencer ao workspace, não por `owner_id`.** Se fosse por dono,
 colaboração não funcionaria — e colaboração é o produto.
@@ -235,6 +236,93 @@ zero linhas `invasao`, zero `sequestrada`, total intacto em 5.
 > filtro da política remove a linha antes, e o comando reporta sucesso com 0
 > linhas. Um teste que só procura exceção passa mesmo com RLS furado no
 > `update`. Por isso o bloco 3 checa `found`, e não só o `exception`.
+
+---
+
+## Teste de isolamento — `board_favorites` (migration 0003)
+
+Rodar **depois** de aplicar `0003_board_favorites.up.sql`. Mesmo formato do teste
+acima: transação com `rollback`, não deixa nada gravado. Usa os ids das contas A e B.
+
+```sql
+begin;
+
+-- >>> TROQUE PELOS IDS DE A E B <<<
+create temp table _t (usuario_a uuid, usuario_b uuid) on commit drop;
+insert into _t values (
+  '00000000-0000-0000-0000-00000000000a',
+  '00000000-0000-0000-0000-00000000000b'
+);
+
+do $teste$
+declare
+  a uuid; b uuid; board_a uuid; board_b uuid;
+  vistos integer; apagados integer;
+begin
+  select usuario_a, usuario_b into a, b from _t;
+  select bo.id into board_a from boards bo
+    join workspace_members m on m.workspace_id = bo.workspace_id and m.user_id = a limit 1;
+  select bo.id into board_b from boards bo
+    join workspace_members m on m.workspace_id = bo.workspace_id and m.user_id = b limit 1;
+  if board_a is null or board_b is null then
+    raise exception 'INCONCLUSIVO: A e B precisam ter ao menos um board cada.';
+  end if;
+
+  -- --- Como A ---
+  set local role authenticated;
+  perform set_config('request.jwt.claims', json_build_object('sub', a, 'role', 'authenticated')::text, true);
+
+  -- 1. A favorita o proprio board
+  insert into board_favorites (user_id, board_id) values (a, board_a);
+  select count(*) into vistos from board_favorites;
+  if vistos <> 1 then
+    raise exception 'FALHA [proprio]: A deveria ver 1 favorito, viu %.', vistos;
+  end if;
+  raise notice 'OK [proprio]: A favoritou e ve o proprio board';
+
+  -- 2. A nao favorita board do workspace de B
+  begin
+    insert into board_favorites (user_id, board_id) values (a, board_b);
+    raise exception 'FALHA [board alheio]: A favoritou um board do workspace de B.';
+  exception when insufficient_privilege then
+    raise notice 'OK [board alheio]: bloqueado pelo RLS';
+  end;
+
+  -- 3. A nao cria favorito em nome de B
+  begin
+    insert into board_favorites (user_id, board_id) values (b, board_a);
+    raise exception 'FALHA [em nome de outro]: A criou favorito com o user_id de B.';
+  exception when insufficient_privilege then
+    raise notice 'OK [em nome de outro]: bloqueado pelo RLS';
+  end;
+
+  -- --- Como B ---
+  perform set_config('request.jwt.claims', json_build_object('sub', b, 'role', 'authenticated')::text, true);
+
+  -- 4. B nao ve o favorito de A
+  select count(*) into vistos from board_favorites;
+  if vistos <> 0 then
+    raise exception 'FALHA [leitura]: B viu % favorito(s) de A.', vistos;
+  end if;
+  raise notice 'OK [leitura]: B nao ve o favorito de A';
+
+  -- 5. B nao apaga o favorito de A. delete sob RLS NAO levanta erro — reporta
+  --    0 linhas. Por isso checar row_count, e nao so esperar exception.
+  delete from board_favorites where user_id = a;
+  get diagnostics apagados = row_count;
+  if apagados <> 0 then
+    raise exception 'FALHA [delete]: B apagou % favorito(s) de A.', apagados;
+  end if;
+  raise notice 'OK [delete]: B apagou 0 linhas';
+
+  reset role;
+end;
+$teste$;
+
+rollback;
+```
+
+Os cinco blocos devem imprimir `NOTICE ... OK`. Qualquer `EXCEPTION` = RLS furado.
 
 ---
 
