@@ -50,6 +50,32 @@ describe('Modal', () => {
     await waitFor(() => expect(screen.getByRole('button', { name: 'Abrir tarefa' })).toHaveFocus())
   })
 
+  it('fechar PELO PAI (open=false, ex.: botão "Cancelar" do conteúdo) também devolve o foco à origem', async () => {
+    // onClose é uma arrow nova a cada render — o padrão real de todo chamador.
+    // Antes o listener de `close` era removido e recolocado no mesmo commit em
+    // que o dialog fechava, e o evento disparava sem ninguém ouvindo.
+    const user = userEvent.setup()
+
+    function Cenario() {
+      const [aberto, setAberto] = useState(false)
+      return (
+        <>
+          <button onClick={() => setAberto(true)}>Abrir</button>
+          <Modal open={aberto} title="Confirmar" onClose={() => setAberto(false)}>
+            <button onClick={() => setAberto(false)}>Cancelar</button>
+          </Modal>
+        </>
+      )
+    }
+
+    render(<Cenario />)
+    await user.click(screen.getByRole('button', { name: 'Abrir' }))
+    await user.click(await screen.findByRole('button', { name: 'Cancelar' }))
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Abrir' })).toHaveFocus())
+  })
+
   it('renderiza o footer quando fornecido', () => {
     render(
       <Modal open title="Detalhe" onClose={vi.fn()} footer={<button>Salvar</button>}>

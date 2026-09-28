@@ -53,7 +53,14 @@ const ALTURA_CONTEUDO: Partial<Record<Tamanho, string>> = {
 export function Modal({ open, onClose, title, children, footer, size = 'md' }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const origemRef = useRef<HTMLElement | null>(null)
+  const onCloseRef = useRef(onClose)
   const idTitulo = useId()
+
+  // Declarado ANTES do efeito que fecha: a ref já aponta pro onClose atual
+  // quando o `close` disparar no mesmo commit.
+  useEffect(() => {
+    onCloseRef.current = onClose
+  })
 
   useEffect(() => {
     const dialog = dialogRef.current
@@ -66,16 +73,21 @@ export function Modal({ open, onClose, title, children, footer, size = 'md' }: P
     }
   }, [open])
 
+  // Listener atachado UMA vez, lendo o onClose pela ref. Com `[onClose]` como
+  // dependência (e o chamador passando uma arrow nova a cada render), o
+  // listener era removido no mesmo commit em que `open=false` fazia
+  // dialog.close() — o `close` disparava sem ninguém ouvindo e o foco não
+  // voltava. Afetava todo fechamento vindo do conteúdo (Cancelar, Salvar).
   useEffect(() => {
     const dialog = dialogRef.current
     if (!dialog) return
     const aoFecharNativo = () => {
-      onClose()
+      onCloseRef.current()
       origemRef.current?.focus()
     }
     dialog.addEventListener('close', aoFecharNativo)
     return () => dialog.removeEventListener('close', aoFecharNativo)
-  }, [onClose])
+  }, [])
 
   // Clique no backdrop nativo chega como clique no próprio <dialog> (não
   // num descendente) — o ::backdrop não é um nó do DOM. Padrão documentado
