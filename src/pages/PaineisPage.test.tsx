@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -98,6 +98,33 @@ describe('PaineisPage', () => {
 
     await screen.findByRole('dialog', { name: 'Excluir painel' })
     expect(screen.getByLabelText('Digite "Roadmap" para confirmar')).toBeInTheDocument()
+  })
+
+  it('depois de excluir, o foco vai pro título da página — o botão de origem sumiu com o card', async () => {
+    vi.mocked(servico.buscarBoards).mockResolvedValueOnce(BOARDS).mockResolvedValue([BOARDS[0]])
+    vi.mocked(servico.removerBoard).mockResolvedValue(undefined)
+    const user = userEvent.setup()
+    renderizar()
+
+    await user.click(await screen.findByRole('button', { name: 'Ações de Roadmap' }))
+    await user.click(screen.getByRole('menuitem', { name: 'Excluir' }))
+    await user.type(await screen.findByLabelText('Digite "Roadmap" para confirmar'), 'Roadmap')
+    await user.click(screen.getByRole('button', { name: 'Excluir painel' }))
+
+    await waitFor(() => expect(screen.queryByRole('link', { name: /Roadmap/ })).not.toBeInTheDocument())
+    await waitFor(() => expect(screen.getByRole('heading', { name: 'Meus Painéis' })).toHaveFocus())
+  })
+
+  it('cancelar a exclusão devolve o foco ao "⋮" de origem, não ao título', async () => {
+    vi.mocked(servico.buscarBoards).mockResolvedValue(BOARDS)
+    const user = userEvent.setup()
+    renderizar()
+
+    await user.click(await screen.findByRole('button', { name: 'Ações de Roadmap' }))
+    await user.click(screen.getByRole('menuitem', { name: 'Excluir' }))
+    await user.click(await screen.findByRole('button', { name: 'Cancelar' }))
+
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Ações de Roadmap' })).toHaveFocus())
   })
 
   it('variante favoritos: título próprio e só os boards favoritados', async () => {

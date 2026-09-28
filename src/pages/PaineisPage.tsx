@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus } from 'lucide-react'
 import { BoardCard } from '@/components/features/BoardCard'
@@ -23,6 +23,7 @@ export default function PaineisPage({ filtro = 'todos' }: Props) {
   const [form, setForm] = useState<Board | 'novo' | null>(null)
   const [boardParaExcluir, setBoardParaExcluir] = useState<Board | null>(null)
   const abrirCriacao = () => setForm('novo')
+  const tituloRef = useRef<HTMLHeadingElement>(null)
 
   const lista = soFavoritos ? boards.data?.filter((b) => favoritos.data?.includes(b.id)) : boards.data
   // Na variante favoritos, os quatro estados dependem das duas queries.
@@ -65,7 +66,9 @@ export default function PaineisPage({ filtro = 'todos' }: Props) {
   return (
     <div className="mx-auto max-w-canvas p-gutter md:p-margin">
       <div className="mb-gutter flex items-center justify-between gap-space-md">
-        <h1 className="text-display">{soFavoritos ? 'Favoritos' : 'Meus Painéis'}</h1>
+        <h1 ref={tituloRef} tabIndex={-1} className="text-display focus:outline-none">
+          {soFavoritos ? 'Favoritos' : 'Meus Painéis'}
+        </h1>
         <Button
           variant="primary"
           size="sm"
@@ -93,7 +96,12 @@ export default function PaineisPage({ filtro = 'todos' }: Props) {
       />
       <ExcluirBoardDialog
         board={boardParaExcluir}
-        aoFechar={() => setBoardParaExcluir(null)}
+        aoFechar={() => {
+          setBoardParaExcluir(null)
+          // Cancelou: o Modal devolve o foco ao "⋮" logo depois, e ele vence.
+          // Excluiu: o "⋮" sumiu com o card, então o foco fica no título.
+          tituloRef.current?.focus()
+        }}
         ehOUltimo={(boards.data?.length ?? 0) <= 1}
       />
     </div>

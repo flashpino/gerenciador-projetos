@@ -126,11 +126,15 @@ export function useExcluirBoard() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (id: string) => removerBoard(id),
-    onSuccess: () => {
-      void qc.invalidateQueries({ queryKey: chaves.boards })
-      // A cascata do banco apagou o favorito junto (0003).
-      void qc.invalidateQueries({ queryKey: chaves.favoritos })
-    },
+    // Devolve a promessa: o `onSuccess` de quem chamou (fechar o diálogo) só
+    // roda com a lista já sem o board — senão o foco volta pro "⋮" de um card
+    // que some em seguida e se perde.
+    onSuccess: () =>
+      Promise.all([
+        qc.invalidateQueries({ queryKey: chaves.boards }),
+        // A cascata do banco apagou o favorito junto (0003).
+        qc.invalidateQueries({ queryKey: chaves.favoritos }),
+      ]),
   })
 }
 
