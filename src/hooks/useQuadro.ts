@@ -20,6 +20,7 @@ import {
   removerSubtarefa,
   renomearBoard,
 } from '@/services/boards'
+import { ehNaoEncontrado } from '@/services/erros'
 import type { GroupComTarefas, Subtask, TaskComDetalhe } from '@/types/domain'
 
 /**
@@ -90,6 +91,9 @@ export function useBoard(boardId: string | undefined) {
     queryKey: chaves.board(boardId ?? ''),
     queryFn: () => buscarBoard(boardId as string),
     enabled: Boolean(boardId),
+    // Board inexistente não volta a existir numa 2ª tentativa — repetir só
+    // atrasa o redirect para /paineis. Falha de rede continua com 1 retry.
+    retry: (falhas, erro) => !ehNaoEncontrado(erro) && falhas < 1,
   })
 }
 

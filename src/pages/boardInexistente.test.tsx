@@ -12,6 +12,7 @@ vi.mock('@/services/boards', () => ({
 }))
 
 import * as servico from '@/services/boards'
+import { ErroDeDados } from '@/services/erros'
 import BoardPage from './BoardPage'
 import DashboardPage from './DashboardPage'
 import GanttPage from './GanttPage'
@@ -28,7 +29,10 @@ describe('board da URL que não existe mais (apagado, ou de outro workspace)', (
   beforeEach(() => {
     vi.resetAllMocks()
     vi.mocked(servico.buscarFavoritos).mockResolvedValue([])
-    vi.mocked(servico.buscarBoard).mockRejectedValue(new Error('Não encontrado.'))
+    // O erro que o serviço lança de verdade para board inexistente (PGRST116 via traduzirErro).
+    vi.mocked(servico.buscarBoard).mockRejectedValue(
+      new ErroDeDados('Registro não encontrado.', { code: 'PGRST116' }),
+    )
     vi.mocked(servico.buscarGruposComTarefas).mockResolvedValue([])
     vi.mocked(servico.buscarMembros).mockResolvedValue([])
   })

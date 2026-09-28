@@ -27,6 +27,7 @@ vi.mock('@/services/boards', () => ({
 
 import type { TaskComDetalhe } from '@/types/domain'
 import * as servico from '@/services/boards'
+import { ErroDeDados } from '@/services/erros'
 import {
   useAlternarFavorito,
   useAtualizarSubtarefa,
@@ -273,6 +274,26 @@ describe('boards — lista, um board e CRUD', () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
     expect(result.current.data?.map((b) => b.id)).toEqual(['b1', 'b2'])
+  })
+
+  it('useBoard NÃO repete a busca quando o board não existe — repetir só atrasa o redirect', async () => {
+    vi.mocked(servico.buscarBoard).mockRejectedValue(
+      new ErroDeDados('Registro não encontrado.', { code: 'PGRST116' }),
+    )
+    const { wrapper } = criarWrapper()
+    const { result } = renderHook(() => useBoard('nao-existe'), { wrapper })
+
+    await waitFor(() => expect(result.current.isError).toBe(true))
+    expect(servico.buscarBoard).toHaveBeenCalledTimes(1)
+  })
+
+  it('useBoard repete uma vez quando a falha é transitória (rede)', async () => {
+    vi.mocked(servico.buscarBoard).mockRejectedValue(new ErroDeDados('Não foi possível completar a operação.'))
+    const { wrapper } = criarWrapper()
+    const { result } = renderHook(() => useBoard('b1'), { wrapper })
+
+    await waitFor(() => expect(result.current.isError).toBe(true), { timeout: 4000 })
+    expect(servico.buscarBoard).toHaveBeenCalledTimes(2)
   })
 
   it('useBoard não busca enquanto o boardId for indefinido', () => {

@@ -15,6 +15,14 @@ export class ErroDeDados extends Error {
   }
 }
 
+/** O registro nao existe (ou o RLS o esconde) — repetir a busca nao muda nada. */
+export function ehNaoEncontrado(erro: unknown): boolean {
+  return (
+    erro instanceof ErroDeDados &&
+    (erro.causa as { code?: string } | undefined)?.code === 'PGRST116'
+  )
+}
+
 /**
  * Traduz o erro do PostgREST para algo que o usuario entende.
  *
