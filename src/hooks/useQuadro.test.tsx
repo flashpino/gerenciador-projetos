@@ -20,11 +20,15 @@ vi.mock('@/services/boards', () => ({
   criarBoard: vi.fn(),
   renomearBoard: vi.fn(),
   removerBoard: vi.fn(),
+  buscarFavoritos: vi.fn(),
+  favoritar: vi.fn(),
+  desfavoritar: vi.fn(),
 }))
 
 import type { TaskComDetalhe } from '@/types/domain'
 import * as servico from '@/services/boards'
 import {
+  useAlternarFavorito,
   useAtualizarSubtarefa,
   useAtualizarTarefa,
   useBoard,
@@ -34,6 +38,7 @@ import {
   useCriarSubtarefa,
   useCriarTarefa,
   useExcluirBoard,
+  useFavoritos,
   useGruposComTarefas,
   useRemoverSubtarefa,
   useRenomearBoard,
@@ -307,5 +312,42 @@ describe('boards — lista, um board e CRUD', () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
     expect(servico.removerBoard).toHaveBeenCalledWith('b1')
+  })
+})
+
+describe('favoritos — alternância otimista', () => {
+  beforeEach(() => vi.resetAllMocks())
+
+  it('favoritar aparece IMEDIATAMENTE, antes da resposta do servidor', async () => {
+    vi.mocked(servico.buscarFavoritos).mockResolvedValue([])
+    vi.mocked(servico.favoritar).mockImplementation(() => new Promise(() => {}))
+    const { wrapper } = criarWrapper()
+    const { result } = renderHook(
+      () => ({ lista: useFavoritos(), alternar: useAlternarFavorito() }),
+      { wrapper },
+    )
+    await waitFor(() => expect(result.current.lista.isSuccess).toBe(true))
+
+    result.current.alternar.mutate({ boardId: 'b1', favorito: true })
+
+    await waitFor(() => expect(result.current.lista.data).toEqual(['b1']))
+    expect(servico.favoritar).toHaveBeenCalledWith('b1')
+  })
+
+  it('desfaz quando o servidor falha', async () => {
+    vi.mocked(servico.buscarFavoritos).mockResolvedValue(['b1'])
+    vi.mocked(servico.desfavoritar).mockRejectedValue(new Error('500'))
+    const { wrapper } = criarWrapper()
+    const { result } = renderHook(
+      () => ({ lista: useFavoritos(), alternar: useAlternarFavorito() }),
+      { wrapper },
+    )
+    await waitFor(() => expect(result.current.lista.isSuccess).toBe(true))
+
+    result.current.alternar.mutate({ boardId: 'b1', favorito: false })
+
+    await waitFor(() => expect(result.current.alternar.isError).toBe(true))
+    expect(result.current.lista.data).toEqual(['b1'])
+    expect(servico.desfavoritar).toHaveBeenCalledWith('b1')
   })
 })

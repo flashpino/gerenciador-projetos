@@ -83,6 +83,25 @@ export async function removerBoard(id: string): Promise<void> {
   if (error) throw traduzirErro(error)
 }
 
+/** Ids dos boards favoritados pela pessoa logada — o RLS de board_favorites filtra. */
+export async function buscarFavoritos(): Promise<string[]> {
+  const { data, error } = await supabase.from('board_favorites').select('board_id')
+  if (error) throw traduzirErro(error)
+  return (data ?? []).map((f) => f.board_id as string)
+}
+
+/** Sem user_id: o `default auth.uid()` preenche e a policy confere (0003). */
+export async function favoritar(boardId: string): Promise<void> {
+  const { error } = await supabase.from('board_favorites').insert({ board_id: boardId })
+  if (error) throw traduzirErro(error)
+}
+
+/** Filtra só por board: o RLS já restringe o delete aos favoritos da própria pessoa. */
+export async function desfavoritar(boardId: string): Promise<void> {
+  const { error } = await supabase.from('board_favorites').delete().eq('board_id', boardId)
+  if (error) throw traduzirErro(error)
+}
+
 /**
  * Grupos do board com suas tarefas, prontos para a tabela.
  *

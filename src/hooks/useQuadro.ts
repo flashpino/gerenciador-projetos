@@ -5,6 +5,7 @@ import {
   atualizarTarefa,
   buscarBoard,
   buscarBoards,
+  buscarFavoritos,
   buscarGruposComTarefas,
   buscarMembros,
   buscarTarefaDetalhe,
@@ -13,6 +14,8 @@ import {
   criarComentario,
   criarSubtarefa,
   criarTarefa,
+  desfavoritar,
+  favoritar,
   removerBoard,
   removerSubtarefa,
   renomearBoard,
@@ -28,6 +31,7 @@ const chaves = {
   workspace: ['workspace'] as const,
   boards: ['boards'] as const,
   board: (boardId: string) => ['board', boardId] as const,
+  favoritos: ['favoritos'] as const,
   membros: ['membros'] as const,
   grupos: (boardId: string) => ['grupos', boardId] as const,
   tarefa: (taskId: string) => ['tarefa', taskId] as const,
@@ -80,6 +84,43 @@ export function useExcluirBoard() {
     mutationFn: (id: string) => removerBoard(id),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: chaves.boards })
+      // A cascata do banco apagou o favorito junto (0003).
+      void qc.invalidateQueries({ queryKey: chaves.favoritos })
+    },
+  })
+}
+
+export function useFavoritos() {
+  return useQuery({ queryKey: chaves.favoritos, queryFn: buscarFavoritos })
+}
+
+/**
+ * Estrela é clique de alternância, como a célula da F1: UPDATE OTIMISTA —
+ * muda na hora e volta se o servidor recusar.
+ */
+export function useAlternarFavorito() {
+  const qc = useQueryClient()
+  const chave = chaves.favoritos
+
+  return useMutation({
+    mutationFn: ({ boardId, favorito }: { boardId: string; favorito: boolean }) =>
+      favorito ? favoritar(boardId) : desfavoritar(boardId),
+
+    onMutate: async ({ boardId, favorito }) => {
+      await qc.cancelQueries({ queryKey: chave })
+      const anterior = qc.getQueryData<string[]>(chave)
+      qc.setQueryData<string[]>(chave, (ids = []) =>
+        favorito ? [...ids, boardId] : ids.filter((id) => id !== boardId),
+      )
+      return { anterior }
+    },
+
+    onError: (_erro, _vars, ctx) => {
+      if (ctx?.anterior) qc.setQueryData(chave, ctx.anterior)
+    },
+
+    onSettled: () => {
+      void qc.invalidateQueries({ queryKey: chave })
     },
   })
 }
