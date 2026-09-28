@@ -136,12 +136,13 @@ describe('Acessibilidade automatizada (axe) — telas principais do MVP', () => 
   // Timeout maior: a grade do Gantt (ticks + linha "hoje" + sticky) é a árvore
   // DOM mais larga das 4 telas. O scan do axe nela passa dos 5s padrão do
   // vitest, e sob `test:cov` (instrumentação v8) passa até dos 15s — medido
-  // em 27s neste ambiente.
+  // em 27s neste ambiente. Em 2026-09-28: ~21s isolado, mas 47–55s na suíte
+  // inteira (37 arquivos disputando CPU em paralelo) — daí 90s.
   it('GanttPage (F3) não tem violação WCAG', async () => {
     const { container, findByText } = renderComProviders(<GanttPage />)
     await findByText('Config inicial')
     expect(await axe(container)).toHaveNoViolations()
-  }, 45_000)
+  }, 90_000)
 
   it('DashboardPage (F4) não tem violação WCAG', async () => {
     const { container, findByText } = renderComProviders(<DashboardPage />)
