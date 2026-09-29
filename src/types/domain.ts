@@ -67,7 +67,8 @@ export interface Comment {
 }
 
 /** Tarefa com o que só o modal de detalhe (F5) precisa — não a tabela/kanban. */
-export type ActivityKind = 'task_created' | 'status_changed' | 'comment_added'
+// Nao exportado: so serve de base para Atividade, no mesmo arquivo.
+type ActivityKind = 'task_created' | 'status_changed' | 'comment_added'
 
 /** Linha de `activities` (0004), gravada por gatilho — o app só lê. */
 export interface Atividade {
