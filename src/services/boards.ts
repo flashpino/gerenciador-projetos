@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import type { Atividade, Board, Comment, GroupComTarefas, Profile, Subtask, Task, TaskComDetalhe } from '@/types/domain'
+import type { Atividade, Board, Comment, GroupComTarefas, GrupoInicial, Profile, Subtask, Task, TaskComDetalhe } from '@/types/domain'
 import { traduzirErro } from './erros'
 
 /**
@@ -44,12 +44,18 @@ export async function buscarBoard(id: string): Promise<{ id: string; name: strin
   return data
 }
 
+const GRUPOS_PADRAO: GrupoInicial[] = [{ name: 'A fazer', color: 'azure' }]
+
 /**
  * Board + grupo "A fazer", espelhando handle_new_user (0001_init.up.sql): sem
  * grupo, `tasks.group_id` NOT NULL deixa o board sem onde criar tarefa. Dois
  * inserts e não RPC — uma function atômica seria migration (Zona Vermelha).
  */
-export async function criarBoard(workspaceId: string, name: string): Promise<Board> {
+export async function criarBoard(
+  workspaceId: string,
+  name: string,
+  grupos: GrupoInicial[] = GRUPOS_PADRAO,
+): Promise<Board> {
   const { data: board, error } = await supabase
     .from('boards')
     .insert({ workspace_id: workspaceId, name })
@@ -59,7 +65,7 @@ export async function criarBoard(workspaceId: string, name: string): Promise<Boa
 
   const { error: erroGrupo } = await supabase
     .from('groups')
-    .insert({ board_id: board.id, name: 'A fazer', color: 'azure', position: 0 })
+    .insert(grupos.map((g, position) => ({ board_id: board.id, name: g.name, color: g.color, position })))
   if (erroGrupo) throw traduzirErro(erroGrupo)
 
   return board

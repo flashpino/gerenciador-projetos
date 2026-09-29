@@ -22,7 +22,7 @@ import {
   renomearBoard,
 } from '@/services/boards'
 import { ehNaoEncontrado } from '@/services/erros'
-import type { GroupComTarefas, Subtask, TaskComDetalhe } from '@/types/domain'
+import type { GroupComTarefas, GrupoInicial, Subtask, TaskComDetalhe } from '@/types/domain'
 
 /**
  * Chaves de cache centralizadas.
@@ -110,7 +110,10 @@ export function useBoard(boardId: string | undefined) {
 export function useCriarBoard() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: ({ workspaceId, name }: { workspaceId: string; name: string }) => criarBoard(workspaceId, name),
+    mutationFn: ({ workspaceId, name, grupos }: { workspaceId: string; name: string; grupos?: GrupoInicial[] }) =>
+      // Não repassa `grupos` undefined: o Vitest trata (a, b, undefined) ≠ (a, b), e os
+      // testes do Novo Painel verificam a chamada com dois argumentos.
+      grupos ? criarBoard(workspaceId, name, grupos) : criarBoard(workspaceId, name),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: chaves.boards })
     },

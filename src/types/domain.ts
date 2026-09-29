@@ -24,6 +24,9 @@ interface Group {
   position: number
 }
 
+/** Grupo ainda sem board — o que um modelo (lib/modelos.ts) ou o "Novo Painel" pede para criar. */
+export type GrupoInicial = Pick<Group, 'name' | 'color'>
+
 export interface Task {
   id: string
   board_id: string
