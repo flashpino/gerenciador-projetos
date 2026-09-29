@@ -219,6 +219,7 @@ describe('Acessibilidade automatizada (axe) — telas principais do MVP', () => 
   })
 
   it('ModelosPage não tem violação WCAG', async () => {
+    vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace' })
     const { wrapper: QueryWrapper } = criarWrapper()
     const { container, findByRole } = render(
       <MemoryRouter>
@@ -228,6 +229,8 @@ describe('Acessibilidade automatizada (axe) — telas principais do MVP', () => 
       </MemoryRouter>,
     )
     await findByRole('heading', { level: 1, name: 'Modelos' })
+    const botao = await findByRole('button', { name: 'Usar modelo Sprint de software' })
+    await vi.waitFor(() => expect(botao).toBeEnabled())
     expect(await axe(container)).toHaveNoViolations()
   })
 

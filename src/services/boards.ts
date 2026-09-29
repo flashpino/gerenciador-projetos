@@ -47,7 +47,7 @@ export async function buscarBoard(id: string): Promise<{ id: string; name: strin
 const GRUPOS_PADRAO: GrupoInicial[] = [{ name: 'A fazer', color: 'azure' }]
 
 /**
- * Board + grupo "A fazer", espelhando handle_new_user (0001_init.up.sql): sem
+ * Board + grupos iniciais (padrão: "A fazer"), espelhando handle_new_user (0001_init.up.sql): sem
  * grupo, `tasks.group_id` NOT NULL deixa o board sem onde criar tarefa. Dois
  * inserts e não RPC — uma function atômica seria migration (Zona Vermelha).
  */
