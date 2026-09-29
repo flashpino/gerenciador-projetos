@@ -419,6 +419,93 @@ Os cinco blocos devem imprimir `NOTICE ... OK`.
 
 ---
 
+## Teste — convidar integrantes (migration 0005)
+
+Rodar **depois** de aplicar `0005_integrantes.up.sql`. Transação com `rollback`:
+B não fica membro do workspace de A.
+
+```sql
+begin;
+
+-- >>> TROQUE PELOS IDS DE A E B <<<
+create temp table _t (usuario_a uuid, usuario_b uuid) on commit drop;
+insert into _t values (
+  '00000000-0000-0000-0000-00000000000a',
+  '00000000-0000-0000-0000-00000000000b'
+);
+
+do $teste$
+declare
+  a uuid; b uuid; ws_a uuid; email_b text; n integer;
+begin
+  select usuario_a, usuario_b into a, b from _t;
+  select id into ws_a from workspaces where owner_id = a;
+  select email into email_b from auth.users where id = b;  -- lido antes de trocar de papel
+
+  -- --- Como A ---
+  set local role authenticated;
+  perform set_config('request.jwt.claims', json_build_object('sub', a, 'role', 'authenticated')::text, true);
+
+  -- 1. E-mail sem conta falha com P0002
+  begin
+    perform adicionar_membro(ws_a, 'ninguem-existe@exemplo.dev');
+    raise exception 'FALHA [inexistente]: adicionou e-mail sem conta.';
+  exception when no_data_found then
+    raise notice 'OK [inexistente]: P0002';
+  end;
+
+  -- 2. A adiciona B (maiusculas e espacos no e-mail nao atrapalham)
+  perform adicionar_membro(ws_a, '  ' || upper(email_b) || ' ');
+  raise notice 'OK [adicionar]: sem erro';
+
+  -- 3. A nao consegue se remover
+  delete from workspace_members where workspace_id = ws_a and user_id = a;
+  if not exists (select 1 from workspace_members where workspace_id = ws_a and user_id = a) then
+    raise exception 'FALHA [dono fica]: A removeu a si mesma.';
+  end if;
+  raise notice 'OK [dono fica]: linha do dono intacta';
+
+  -- --- Como B ---
+  perform set_config('request.jwt.claims', json_build_object('sub', b, 'role', 'authenticated')::text, true);
+
+  -- 4. B agora le os boards de A
+  select count(*) into n from boards where workspace_id = ws_a;
+  if n = 0 then
+    raise exception 'FALHA [leitura]: B membro nao ve boards de A.';
+  end if;
+  raise notice 'OK [leitura]: B ve % board(s) de A', n;
+
+  -- 5. B nao e dono: nao adiciona ninguem no workspace de A
+  begin
+    perform adicionar_membro(ws_a, email_b);
+    raise exception 'FALHA [so dono]: B adicionou no workspace de A.';
+  exception when insufficient_privilege then
+    raise notice 'OK [so dono]: 42501';
+  end;
+
+  -- --- Como A: remove B ---
+  perform set_config('request.jwt.claims', json_build_object('sub', a, 'role', 'authenticated')::text, true);
+  delete from workspace_members where workspace_id = ws_a and user_id = b;
+
+  -- 6. B deixa de ver os boards de A
+  perform set_config('request.jwt.claims', json_build_object('sub', b, 'role', 'authenticated')::text, true);
+  select count(*) into n from boards where workspace_id = ws_a;
+  if n <> 0 then
+    raise exception 'FALHA [remover]: B removido ainda ve % board(s) de A.', n;
+  end if;
+  raise notice 'OK [remover]: B nao ve mais os boards de A';
+
+  reset role;
+end;
+$teste$;
+
+rollback;
+```
+
+Os seis blocos devem imprimir `NOTICE ... OK`.
+
+---
+
 ## Advisors — o que o linter do Supabase apontou
 
 Rodados após cada migration (`get_advisors`, tipos `security` e `performance`).
