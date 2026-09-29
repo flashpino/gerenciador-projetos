@@ -70,7 +70,7 @@ removido; A remove B → B deixa de ler os boards de A.
 - `BoardShell`: o botão deixa de ser "em breve" e abre `IntegrantesModal`.
 - **`IntegrantesModal`** (novo, `src/components/features/`) — compõe `Modal`,
   `Avatar`, `Button`, `Field`, `TextInput`, `StateView`:
-  - lista de membros: avatar, nome, selo "Dono" no dono; os quatro estados via
+  - lista de membros: nome e selo "Dono" (avatar cortado na implementação — ver progresso.md); os quatro estados via
     `StateView`
   - **dono:** campo `type="email"` + "Adicionar"; "Remover" em cada membro menos ele
     mesmo, com confirmação

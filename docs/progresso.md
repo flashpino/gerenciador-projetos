@@ -162,7 +162,7 @@ Spec: `docs/superpowers/specs/2026-09-29-integrantes-design.md` · Plano: `docs/
 - [x] Dono adiciona por e-mail (só quem já tem conta) e remove com confirmação; os outros só veem
 - [x] Workspace atual = o da própria pessoa; responsáveis = membros do workspace do board
 
-**Cortado:** convite por e-mail para quem não tem conta, papéis, sair do workspace, trocar de workspace, transferir posse.
+**Cortado:** avatar na lista de integrantes (o Avatar repete o nome para leitor de tela; exigiria variante decorativa no primitivo), convite por e-mail para quem não tem conta, papéis, sair do workspace, trocar de workspace, transferir posse.
 **Limitações aceitas:** membro removido continua como responsável das tarefas que tinha; sem notificação; o dono descobre se um e-mail tem conta.
 
 ---

@@ -1,6 +1,6 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { SessaoContext } from '@/hooks/sessaoContext'
 import { criarWrapper } from '@/test/query'
 
@@ -36,6 +36,8 @@ describe('IntegrantesModal', () => {
     vi.resetAllMocks()
     vi.mocked(servico.buscarMembros).mockResolvedValue(MEMBROS)
   })
+
+  afterEach(() => vi.restoreAllMocks())
 
   it('lista os membros do workspace e marca a dona', async () => {
     renderizar(DONA)
@@ -99,6 +101,21 @@ describe('IntegrantesModal', () => {
     expect(screen.getByText('Só o dono do workspace pode convidar.')).toBeInTheDocument()
     expect(screen.queryByLabelText('E-mail de quem já tem conta')).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /^Remover/ })).not.toBeInTheDocument()
+  })
+
+  it('erro de uma ação some quando a outra começa', async () => {
+    vi.mocked(servico.adicionarMembro).mockRejectedValue(new Error('Nenhuma conta com esse e-mail.'))
+    vi.mocked(servico.removerMembro).mockResolvedValue()
+    vi.spyOn(window, 'confirm').mockReturnValue(true)
+    const user = userEvent.setup()
+    renderizar(DONA)
+
+    await user.type(await screen.findByLabelText('E-mail de quem já tem conta'), 'z@x.com')
+    await user.click(screen.getByRole('button', { name: 'Adicionar' }))
+    expect(await screen.findByRole('alert')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Remover Beto Souza' }))
+    await vi.waitFor(() => expect(screen.queryByRole('alert')).not.toBeInTheDocument())
   })
 
   it('erro ao carregar os membros aparece no StateView', async () => {

@@ -39,12 +39,14 @@ function Conteudo({ workspaceId, donoId }: { workspaceId: string; donoId: string
     e.preventDefault()
     const limpo = email.trim()
     if (!limpo) return
+    remover.reset()
     adicionar.mutate({ workspaceId, email: limpo }, { onSuccess: () => setEmail('') })
   }
 
   function aoRemover(membro: Profile) {
     // ponytail: confirm() nativo; diálogo próprio só se o texto precisar de formatação.
     if (!window.confirm(`Remover ${membro.full_name} do workspace?`)) return
+    adicionar.reset()
     remover.mutate({ workspaceId, userId: membro.id })
   }
 
