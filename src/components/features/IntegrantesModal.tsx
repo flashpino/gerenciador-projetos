@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Field } from '@/components/ui/Field'
@@ -29,6 +30,7 @@ export function IntegrantesModal({ aberto, aoFechar, workspaceId, donoId }: Prop
 function Conteudo({ workspaceId, donoId }: { workspaceId: string; donoId: string }) {
   const membros = useMembros(workspaceId)
   const { usuario } = useSessao()
+  const navigate = useNavigate()
   const adicionar = useAdicionarMembro()
   const remover = useRemoverMembro()
   const [email, setEmail] = useState('')
@@ -50,6 +52,14 @@ function Conteudo({ workspaceId, donoId }: { workspaceId: string; donoId: string
     remover.mutate({ workspaceId, userId: membro.id })
   }
 
+  // Quem foi adicionado sem pedir sai sozinho (0006). O board deixa de ser visível,
+  // então a volta é para Meus Painéis.
+  function aoSair() {
+    if (!usuario || !window.confirm('Sair deste workspace? Você deixa de ver os boards dele.')) return
+    adicionar.reset()
+    remover.mutate({ workspaceId, userId: usuario.id }, { onSuccess: () => navigate('/paineis') })
+  }
+
   const estado = estadoDaQuery(membros, { titulo: 'Nenhum integrante' }, () => void membros.refetch())
 
   return (
@@ -64,7 +74,12 @@ function Conteudo({ workspaceId, donoId }: { workspaceId: string; donoId: string
           </Button>
         </form>
       ) : (
-        <p className="text-body text-ink-muted">Só o dono do workspace pode convidar.</p>
+        <div className="flex flex-col gap-space-sm">
+          <p className="text-body text-ink-muted">Só o dono do workspace pode convidar.</p>
+          <Button variant="secondary" size="sm" loading={remover.isPending} className="self-start" onClick={aoSair}>
+            Sair do workspace
+          </Button>
+        </div>
       )}
 
       {erro && (

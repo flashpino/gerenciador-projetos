@@ -270,7 +270,9 @@ describe('Acessibilidade automatizada (axe) — telas principais do MVP', () => 
     const { findByRole } = render(
       <SessaoContext.Provider value={SESSAO_LOGADA}>
         <QueryWrapper>
-          <IntegrantesModal aberto aoFechar={() => {}} workspaceId="w1" donoId="u1" />
+          <MemoryRouter>
+            <IntegrantesModal aberto aoFechar={() => {}} workspaceId="w1" donoId="u1" />
+          </MemoryRouter>
         </QueryWrapper>
       </SessaoContext.Provider>,
     )

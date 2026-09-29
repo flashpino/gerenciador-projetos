@@ -1,4 +1,6 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
+import type { ReactElement } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/services/auth', () => ({
@@ -9,6 +11,13 @@ vi.mock('@/services/auth', () => ({
 import * as servico from '@/services/auth'
 import { useSessao } from '@/hooks/useSessao'
 import { SessaoProvider } from './SessaoProvider'
+
+// Client próprio (sem gcTime 0 do criarWrapper): o teste de logout precisa que o
+// dado semeado continue no cache até o provider limpá-lo.
+function renderComQuery(ui: ReactElement) {
+  const client = new QueryClient()
+  return { client, ...render(<QueryClientProvider client={client}>{ui}</QueryClientProvider>) }
+}
 
 function Sonda() {
   const { usuario, carregando } = useSessao()
@@ -28,7 +37,7 @@ describe('SessaoProvider / useSessao', () => {
     )
     vi.mocked(servico.escutarSessao).mockReturnValue(() => {})
 
-    render(
+    renderComQuery(
       <SessaoProvider>
         <Sonda />
       </SessaoProvider>,
@@ -43,7 +52,7 @@ describe('SessaoProvider / useSessao', () => {
     vi.mocked(servico.obterSessaoAtual).mockResolvedValue({ id: '1', email: 'a@x.com' })
     vi.mocked(servico.escutarSessao).mockReturnValue(() => {})
 
-    render(
+    renderComQuery(
       <SessaoProvider>
         <Sonda />
       </SessaoProvider>,
@@ -59,7 +68,7 @@ describe('SessaoProvider / useSessao', () => {
       return () => {}
     })
 
-    render(
+    renderComQuery(
       <SessaoProvider>
         <Sonda />
       </SessaoProvider>,
@@ -70,12 +79,34 @@ describe('SessaoProvider / useSessao', () => {
     await waitFor(() => expect(screen.getByText('deslogado')).toBeInTheDocument())
   })
 
+  it('logout limpa o cache de dados — a próxima conta na mesma aba não herda o workspace da anterior', async () => {
+    vi.mocked(servico.obterSessaoAtual).mockResolvedValue({ id: '1', email: 'a@x.com' })
+    let emitir!: (u: { id: string; email: string | null } | null) => void
+    vi.mocked(servico.escutarSessao).mockImplementation((cb) => {
+      emitir = cb
+      return () => {}
+    })
+
+    const { client } = renderComQuery(
+      <SessaoProvider>
+        <Sonda />
+      </SessaoProvider>,
+    )
+    await waitFor(() => expect(screen.getByText('logado:a@x.com')).toBeInTheDocument())
+    client.setQueryData(['workspace'], { id: 'w-a', name: 'Workspace de A' })
+
+    emitir(null)
+
+    await waitFor(() => expect(screen.getByText('deslogado')).toBeInTheDocument())
+    expect(client.getQueryData(['workspace'])).toBeUndefined()
+  })
+
   it('cancela a inscricao ao desmontar', async () => {
     const cancelar = vi.fn()
     vi.mocked(servico.obterSessaoAtual).mockResolvedValue(null)
     vi.mocked(servico.escutarSessao).mockReturnValue(cancelar)
 
-    const { unmount } = render(
+    const { unmount } = renderComQuery(
       <SessaoProvider>
         <Sonda />
       </SessaoProvider>,

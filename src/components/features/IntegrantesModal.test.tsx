@@ -1,5 +1,6 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { SessaoContext } from '@/hooks/sessaoContext'
 import { criarWrapper } from '@/test/query'
@@ -25,7 +26,15 @@ function renderizar(sessao: typeof DONA) {
   render(
     <SessaoContext.Provider value={sessao}>
       <QueryWrapper>
-        <IntegrantesModal aberto aoFechar={vi.fn()} workspaceId="w1" donoId="u1" />
+        <MemoryRouter initialEntries={['/boards/b1']}>
+          <Routes>
+            <Route
+              path="/boards/:boardId"
+              element={<IntegrantesModal aberto aoFechar={vi.fn()} workspaceId="w1" donoId="u1" />}
+            />
+            <Route path="/paineis" element={<p>meus painéis</p>} />
+          </Routes>
+        </MemoryRouter>
       </QueryWrapper>
     </SessaoContext.Provider>,
   )
@@ -93,6 +102,24 @@ describe('IntegrantesModal', () => {
     await user.click(await screen.findByRole('button', { name: 'Remover Beto Souza' }))
 
     expect(servico.removerMembro).not.toHaveBeenCalled()
+  })
+
+  it('quem não é dono sai do workspace depois de confirmar e volta para Meus Painéis', async () => {
+    vi.mocked(servico.removerMembro).mockResolvedValue()
+    vi.spyOn(window, 'confirm').mockReturnValue(true)
+    const user = userEvent.setup()
+    renderizar(CONVIDADO)
+
+    await user.click(await screen.findByRole('button', { name: 'Sair do workspace' }))
+
+    expect(servico.removerMembro).toHaveBeenCalledWith('w1', 'u2')
+    expect(await screen.findByText('meus painéis')).toBeInTheDocument()
+  })
+
+  it('a dona não tem "Sair do workspace" (o banco também recusaria)', async () => {
+    renderizar(DONA)
+    await screen.findByRole('list', { name: 'Integrantes do workspace' })
+    expect(screen.queryByRole('button', { name: 'Sair do workspace' })).not.toBeInTheDocument()
   })
 
   it('quem não é dono só vê a lista e o motivo', async () => {

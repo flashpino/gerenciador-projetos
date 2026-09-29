@@ -195,6 +195,8 @@ export function useRemoverMembro() {
     mutationFn: ({ workspaceId, userId }: { workspaceId: string; userId: string }) => removerMembro(workspaceId, userId),
     onSuccess: (_nada, { workspaceId }) => {
       void qc.invalidateQueries({ queryKey: chaves.membros(workspaceId) })
+      // Quem sai (0006) deixa de ver os boards daquele workspace.
+      void qc.invalidateQueries({ queryKey: chaves.boards })
     },
   })
 }

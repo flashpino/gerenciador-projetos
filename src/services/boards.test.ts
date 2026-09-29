@@ -5,7 +5,7 @@ vi.mock('@/lib/supabase', () => ({
 }))
 
 import { supabase } from '@/lib/supabase'
-import { adicionarMembro, buscarMembros, buscarWorkspaceAtual, criarBoard } from './boards'
+import { adicionarMembro, buscarBoard, buscarMembros, buscarWorkspaceAtual, criarBoard } from './boards'
 
 // boards: insert().select().single() → board criado; groups: insert() → o que o teste inspeciona.
 function mockSupabase() {
@@ -98,5 +98,21 @@ describe('adicionarMembro', () => {
       error: { code: '42501', message: 'so o dono do workspace adiciona integrantes' },
     } as never)
     await expect(adicionarMembro('w1', 'b@x.com')).rejects.toThrow('Você não tem permissão para isso.')
+  })
+})
+
+describe('buscarBoard', () => {
+  beforeEach(() => vi.resetAllMocks())
+
+  // owner_id decide quem vê os controles de dono no IntegrantesModal: um alias
+  // errado no embed daria undefined e desligaria o convite em silêncio.
+  it('achata o dono do workspace (embed) em owner_id', async () => {
+    const single = vi.fn().mockResolvedValue({
+      data: { id: 'b1', name: 'Sprint', workspace_id: 'w1', workspace: { owner_id: 'u1' } },
+      error: null,
+    })
+    vi.mocked(supabase.from).mockReturnValue({ select: () => ({ eq: () => ({ single }) }) } as never)
+
+    await expect(buscarBoard('b1')).resolves.toEqual({ id: 'b1', name: 'Sprint', workspace_id: 'w1', owner_id: 'u1' })
   })
 })
