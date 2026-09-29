@@ -124,6 +124,19 @@ Spec: `docs/superpowers/specs/2026-09-28-favoritos-design.md` · Plano: `docs/su
 
 **Cortado:** atalhos de favoritos na Sidebar, ordenar favoritos, favoritar tarefa.
 
+## Sub-projeto 4/6 — Feed de Atividades ✅
+
+Spec: `docs/superpowers/specs/2026-09-28-atividades-design.md` · Plano: `docs/superpowers/plans/2026-09-28-atividades.md`
+
+- [x] Migration `0004_activities` (Zona Vermelha): eventos gravados por gatilhos `security definer`; o cliente só lê. Aplicada pelo humano, verificada pela API (7 checagens)
+- [x] Eventos: tarefa criada, status alterado (concluída e travada com frase própria), comentário
+- [x] `/atividades`: workspace inteiro, 50 mais recentes, com o board de cada evento
+- [x] Card "Atividades recentes" no Dashboard: 10 mais recentes do board, fora do estado das métricas
+- [x] Mudar/criar tarefa e comentar invalidam o feed
+
+**Cortado:** tempo real, paginação, filtro por tipo, eventos de outros campos (prazo, responsável…).
+**Nota:** o histórico começa na aplicação da 0004 — nada antes dela foi registrado.
+
 ---
 
 ## Como isto é mantido

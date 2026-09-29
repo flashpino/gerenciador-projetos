@@ -153,7 +153,7 @@ Explícito para que seja possível recusar depois, sem nova discussão:
 | Múltiplos workspaces por usuário | Um workspace por usuário na v1. O schema já suporta; a UI não expõe |
 | Colunas customizáveis pelo usuário | O conjunto de colunas é fixo na v1 |
 | Permissão granular por papel | Membro do workspace lê e escreve. Sem papéis na v1 |
-| Feed de atividades no dashboard | Exige tabela de eventos nova — nenhuma das 9 tabelas do schema atual (`docs/data-model.md`) registra log de atividade. Candidato a v1.1, com migration própria revisada por humano |
+| ~~Feed de atividades no dashboard~~ | **Reaberto e entregue** no sub-projeto 4 (2026-09-28): tabela `activities` gravada por gatilhos (migration 0004, revisada e aplicada por humano), `/atividades` e card no Dashboard — `docs/superpowers/specs/2026-09-28-atividades-design.md`. Continua fora: tempo real, filtro por tipo de evento, eventos de outros campos |
 | Carga de trabalho / capacidade da equipe no dashboard | Zona Vermelha (`CLAUDE.md`): cálculo de capacidade e alocação de esforço é autoria humana. `estimated_hours`/`logged_hours` já existem em `tasks`, mas a fórmula de sobrecarga fica para v1.1, proposta pela IA e aprovada linha a linha |
 | Filtros de período/sprint, exportar relatório, personalizar widgets no dashboard | Não existe conceito de sprint/período no schema. Seriam controles de UI sem dado real por trás — mockup do stitch é ilustrativo aqui, não um requisito com dado que sustente. "Exportar" já cai na linha "Exportação XLSX/PDF" acima |
 | Subtarefas aninhadas em vários níveis | Um nível só |
