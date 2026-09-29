@@ -3,6 +3,7 @@ import type { CamposEditaveis, NovaTarefa } from '@/services/boards'
 import {
   atualizarSubtarefa,
   atualizarTarefa,
+  buscarAtividades,
   buscarBoard,
   buscarBoards,
   buscarFavoritos,
@@ -36,6 +37,8 @@ const chaves = {
   membros: ['membros'] as const,
   grupos: (boardId: string) => ['grupos', boardId] as const,
   tarefa: (taskId: string) => ['tarefa', taskId] as const,
+  atividades: (boardId: string | undefined, limite: number) => ['atividades', boardId ?? 'todos', limite] as const,
+  todasAtividades: ['atividades'] as const,
 }
 
 /**
@@ -51,6 +54,8 @@ function useMutacaoOtimista<TDado, TVars>(
   chave: QueryKey,
   mutationFn: (vars: TVars) => Promise<unknown>,
   aplicar: (atual: TDado | undefined, vars: TVars) => TDado | undefined,
+  /** Outras caches que a mudança torna velhas (ex.: o feed de atividades). */
+  invalidarTambem: readonly QueryKey[] = [],
 ) {
   const qc = useQueryClient()
 
@@ -74,6 +79,7 @@ function useMutacaoOtimista<TDado, TVars>(
       // Reconcilia com o servidor em sucesso E em erro: o banco pode ter
       // normalizado algo (trigger de updated_at, constraint) que o otimista nao sabe.
       void qc.invalidateQueries({ queryKey: chave })
+      for (const outra of invalidarTambem) void qc.invalidateQueries({ queryKey: outra })
     },
   })
 }
@@ -151,6 +157,14 @@ export function useAlternarFavorito() {
   )
 }
 
+/** Feed de eventos (0004): do workspace inteiro (`boardId` indefinido) ou de um board. */
+export function useAtividades(boardId: string | undefined, limite: number) {
+  return useQuery({
+    queryKey: chaves.atividades(boardId, limite),
+    queryFn: () => buscarAtividades({ boardId, limite }),
+  })
+}
+
 export function useMembros() {
   return useQuery({ queryKey: chaves.membros, queryFn: buscarMembros })
 }
@@ -180,6 +194,8 @@ export function useAtualizarTarefa(boardId: string | undefined) {
         ...g,
         tasks: g.tasks.map((t) => (t.id === id ? { ...t, ...campos } : t)),
       })),
+    // Mudar status gera evento no banco (gatilho da 0004): o feed fica velho.
+    [chaves.todasAtividades],
   )
 }
 
@@ -212,6 +228,7 @@ export function useCriarTarefa(boardId: string | undefined) {
     mutationFn: (campos: NovaTarefa) => criarTarefa(campos),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: chaves.grupos(boardId ?? '') })
+      void qc.invalidateQueries({ queryKey: chaves.todasAtividades })
     },
   })
 }
@@ -267,6 +284,7 @@ export function useCriarComentario(taskId: string | undefined) {
       criarComentario(taskId as string, authorId, body),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: chaves.tarefa(taskId ?? '') })
+      void qc.invalidateQueries({ queryKey: chaves.todasAtividades })
     },
   })
 }

@@ -23,6 +23,7 @@ vi.mock('@/services/boards', () => ({
   buscarFavoritos: vi.fn(),
   favoritar: vi.fn(),
   desfavoritar: vi.fn(),
+  buscarAtividades: vi.fn(),
 }))
 
 import type { TaskComDetalhe } from '@/types/domain'
@@ -30,6 +31,7 @@ import * as servico from '@/services/boards'
 import { ErroDeDados } from '@/services/erros'
 import {
   useAlternarFavorito,
+  useAtividades,
   useAtualizarSubtarefa,
   useAtualizarTarefa,
   useBoard,
@@ -370,5 +372,43 @@ describe('favoritos — alternância otimista', () => {
     await waitFor(() => expect(result.current.alternar.isError).toBe(true))
     expect(result.current.lista.data).toEqual(['b1'])
     expect(servico.desfavoritar).toHaveBeenCalledWith('b1')
+  })
+})
+
+describe('atividades', () => {
+  beforeEach(() => vi.resetAllMocks())
+
+  it('useAtividades repassa boardId e limite ao serviço', async () => {
+    vi.mocked(servico.buscarAtividades).mockResolvedValue([])
+    const { wrapper } = criarWrapper()
+    const { result } = renderHook(() => useAtividades('b1', 10), { wrapper })
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(servico.buscarAtividades).toHaveBeenCalledWith({ boardId: 'b1', limite: 10 })
+  })
+
+  it('mudar uma tarefa invalida o feed — o evento novo aparece sem esperar o staleTime', async () => {
+    vi.mocked(servico.buscarGruposComTarefas).mockResolvedValue(grupos())
+    vi.mocked(servico.atualizarTarefa).mockResolvedValue({} as never)
+    const { wrapper, client } = criarWrapper()
+    const espiao = vi.spyOn(client, 'invalidateQueries')
+    const { result } = renderHook(() => useAtualizarTarefa('b1'), { wrapper })
+
+    result.current.mutate({ id: 't1', campos: { status: 'done' } })
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(espiao).toHaveBeenCalledWith({ queryKey: ['atividades'] })
+  })
+
+  it('comentar invalida o feed', async () => {
+    vi.mocked(servico.criarComentario).mockResolvedValue({ id: 'c1' } as never)
+    const { wrapper, client } = criarWrapper()
+    const espiao = vi.spyOn(client, 'invalidateQueries')
+    const { result } = renderHook(() => useCriarComentario('t1'), { wrapper })
+
+    result.current.mutate({ authorId: 'u1', body: 'oi' })
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(espiao).toHaveBeenCalledWith({ queryKey: ['atividades'] })
   })
 })

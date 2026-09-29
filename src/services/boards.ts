@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import type { Board, Comment, GroupComTarefas, Profile, Subtask, Task, TaskComDetalhe } from '@/types/domain'
+import type { Atividade, Board, Comment, GroupComTarefas, Profile, Subtask, Task, TaskComDetalhe } from '@/types/domain'
 import { traduzirErro } from './erros'
 
 /**
@@ -100,6 +100,20 @@ export async function favoritar(boardId: string): Promise<void> {
 export async function desfavoritar(boardId: string): Promise<void> {
   const { error } = await supabase.from('board_favorites').delete().eq('board_id', boardId)
   if (error) throw traduzirErro(error)
+}
+
+/** Feed: os `limite` mais recentes, do workspace inteiro ou de um board. RLS isola. */
+export async function buscarAtividades({ boardId, limite }: { boardId?: string; limite: number }): Promise<Atividade[]> {
+  let consulta = supabase
+    .from('activities')
+    .select(
+      'id, board_id, task_id, kind, task_title, from_status, to_status, comment_excerpt, created_at, ator:profiles(full_name, avatar_url), board:boards(name)',
+    )
+  if (boardId) consulta = consulta.eq('board_id', boardId)
+  const { data, error } = await consulta.order('created_at', { ascending: false }).limit(limite)
+
+  if (error) throw traduzirErro(error)
+  return (data ?? []) as unknown as Atividade[]
 }
 
 /**

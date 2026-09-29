@@ -67,6 +67,24 @@ export interface Comment {
 }
 
 /** Tarefa com o que só o modal de detalhe (F5) precisa — não a tabela/kanban. */
+export type ActivityKind = 'task_created' | 'status_changed' | 'comment_added'
+
+/** Linha de `activities` (0004), gravada por gatilho — o app só lê. */
+export interface Atividade {
+  id: number
+  board_id: string
+  task_id: string | null
+  kind: ActivityKind
+  /** Cópia: a tarefa pode ter sido renomeada ou apagada depois. */
+  task_title: string
+  from_status: TaskStatus | null
+  to_status: TaskStatus | null
+  comment_excerpt: string | null
+  created_at: string
+  ator: Pick<Profile, 'full_name' | 'avatar_url'> | null
+  board: { name: string } | null
+}
+
 export interface TaskComDetalhe extends Task {
   subtasks: Subtask[]
   comments: Comment[]
