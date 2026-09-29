@@ -175,10 +175,20 @@ Os seis blocos devem imprimir `NOTICE ... OK`.
 
 - [ ] **Step 4: Commit (só arquivos — nada é aplicado)**
 
+`docs/data-model.md` tem uma mudança **não relacionada e não commitada** do humano (UUIDs reais no teste da 0001) que não pode entrar no commit nem se perder. **Antes do Step 3**, guarde-a e limpe o arquivo:
+
 ```bash
-git add supabase/migrations/0005_integrantes.up.sql supabase/migrations/0005_integrantes.down.sql
-git add -p docs/data-model.md   # só o hunk da seção nova; o working tree tem UUIDs reais não relacionados
+git diff docs/data-model.md > "$TEMP/uuids-humano.patch"
+git checkout -- docs/data-model.md
+```
+
+Depois do Step 3:
+
+```bash
+git add supabase/migrations/0005_integrantes.up.sql supabase/migrations/0005_integrantes.down.sql docs/data-model.md
 git commit -m "feat(db): migration 0005 adicionar_membro + dono não se remove (não aplicada)"
+git apply "$TEMP/uuids-humano.patch"   # devolve a mudança do humano, ainda não commitada
+git diff --stat docs/data-model.md     # tem que mostrar a mudança de volta (2 linhas)
 ```
 
 - [ ] **Step 5: PARE.** Mostrar ao humano os dois SQL. Ele revisa, aplica a 0005 e roda o roteiro (ou pede ao agente para rodar o roteiro e `get_advisors` pelo MCP). As Tasks 2 e 3 só começam depois de "0005 aplicada".
