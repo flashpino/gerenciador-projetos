@@ -12,6 +12,7 @@ import AtividadesPage from '@/pages/AtividadesPage'
 import BoardPage from '@/pages/BoardPage'
 import KanbanPage from '@/pages/KanbanPage'
 import LoginPage from '@/pages/LoginPage'
+import ModelosPage from '@/pages/ModelosPage'
 import NaoEncontrada from '@/pages/NaoEncontrada'
 import PaineisPage from '@/pages/PaineisPage'
 
@@ -72,15 +73,7 @@ export default function App() {
                   <Route path="/paineis" element={<PaineisPage />} />
                   <Route path="/favoritos" element={<PaineisPage filtro="favoritos" />} />
                   <Route path="/atividades" element={<AtividadesPage />} />
-                  <Route
-                    path="/modelos"
-                    element={
-                      <EmConstrucaoPage
-                        titulo="Modelos"
-                        descricao="Criar painéis a partir de modelos chega em breve."
-                      />
-                    }
-                  />
+                  <Route path="/modelos" element={<ModelosPage />} />
                   <Route
                     path="/notificacoes"
                     element={<EmConstrucaoPage titulo="Notificações" descricao="Central de notificações em construção." />}

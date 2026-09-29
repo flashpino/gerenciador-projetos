@@ -139,6 +139,20 @@ Spec: `docs/superpowers/specs/2026-09-28-atividades-design.md` · Plano: `docs/s
 
 ---
 
+## Sub-projeto 5/6 — Modelos ✅
+
+Spec: `docs/superpowers/specs/2026-09-28-modelos-design.md` · Plano: `docs/superpowers/plans/2026-09-28-modelos.md`
+
+- [x] `/modelos` com 3 modelos fixos (Sprint de software, Lançamento de campanha, Onboarding)
+- [x] "Usar modelo" cria o board com os grupos do modelo e abre o board
+- [x] `criarBoard` aceita grupos iniciais (insert em lote); "Novo Painel" segue com "A fazer"
+- [x] Sem migration
+
+**Cortado:** salvar board como modelo, tarefas de exemplo, pedir nome antes de criar.
+**Limitação herdada:** board criado e insert de grupos falhando deixa o board sem grupos (resolver pede RPC — Zona Vermelha).
+
+---
+
 ## Como isto é mantido
 
 Sem automação — atualizo este arquivo no mesmo commit que fecha um critério ou

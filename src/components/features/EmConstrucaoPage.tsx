@@ -7,7 +7,7 @@ interface Props {
 
 /**
  * Uma página, montada em 7 rotas (Meus Painéis, Favoritos, Atividades,
- * Modelos, Notificações, Ajuda, Configurações — docs/superpowers/specs/
+ * Notificações, Ajuda, Configurações — docs/superpowers/specs/
  * 2026-09-17-casca-sidebar-design.md). Cada sub-projeto futuro substitui a
  * sua própria rota por conteúdo real, sem tocar nas outras 6.
  */

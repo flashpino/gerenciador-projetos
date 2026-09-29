@@ -144,7 +144,7 @@ Explícito para que seja possível recusar depois, sem nova discussão:
 | Automações e webhooks | Motor de regras é um produto dentro do produto |
 | Upload real de anexos | Storage, antivírus, cota, permissão de arquivo. Sozinho é uma v2 |
 | Time tracking com cronômetro | `horas estimadas` e `horas gastas` são campos simples; o cronômetro não é |
-| Templates de board | Só faz sentido depois de existirem boards reais para virar template |
+| ~~Templates de board~~ | **Reaberto e entregue** no sub-projeto 5 (2026-09-28): catálogo fixo de 3 modelos em `/modelos`, só grupos, sem migration — `docs/superpowers/specs/2026-09-28-modelos-design.md`. Continua fora: salvar board como modelo, tarefas de exemplo |
 | Notificação por e-mail / push | Exige fila, preferência por usuário e opt-out |
 | Exportação XLSX / PDF | Uma dependência pesada para um caso que o copiar-colar cobre na v1 |
 | Colaboração em tempo real | Traz reconciliação de estado e conflito de edição concorrente |

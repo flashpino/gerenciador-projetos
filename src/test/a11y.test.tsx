@@ -37,6 +37,7 @@ vi.mock('@/services/boards', () => ({
   criarSubtarefa: vi.fn(),
   removerSubtarefa: vi.fn(),
   criarComentario: vi.fn(),
+  criarBoard: vi.fn(),
 }))
 vi.mock('@/services/auth', () => ({
   sair: vi.fn(),
@@ -52,6 +53,7 @@ import KanbanPage from '@/pages/KanbanPage'
 import LoginPage from '@/pages/LoginPage'
 import PaineisPage from '@/pages/PaineisPage'
 import AtividadesPage from '@/pages/AtividadesPage'
+import ModelosPage from '@/pages/ModelosPage'
 import { TaskModal } from '@/components/features/TaskModal'
 
 // Objetos hoisted: JSX `value={{...}}` inline reconstrói a cada render e o
@@ -213,6 +215,19 @@ describe('Acessibilidade automatizada (axe) — telas principais do MVP', () => 
       </MemoryRouter>,
     )
     await findAllByText(/Deploy/)
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
+  it('ModelosPage não tem violação WCAG', async () => {
+    const { wrapper: QueryWrapper } = criarWrapper()
+    const { container, findByRole } = render(
+      <MemoryRouter>
+        <QueryWrapper>
+          <ModelosPage />
+        </QueryWrapper>
+      </MemoryRouter>,
+    )
+    await findByRole('heading', { level: 1, name: 'Modelos' })
     expect(await axe(container)).toHaveNoViolations()
   })
 

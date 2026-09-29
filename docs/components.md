@@ -110,13 +110,18 @@ passam por `src/hooks/` → `src/services/`.
 | `CommentList` | Avatar, TextInput, StateView | TaskModal |
 | `AppShell` | Sidebar | container de toda rota autenticada (docs/superpowers/specs/2026-09-17-casca-sidebar-design.md) |
 | `Sidebar` | Avatar, Button, Modal (`drawer`) | identidade do workspace, nav, rodapé — dentro do AppShell |
-| `EmConstrucaoPage` | StateView | 4 rotas "em construção" (Modelos, Notificações, Ajuda, Configurações) |
+| `EmConstrucaoPage` | StateView | 3 rotas "em construção" (Notificações, Ajuda, Configurações) |
 | `FeedAtividades` | Badge | lista de eventos (criou, mudou status, comentou) — `/atividades` e card do Dashboard. Só apresentação; o texto vem de `lib/atividade.ts` |
 | `FavoritoToggle` | Button (`ghost`, `iconOnly`) | estrela de favorito autossuficiente (lê e alterna sozinha) — BoardShell e BoardCard |
 | `BoardCard` | Menu | um board em Meus Painéis — link pro board + menu Renomear/Excluir |
 | `BoardFormModal` | Modal, Field, TextInput, Button | criar e renomear board (PaineisPage, Sidebar) — mesma dualidade criar/editar do TaskModal |
 | `ExcluirBoardDialog` | Modal, Field, TextInput, Button (`danger`) | exclusão definitiva de board, confirmada digitando o nome. Separado do BoardFormModal: regra destrutiva diferente, nada em comum além do Modal |
 | `AppUpdatePrompt` | Button | shell (nova versão do PWA) |
+
+**`ModelosPage` sem `StateView`:** o catálogo de `lib/modelos.ts` é estático — não
+há loading/erro/vazio de lista. O único estado assíncrono é criar o board: botões
+desabilitados enquanto cria e erro em `role="alert"`. Card inline na página (uso
+único; regra dos três).
 
 **Nota sobre `StatusCell` / `PriorityCell` / `AssigneeCell` / `DueDateCell`:**
 parecem 4 componentes quase iguais e a tentação é unificar num `<Cell type=...>`.
