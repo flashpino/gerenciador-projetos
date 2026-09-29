@@ -30,7 +30,7 @@ $fn$;
 revoke execute on function adicionar_membro(uuid, text) from public, anon;
 grant execute on function adicionar_membro(uuid, text) to authenticated;
 
--- O dono remove os outros (ws_members_write, 0001), nunca a si mesmo: o workspace
+-- O dono remove os outros (ws_members_delete, 0002), nunca a si mesmo: o workspace
 -- ficaria sem o dono na lista de membros e o RLS dele pararia de liberar os boards.
 -- Restrictive: soma-se (AND) as politicas permissivas existentes.
 create policy ws_members_dono_fica on workspace_members

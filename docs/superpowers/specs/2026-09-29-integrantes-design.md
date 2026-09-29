@@ -17,7 +17,7 @@ cabeçalho do board). Não há tela de gestão de membros no Stitch.
   **além** dos próprios.
 
 **Fora de escopo:** convite por e-mail para quem não tem conta, papéis/permissões,
-sair do workspace por conta própria, trocar de workspace na UI, transferir posse.
+trocar de workspace na UI, transferir posse. (Sair por conta própria entrou depois da revisão final — migration 0006, botão "Sair do workspace" para quem não é dono.)
 
 ## Decisão sobre `docs/specs.md` — múltiplos workspaces
 
@@ -41,7 +41,7 @@ estar no ar.
    - `grant execute … to authenticated`; `revoke … from public, anon`
 2. **Dono não se remove:** política `restrictive` de `delete` em `workspace_members`
    que recusa apagar a linha cujo `user_id` é o `owner_id` do workspace. (Remover
-   os outros já é permitido ao dono por `ws_members_write`, da 0001.)
+   os outros já é permitido ao dono por `ws_members_delete`, da 0002. A 0006 soma a saída voluntária do membro.)
 3. **down:** `drop function` + `drop policy`.
 
 Nenhuma tabela nova, nenhum dado migrado.

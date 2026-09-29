@@ -35,7 +35,7 @@ Por isso: **11 tabelas, 11 `enable row level security`, zero exceção.**
 |---|---|---|
 | `profiles` | dados públicos do usuário (nome, avatar) | é o próprio, ou divide workspace |
 | `workspaces` | container raiz | ser membro |
-| `workspace_members` | quem pertence a quê | ser membro (via função) |
+| `workspace_members` | quem pertence a quê | ser membro (via função); entra só por `adicionar_membro` (0005), sai pelo dono ou por conta própria (0006) |
 | `boards` | quadro de tarefas | workspace do board |
 | `groups` | seções dentro do board | board → workspace |
 | `tasks` | a entidade central | board → workspace |
@@ -416,6 +416,23 @@ rollback;
 ```
 
 Os cinco blocos devem imprimir `NOTICE ... OK`.
+
+---
+
+## Integrantes — função e políticas (migrations 0005 e 0006)
+
+Quem entra e sai de `workspace_members` depois do cadastro:
+
+| Peça | O que faz | Por quê |
+|---|---|---|
+| `adicionar_membro(p_ws, p_email)` (0005) | o **dono** de `p_ws` adiciona uma conta existente por e-mail. `42501` se não é dono, `P0002` se o e-mail não tem conta | achar alguém por e-mail exige ler `auth.users`, que o cliente não vê — daí `security definer`, com `search_path` fixo e checagem de dono **antes** de tudo. `execute` só para `authenticated` |
+| `ws_members_delete` (0002, reescrita na 0006) | apaga uma linha de membro: o **dono** apaga qualquer uma, **cada pessoa** apaga a própria (sair) | sem saída, quem é adicionado contra a vontade fica preso. Uma policy só com `or`, não duas permissivas (custo em toda query, como na 0002) |
+| `ws_members_dono_fica` (0005, **restrictive**) | recusa apagar a linha do dono | somada (AND) à de cima: o dono não sai nem remove a si mesmo — sem a linha dele, o RLS pararia de liberar os próprios boards |
+| ~~`ws_members_update`~~ (removida na 0006) | — | o app só insere e apaga membro; o update deixava o dono trocar o próprio `user_id` e contornar a restrictive |
+
+**Riscos aceitos:** um dono descobre se um e-mail tem conta; alguém pode ser adicionado sem aceite (mas sai com um clique, 0006). Convite com aceite seria uma tabela de convites pendentes — fora da v1.
+
+**Verificação (2026-09-29):** 0005 verificada pela API com as contas A e B, 9/9 (script no scratchpad da sessão, não versionado). A 0006 é verificada do mesmo jeito depois de aplicada: B sai sozinho; A continua sem conseguir sair.
 
 ---
 
