@@ -542,8 +542,9 @@ Rodados após cada migration (`get_advisors`, tipos `security` e `performance`).
 | Achado | Nível | Por que fica |
 |---|---|---|
 | `is_workspace_member` executável por `authenticated` | WARN | **Obrigatório.** Toda policy a chama, e expressão de policy roda com os privilégios de quem consulta. Revogar quebra o RLS inteiro com `permission denied for function`. Revela só se você é membro de um workspace cujo id você já teria de conhecer |
-| `unindexed_foreign_keys` × 5 | INFO | É literalmente "índice por precaução", que a seção *Índices* deste documento rejeita. Entra quando existir a query que o paga |
-| `unused_index` × 4 | INFO | Banco quase vazio, sem tráfego. Reavaliar com dado real |
+| `adicionar_membro` executável por `authenticated` (0005) | WARN | **É a RPC.** O app a chama por `/rest/v1/rpc/`. A função checa o dono antes de tudo e só `authenticated` executa (`anon` revogado) |
+| `unindexed_foreign_keys` × 7 (2026-09-29) | INFO | É literalmente "índice por precaução", que a seção *Índices* deste documento rejeita. Entra quando existir a query que o paga |
+| `unused_index` × 3 (2026-09-29) | INFO | Banco quase vazio, sem tráfego. Reavaliar com dado real |
 | `rls_auto_enable` executável | WARN | Não é deste projeto. É um event trigger que liga RLS em tabela nova — guardrail alinhado à regra das 9/9. Chamar direto já falha (`0A000`) |
 
 ### Pendente — decisão humana (Zona Vermelha)
