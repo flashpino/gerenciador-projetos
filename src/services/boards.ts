@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import type { Atividade, Board, Comment, GroupComTarefas, GrupoInicial, Profile, Subtask, Task, TaskComDetalhe } from '@/types/domain'
-import { traduzirErro } from './erros'
+import { ErroDeDados, traduzirErro } from './erros'
 
 /**
  * CAMADA DE SERVICO — unico lugar que fala com o Supabase.
@@ -12,17 +12,15 @@ import { traduzirErro } from './erros'
  */
 
 /**
- * Workspace do usuario. Na v1 ha um workspace por usuario — usado pela Sidebar
- * pra mostrar o nome e pelo BoardFormModal pra criar board nele.
+ * Workspace do usuario: o do qual a pessoa é dona — convidada em outro, ela vê os dois, mas cria no dela.
+ * Usado pela Sidebar pra mostrar o nome e pelo BoardFormModal pra criar board nele.
  */
 export async function buscarWorkspaceAtual(): Promise<{ id: string; name: string }> {
-  const { data, error } = await supabase
-    .from('workspaces')
-    .select('id, name')
-    .order('created_at', { ascending: true })
-    .limit(1)
-    .single()
+  const { data: sessao } = await supabase.auth.getSession()
+  const dono = sessao.session?.user.id
+  if (!dono) throw new ErroDeDados('Sua sessão expirou. Entre de novo.')
 
+  const { data, error } = await supabase.from('workspaces').select('id, name').eq('owner_id', dono).single()
   if (error) throw traduzirErro(error)
   return data
 }
@@ -38,10 +36,18 @@ export async function buscarBoards(): Promise<Board[]> {
   return data ?? []
 }
 
-export async function buscarBoard(id: string): Promise<{ id: string; name: string }> {
-  const { data, error } = await supabase.from('boards').select('id, name').eq('id', id).single()
+/** Board + workspace e dono — o diálogo de integrantes precisa dos dois. */
+export async function buscarBoard(
+  id: string,
+): Promise<{ id: string; name: string; workspace_id: string; owner_id: string }> {
+  const { data, error } = await supabase
+    .from('boards')
+    .select('id, name, workspace_id, workspace:workspaces(owner_id)')
+    .eq('id', id)
+    .single()
   if (error) throw traduzirErro(error)
-  return data
+  const linha = data as unknown as { id: string; name: string; workspace_id: string; workspace: { owner_id: string } }
+  return { id: linha.id, name: linha.name, workspace_id: linha.workspace_id, owner_id: linha.workspace.owner_id }
 }
 
 const GRUPOS_PADRAO: GrupoInicial[] = [{ name: 'A fazer', color: 'azure' }]
@@ -141,15 +147,34 @@ export async function buscarGruposComTarefas(boardId: string): Promise<GroupComT
   return (data ?? []) as GroupComTarefas[]
 }
 
-/** Membros do workspace — para o seletor de responsavel e para os avatares. */
-export async function buscarMembros(): Promise<Profile[]> {
+/** Membros de um workspace — para o seletor de responsavel e para os avatares. */
+export async function buscarMembros(workspaceId: string): Promise<Profile[]> {
   const { data, error } = await supabase
-    .from('profiles')
-    .select('id, full_name, avatar_url')
-    .order('full_name', { ascending: true })
-
+    .from('workspace_members')
+    .select('perfil:profiles(id, full_name, avatar_url)')
+    .eq('workspace_id', workspaceId)
   if (error) throw traduzirErro(error)
-  return data ?? []
+
+  const linhas = (data ?? []) as unknown as { perfil: Profile }[]
+  return linhas.map((l) => l.perfil).toSorted((x, y) => x.full_name.localeCompare(y.full_name, 'pt-BR'))
+}
+
+/** Só o dono consegue (RPC da 0005). Só acha quem já tem conta — nenhum e-mail é enviado. */
+export async function adicionarMembro(workspaceId: string, email: string): Promise<void> {
+  const { error } = await supabase.rpc('adicionar_membro', { p_ws: workspaceId, p_email: email })
+  // P0002 é o raise da 0005 para e-mail sem conta — a única mensagem de domínio da RPC.
+  if (error?.code === 'P0002') throw new ErroDeDados('Nenhuma conta com esse e-mail.', error)
+  if (error) throw traduzirErro(error)
+}
+
+/** RLS: só o dono apaga, e nunca a própria linha (0005). */
+export async function removerMembro(workspaceId: string, userId: string): Promise<void> {
+  const { error } = await supabase
+    .from('workspace_members')
+    .delete()
+    .eq('workspace_id', workspaceId)
+    .eq('user_id', userId)
+  if (error) throw traduzirErro(error)
 }
 
 export type CamposEditaveis = Partial<

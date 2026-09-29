@@ -38,7 +38,7 @@ describe('DashboardPage', () => {
   })
 
   it('card "Atividades recentes" mostra os eventos DESTE board (10 mais recentes)', async () => {
-    vi.mocked(servico.buscarBoard).mockResolvedValue({ id: 'b1', name: 'Meu Board' })
+    vi.mocked(servico.buscarBoard).mockResolvedValue({ id: 'b1', name: 'Meu Board', workspace_id: 'w1', owner_id: 'u1' })
     vi.mocked(servico.buscarGruposComTarefas).mockResolvedValue([])
     vi.mocked(servico.buscarAtividades).mockResolvedValue([
       {
@@ -56,7 +56,7 @@ describe('DashboardPage', () => {
   })
 
   it('card de atividades tem vazio próprio e aparece mesmo com o board sem tarefas', async () => {
-    vi.mocked(servico.buscarBoard).mockResolvedValue({ id: 'b1', name: 'Meu Board' })
+    vi.mocked(servico.buscarBoard).mockResolvedValue({ id: 'b1', name: 'Meu Board', workspace_id: 'w1', owner_id: 'u1' })
     vi.mocked(servico.buscarGruposComTarefas).mockResolvedValue([])
     renderizar()
 
@@ -65,7 +65,7 @@ describe('DashboardPage', () => {
   })
 
   it('F4.3: board com grupo presente mas sem tarefas mostra o estado vazio, não 0%/NaN', async () => {
-    vi.mocked(servico.buscarBoard).mockResolvedValue({ id: 'b1', name: 'Meu Board' })
+    vi.mocked(servico.buscarBoard).mockResolvedValue({ id: 'b1', name: 'Meu Board', workspace_id: 'w1', owner_id: 'u1' })
     const grupoVazio: GroupComTarefas[] = [
       { id: 'g1', board_id: 'b1', name: 'Grupo Vazio', color: 'azure', position: 0, tasks: [] },
     ]
@@ -79,7 +79,7 @@ describe('DashboardPage', () => {
   })
 
   it('renderiza as métricas reais quando o board tem tarefas', async () => {
-    vi.mocked(servico.buscarBoard).mockResolvedValue({ id: 'b1', name: 'Meu Board' })
+    vi.mocked(servico.buscarBoard).mockResolvedValue({ id: 'b1', name: 'Meu Board', workspace_id: 'w1', owner_id: 'u1' })
     const grupos: GroupComTarefas[] = [
       {
         id: 'g1', board_id: 'b1', name: 'Em Execução', color: 'azure', position: 0,

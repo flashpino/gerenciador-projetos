@@ -1,9 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('@/lib/supabase', () => ({ supabase: { from: vi.fn() } }))
+vi.mock('@/lib/supabase', () => ({
+  supabase: { from: vi.fn(), rpc: vi.fn(), auth: { getSession: vi.fn() } },
+}))
 
 import { supabase } from '@/lib/supabase'
-import { criarBoard } from './boards'
+import { adicionarMembro, buscarMembros, buscarWorkspaceAtual, criarBoard } from './boards'
 
 // boards: insert().select().single() → board criado; groups: insert() → o que o teste inspeciona.
 function mockSupabase() {
@@ -35,5 +37,66 @@ describe('criarBoard', () => {
       { board_id: 'b1', name: 'Backlog', color: 'azure', position: 0 },
       { board_id: 'b1', name: 'Concluído', color: 'mint', position: 1 },
     ])
+  })
+})
+
+describe('buscarWorkspaceAtual', () => {
+  beforeEach(() => vi.resetAllMocks())
+
+  it('pega o workspace do qual a pessoa é dona, não o primeiro visível', async () => {
+    vi.mocked(supabase.auth.getSession).mockResolvedValue({ data: { session: { user: { id: 'u1' } } }, error: null } as never)
+    const eq = vi.fn(() => ({ single: vi.fn().mockResolvedValue({ data: { id: 'w1', name: 'Meu Workspace' }, error: null }) }))
+    vi.mocked(supabase.from).mockReturnValue({ select: () => ({ eq }) } as never)
+
+    await expect(buscarWorkspaceAtual()).resolves.toEqual({ id: 'w1', name: 'Meu Workspace' })
+    expect(supabase.from).toHaveBeenCalledWith('workspaces')
+    expect(eq).toHaveBeenCalledWith('owner_id', 'u1')
+  })
+})
+
+describe('buscarMembros', () => {
+  beforeEach(() => vi.resetAllMocks())
+
+  it('lista só os membros do workspace pedido, em ordem de nome', async () => {
+    const eq = vi.fn().mockResolvedValue({
+      data: [
+        { perfil: { id: 'u2', full_name: 'Beto Souza', avatar_url: null } },
+        { perfil: { id: 'u1', full_name: 'Ana Lima', avatar_url: null } },
+      ],
+      error: null,
+    })
+    vi.mocked(supabase.from).mockReturnValue({ select: () => ({ eq }) } as never)
+
+    const membros = await buscarMembros('w1')
+
+    expect(supabase.from).toHaveBeenCalledWith('workspace_members')
+    expect(eq).toHaveBeenCalledWith('workspace_id', 'w1')
+    expect(membros.map((m) => m.full_name)).toEqual(['Ana Lima', 'Beto Souza'])
+  })
+})
+
+describe('adicionarMembro', () => {
+  beforeEach(() => vi.resetAllMocks())
+
+  it('chama a RPC com o workspace e o e-mail', async () => {
+    vi.mocked(supabase.rpc).mockResolvedValue({ data: null, error: null } as never)
+    await adicionarMembro('w1', 'b@x.com')
+    expect(supabase.rpc).toHaveBeenCalledWith('adicionar_membro', { p_ws: 'w1', p_email: 'b@x.com' })
+  })
+
+  it('e-mail sem conta (P0002) vira mensagem de domínio, não a do banco', async () => {
+    vi.mocked(supabase.rpc).mockResolvedValue({
+      data: null,
+      error: { code: 'P0002', message: 'nenhuma conta com esse e-mail' },
+    } as never)
+    await expect(adicionarMembro('w1', 'z@x.com')).rejects.toThrow('Nenhuma conta com esse e-mail.')
+  })
+
+  it('quem não é dono (42501) recebe a mensagem de permissão', async () => {
+    vi.mocked(supabase.rpc).mockResolvedValue({
+      data: null,
+      error: { code: '42501', message: 'so o dono do workspace adiciona integrantes' },
+    } as never)
+    await expect(adicionarMembro('w1', 'b@x.com')).rejects.toThrow('Você não tem permissão para isso.')
   })
 })

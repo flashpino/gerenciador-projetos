@@ -62,7 +62,7 @@ export function Sidebar() {
   const [criandoBoard, setCriandoBoard] = useState(false)
   const { pathname } = useLocation()
   const workspace = useWorkspaceAtual()
-  const membros = useMembros()
+  const membros = useMembros(workspace.data?.id)
   const { usuario } = useSessao()
   const eu = membros.data?.find((m) => m.id === usuario?.id)
 

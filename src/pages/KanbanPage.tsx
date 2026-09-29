@@ -12,7 +12,7 @@ export default function KanbanPage() {
   const { boardId } = useParams<{ boardId: string }>()
   const board = useBoard(boardId)
   const grupos = useGruposComTarefas(boardId)
-  const membros = useMembros()
+  const membros = useMembros(board.data?.workspace_id)
   const editar = useAtualizarTarefa(boardId)
   const [taskIdModal, setTaskIdModal] = useState<string | null>(null)
 

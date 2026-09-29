@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { criarWrapper } from '@/test/query'
 
 vi.mock('@/services/boards', () => ({
+  buscarBoard: vi.fn(),
   buscarFavoritos: vi.fn(),
   favoritar: vi.fn(),
   desfavoritar: vi.fn(),
@@ -30,6 +31,7 @@ describe('BoardShell', () => {
     localStorage.clear()
     vi.resetAllMocks()
     vi.mocked(servico.buscarFavoritos).mockResolvedValue([])
+    vi.mocked(servico.buscarBoard).mockResolvedValue({ id: 'b1', name: 'Sprint Alpha', workspace_id: 'w1', owner_id: 'u1' })
   })
 
   it('abas apontam para as views DESTE board', () => {
@@ -66,10 +68,15 @@ describe('BoardShell', () => {
     for (const nome of [
       'Buscar neste quadro — em breve',
       'Filtrar — em breve',
-      'Convidar integrantes — em breve',
       'Novo item — em breve',
     ]) {
       expect(screen.getByRole('button', { name: nome })).toBeDisabled()
     }
+  })
+
+  it('"Convidar integrantes" habilita quando o board carrega', async () => {
+    renderizar()
+    const botao = await screen.findByRole('button', { name: 'Convidar integrantes' })
+    await vi.waitFor(() => expect(botao).toBeEnabled())
   })
 })

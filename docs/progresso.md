@@ -153,6 +153,20 @@ Spec: `docs/superpowers/specs/2026-09-28-modelos-design.md` · Plano: `docs/supe
 
 ---
 
+## Sub-projeto 6/6 — Convidar Integrantes ✅
+
+Spec: `docs/superpowers/specs/2026-09-29-integrantes-design.md` · Plano: `docs/superpowers/plans/2026-09-29-integrantes.md`
+
+- [x] Migration `0005_integrantes` (Zona Vermelha): RPC `adicionar_membro` e dono que não se remove; escrita pelo agente, aplicada pelo humano
+- [x] "Convidar integrantes" no board abre a lista de integrantes do workspace daquele board
+- [x] Dono adiciona por e-mail (só quem já tem conta) e remove com confirmação; os outros só veem
+- [x] Workspace atual = o da própria pessoa; responsáveis = membros do workspace do board
+
+**Cortado:** convite por e-mail para quem não tem conta, papéis, sair do workspace, trocar de workspace, transferir posse.
+**Limitações aceitas:** membro removido continua como responsável das tarefas que tinha; sem notificação; o dono descobre se um e-mail tem conta.
+
+---
+
 ## Como isto é mantido
 
 Sem automação — atualizo este arquivo no mesmo commit que fecha um critério ou

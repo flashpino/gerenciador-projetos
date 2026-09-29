@@ -1,10 +1,12 @@
-import { useEffect, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import { Filter, Plus, Search, UserPlus } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Tabs, type ItemTab } from '@/components/ui/Tabs'
+import { useBoard } from '@/hooks/useQuadro'
 import { lembrarUltimoBoard } from '@/lib/ultimoBoard'
 import { FavoritoToggle } from './FavoritoToggle'
+import { IntegrantesModal } from './IntegrantesModal'
 
 interface Props {
   titulo: string
@@ -20,6 +22,8 @@ interface Props {
 export function BoardShell({ titulo, children }: Props) {
   const { pathname } = useLocation()
   const { boardId = '' } = useParams<{ boardId: string }>()
+  const board = useBoard(boardId)
+  const [integrantesAberto, setIntegrantesAberto] = useState(false)
 
   // Único ponto comum às 4 views — é aqui que a raiz `/` aprende pra onde voltar.
   useEffect(() => {
@@ -41,7 +45,7 @@ export function BoardShell({ titulo, children }: Props) {
         <h1 className="text-display">{titulo}</h1>
         {/*
           Ícones do Stitch (buscar/filtrar/convidar/novo item) desabilitados
-          por enquanto — a estrela de favorito já funciona (sub-projeto 3).
+          por enquanto — a estrela (sub-projeto 3) e convidar (sub-projeto 6) já funcionam.
           Cada um liga quando chegar a vez do seu sub-projeto ou item da auditoria
           (docs/superpowers/specs/2026-09-17-casca-sidebar-design.md,
           seção "Barra superior do board"). "Sair" saiu daqui — mora no
@@ -69,8 +73,9 @@ export function BoardShell({ titulo, children }: Props) {
             variant="ghost"
             size="sm"
             iconOnly
-            disabled
-            aria-label="Convidar integrantes — em breve"
+            disabled={!board.data}
+            onClick={() => setIntegrantesAberto(true)}
+            aria-label="Convidar integrantes"
             iconStart={<UserPlus aria-hidden="true" className="size-4" />}
           />
           <Button
@@ -90,6 +95,14 @@ export function BoardShell({ titulo, children }: Props) {
         className="mb-margin border-b border-border"
       />
       {children}
+      {board.data && (
+        <IntegrantesModal
+          aberto={integrantesAberto}
+          aoFechar={() => setIntegrantesAberto(false)}
+          workspaceId={board.data.workspace_id}
+          donoId={board.data.owner_id}
+        />
+      )}
     </div>
   )
 }

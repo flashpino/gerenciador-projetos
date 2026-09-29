@@ -150,7 +150,7 @@ Explícito para que seja possível recusar depois, sem nova discussão:
 | Colaboração em tempo real | Traz reconciliação de estado e conflito de edição concorrente |
 | Funcionamento offline | Exige resolução de conflito. O PWA da v1 é **instalável, não offline** |
 | Recuperação de senha, OAuth, 2FA | Fora do mínimo que faz o RLS funcionar |
-| Múltiplos workspaces por usuário | Um workspace por usuário na v1. O schema já suporta; a UI não expõe |
+| ~~Múltiplos workspaces por usuário~~ | **Reaberto em parte** no sub-projeto 6 (2026-09-29): quem é convidado vê e edita os boards do workspace de quem convidou, além dos próprios. O "workspace atual" continua sendo o da própria pessoa (onde ela cria boards). Continua fora: trocar de workspace na UI, transferir posse — `docs/superpowers/specs/2026-09-29-integrantes-design.md` |
 | Colunas customizáveis pelo usuário | O conjunto de colunas é fixo na v1 |
 | Permissão granular por papel | Membro do workspace lê e escreve. Sem papéis na v1 |
 | ~~Feed de atividades no dashboard~~ | **Reaberto e entregue** no sub-projeto 4 (2026-09-28): tabela `activities` gravada por gatilhos (migration 0004, revisada e aplicada por humano), `/atividades` e card no Dashboard — `docs/superpowers/specs/2026-09-28-atividades-design.md`. Continua fora: tempo real, filtro por tipo de evento, eventos de outros campos |

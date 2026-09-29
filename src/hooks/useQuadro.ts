@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient, type QueryKey } from '@tanstack/react-query'
 import type { CamposEditaveis, NovaTarefa } from '@/services/boards'
 import {
+  adicionarMembro,
   atualizarSubtarefa,
   atualizarTarefa,
   buscarAtividades,
@@ -18,6 +19,7 @@ import {
   desfavoritar,
   favoritar,
   removerBoard,
+  removerMembro,
   removerSubtarefa,
   renomearBoard,
 } from '@/services/boards'
@@ -34,7 +36,7 @@ const chaves = {
   boards: ['boards'] as const,
   board: (boardId: string) => ['board', boardId] as const,
   favoritos: ['favoritos'] as const,
-  membros: ['membros'] as const,
+  membros: (workspaceId: string) => ['membros', workspaceId] as const,
   grupos: (boardId: string) => ['grupos', boardId] as const,
   tarefa: (taskId: string) => ['tarefa', taskId] as const,
   atividades: (boardId: string | undefined, limite: number) => ['atividades', boardId ?? 'todos', limite] as const,
@@ -168,8 +170,33 @@ export function useAtividades(boardId: string | undefined, limite: number) {
   })
 }
 
-export function useMembros() {
-  return useQuery({ queryKey: chaves.membros, queryFn: buscarMembros })
+/** Membros do workspace de um board — com convite, a pessoa vê mais de um workspace. */
+export function useMembros(workspaceId: string | undefined) {
+  return useQuery({
+    queryKey: chaves.membros(workspaceId ?? ''),
+    queryFn: () => buscarMembros(workspaceId as string),
+    enabled: Boolean(workspaceId),
+  })
+}
+
+export function useAdicionarMembro() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ workspaceId, email }: { workspaceId: string; email: string }) => adicionarMembro(workspaceId, email),
+    onSuccess: (_nada, { workspaceId }) => {
+      void qc.invalidateQueries({ queryKey: chaves.membros(workspaceId) })
+    },
+  })
+}
+
+export function useRemoverMembro() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ workspaceId, userId }: { workspaceId: string; userId: string }) => removerMembro(workspaceId, userId),
+    onSuccess: (_nada, { workspaceId }) => {
+      void qc.invalidateQueries({ queryKey: chaves.membros(workspaceId) })
+    },
+  })
 }
 
 export function useGruposComTarefas(boardId: string | undefined) {

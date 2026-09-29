@@ -89,7 +89,7 @@ passam por `src/hooks/` → `src/services/`.
 
 | Componente | Compõe | Vive em |
 |---|---|---|
-| `BoardShell` | Tabs, Button, FavoritoToggle | todas as 4 views (layout comum + estrela de favorito + ícones desabilitados da barra superior — Sair mora na Sidebar) |
+| `BoardShell` | Tabs, Button, FavoritoToggle | todas as 4 views (layout comum + estrela de favorito + ícones desabilitados da barra superior; "convidar" abre `IntegrantesModal` — Sair mora na Sidebar) |
 | `StatusCell` | Badge, Menu | tabela, kanban, modal |
 | `PriorityCell` | Badge, Menu | tabela, modal |
 | `AssigneeCell` | Avatar, Menu | tabela, kanban, modal |
@@ -112,6 +112,7 @@ passam por `src/hooks/` → `src/services/`.
 | `Sidebar` | Avatar, Button, Modal (`drawer`) | identidade do workspace, nav, rodapé — dentro do AppShell |
 | `EmConstrucaoPage` | StateView | 3 rotas "em construção" (Notificações, Ajuda, Configurações) |
 | `FeedAtividades` | Badge | lista de eventos (criou, mudou status, comentou) — `/atividades` e card do Dashboard. Só apresentação; o texto vem de `lib/atividade.ts` |
+| `IntegrantesModal` | Modal, Badge, Button, Field, TextInput, StateView | diálogo do botão "Convidar integrantes" do `BoardShell`. Novo porque nenhum modal existente lista pessoas; `BoardFormModal`/`TaskModal` editam uma entidade só |
 | `FavoritoToggle` | Button (`ghost`, `iconOnly`) | estrela de favorito autossuficiente (lê e alterna sozinha) — BoardShell e BoardCard |
 | `BoardCard` | Menu | um board em Meus Painéis — link pro board + menu Renomear/Excluir |
 | `BoardFormModal` | Modal, Field, TextInput, Button | criar e renomear board (PaineisPage, Sidebar) — mesma dualidade criar/editar do TaskModal |

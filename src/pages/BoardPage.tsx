@@ -13,7 +13,7 @@ export default function BoardPage() {
   const { boardId } = useParams<{ boardId: string }>()
   const board = useBoard(boardId)
   const grupos = useGruposComTarefas(boardId)
-  const membros = useMembros()
+  const membros = useMembros(board.data?.workspace_id)
   const editar = useAtualizarTarefa(boardId)
 
   // null = modal fechado. string = editando essa tarefa. '' = criando (o

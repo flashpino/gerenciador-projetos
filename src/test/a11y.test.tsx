@@ -38,6 +38,8 @@ vi.mock('@/services/boards', () => ({
   removerSubtarefa: vi.fn(),
   criarComentario: vi.fn(),
   criarBoard: vi.fn(),
+  adicionarMembro: vi.fn(),
+  removerMembro: vi.fn(),
 }))
 vi.mock('@/services/auth', () => ({
   sair: vi.fn(),
@@ -54,6 +56,7 @@ import LoginPage from '@/pages/LoginPage'
 import PaineisPage from '@/pages/PaineisPage'
 import AtividadesPage from '@/pages/AtividadesPage'
 import ModelosPage from '@/pages/ModelosPage'
+import { IntegrantesModal } from '@/components/features/IntegrantesModal'
 import { TaskModal } from '@/components/features/TaskModal'
 
 // Objetos hoisted: JSX `value={{...}}` inline reconstrói a cada render e o
@@ -103,7 +106,7 @@ describe('Acessibilidade automatizada (axe) — telas principais do MVP', () => 
     vi.resetAllMocks()
     vi.mocked(servico.buscarFavoritos).mockResolvedValue([])
     vi.mocked(servico.buscarAtividades).mockResolvedValue([])
-    vi.mocked(servico.buscarBoard).mockResolvedValue({ id: 'b1', name: 'Sprint Alpha Q3' })
+    vi.mocked(servico.buscarBoard).mockResolvedValue({ id: 'b1', name: 'Sprint Alpha Q3', workspace_id: 'w1', owner_id: 'u1' })
     vi.mocked(servico.buscarGruposComTarefas).mockResolvedValue(grupos())
     vi.mocked(servico.buscarMembros).mockResolvedValue(MEMBROS)
   })
@@ -260,5 +263,19 @@ describe('Acessibilidade automatizada (axe) — telas principais do MVP', () => 
 
     await findByDisplayValue('Refatorar arquitetura')
     expect(await axe(container)).toHaveNoViolations()
+  })
+
+  it('IntegrantesModal aberto como dono não tem violação WCAG', async () => {
+    const { wrapper: QueryWrapper } = criarWrapper()
+    const { findByRole } = render(
+      <SessaoContext.Provider value={SESSAO_LOGADA}>
+        <QueryWrapper>
+          <IntegrantesModal aberto aoFechar={() => {}} workspaceId="w1" donoId="u1" />
+        </QueryWrapper>
+      </SessaoContext.Provider>,
+    )
+    const dialogo = await findByRole('dialog', { name: 'Integrantes' })
+    await findByRole('list', { name: 'Integrantes do workspace' })
+    expect(await axe(dialogo)).toHaveNoViolations()
   })
 })
