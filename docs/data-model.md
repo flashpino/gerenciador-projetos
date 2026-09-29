@@ -432,7 +432,7 @@ Quem entra e sai de `workspace_members` depois do cadastro:
 
 **Riscos aceitos:** um dono descobre se um e-mail tem conta; alguém pode ser adicionado sem aceite (mas sai com um clique, 0006). Convite com aceite seria uma tabela de convites pendentes — fora da v1.
 
-**Verificação (2026-09-29):** 0005 verificada pela API com as contas A e B, 9/9 (script no scratchpad da sessão, não versionado). A 0006 é verificada do mesmo jeito depois de aplicada: B sai sozinho; A continua sem conseguir sair.
+**Verificação (2026-09-29):** 0005 verificada pela API com as contas A e B, 9/9 (script no scratchpad da sessão, não versionado). 0006 aplicada e verificada do mesmo jeito, 4/4: A (dono) não sai; B sai sozinho e deixa de ver os boards de A; update de membro devolve 0 linhas (policy removida).
 
 ---
 
