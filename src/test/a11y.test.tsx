@@ -23,6 +23,7 @@ import { criarTarefaFixture as tarefa } from '@/test/fixtures'
  */
 
 vi.mock('@/services/boards', () => ({
+  buscarAtividades: vi.fn(),
   buscarFavoritos: vi.fn(),
   buscarBoard: vi.fn(),
   buscarBoards: vi.fn(),
@@ -50,6 +51,7 @@ import GanttPage from '@/pages/GanttPage'
 import KanbanPage from '@/pages/KanbanPage'
 import LoginPage from '@/pages/LoginPage'
 import PaineisPage from '@/pages/PaineisPage'
+import AtividadesPage from '@/pages/AtividadesPage'
 import { TaskModal } from '@/components/features/TaskModal'
 
 // Objetos hoisted: JSX `value={{...}}` inline reconstrói a cada render e o
@@ -98,6 +100,7 @@ describe('Acessibilidade automatizada (axe) — telas principais do MVP', () => 
   beforeEach(() => {
     vi.resetAllMocks()
     vi.mocked(servico.buscarFavoritos).mockResolvedValue([])
+    vi.mocked(servico.buscarAtividades).mockResolvedValue([])
     vi.mocked(servico.buscarBoard).mockResolvedValue({ id: 'b1', name: 'Sprint Alpha Q3' })
     vi.mocked(servico.buscarGruposComTarefas).mockResolvedValue(grupos())
     vi.mocked(servico.buscarMembros).mockResolvedValue(MEMBROS)
@@ -184,6 +187,32 @@ describe('Acessibilidade automatizada (axe) — telas principais do MVP', () => 
       </MemoryRouter>,
     )
     await findByText('Roadmap')
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
+  it('AtividadesPage não tem violação WCAG', async () => {
+    const agora = new Date().toISOString()
+    vi.mocked(servico.buscarAtividades).mockResolvedValue([
+      {
+        id: 1, board_id: 'b1', task_id: 't1', kind: 'status_changed', task_title: 'Deploy',
+        from_status: 'working', to_status: 'review', comment_excerpt: null, created_at: agora,
+        ator: { full_name: 'Ana Lima', avatar_url: null }, board: { name: 'Sprint Alpha Q3' },
+      },
+      {
+        id: 2, board_id: 'b1', task_id: 't1', kind: 'comment_added', task_title: 'Deploy',
+        from_status: null, to_status: null, comment_excerpt: 'Pipeline verde', created_at: agora,
+        ator: { full_name: 'Beto Souza', avatar_url: null }, board: { name: 'Sprint Alpha Q3' },
+      },
+    ])
+    const { wrapper: QueryWrapper } = criarWrapper()
+    const { container, findAllByText } = render(
+      <MemoryRouter>
+        <QueryWrapper>
+          <AtividadesPage />
+        </QueryWrapper>
+      </MemoryRouter>,
+    )
+    await findAllByText(/Deploy/)
     expect(await axe(container)).toHaveNoViolations()
   })
 

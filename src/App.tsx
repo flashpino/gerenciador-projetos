@@ -8,6 +8,7 @@ import { RotaProtegida } from '@/components/RotaProtegida'
 import { SessaoProvider } from '@/components/SessaoProvider'
 import { StateView } from '@/components/ui/StateView'
 import AberturaPage from '@/pages/AberturaPage'
+import AtividadesPage from '@/pages/AtividadesPage'
 import BoardPage from '@/pages/BoardPage'
 import KanbanPage from '@/pages/KanbanPage'
 import LoginPage from '@/pages/LoginPage'
@@ -70,15 +71,7 @@ export default function App() {
                       substitui a sua por conteúdo real quando chegar a vez. */}
                   <Route path="/paineis" element={<PaineisPage />} />
                   <Route path="/favoritos" element={<PaineisPage filtro="favoritos" />} />
-                  <Route
-                    path="/atividades"
-                    element={
-                      <EmConstrucaoPage
-                        titulo="Atividades"
-                        descricao="O feed de atividades do workspace chega em breve."
-                      />
-                    }
-                  />
+                  <Route path="/atividades" element={<AtividadesPage />} />
                   <Route
                     path="/modelos"
                     element={
