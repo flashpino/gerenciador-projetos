@@ -23,18 +23,17 @@ políticas que o "Novo Painel" já usa.
 
 ```ts
 interface Modelo {
-  id: string
   nome: string
   descricao: string
   grupos: { name: string; color: GroupColor }[]
 }
 ```
 
-| id | nome | grupos (cor) |
-|---|---|---|
-| `sprint` | Sprint de software | Backlog (azure) · Em andamento (grape) · Revisão (crimson) · Concluído (mint) |
-| `campanha` | Lançamento de campanha | Planejamento (azure) · Produção (grape) · Aprovação (crimson) · Publicado (mint) |
-| `onboarding` | Onboarding | Antes do 1º dia (azure) · Primeira semana (grape) · Primeiro mês (mint) |
+| nome | grupos (cor) |
+|---|---|
+| Sprint de software | Backlog (azure) · Em andamento (grape) · Revisão (crimson) · Concluído (mint) |
+| Lançamento de campanha | Planejamento (azure) · Produção (grape) · Aprovação (crimson) · Publicado (mint) |
+| Onboarding | Antes do 1º dia (azure) · Primeira semana (grape) · Primeiro mês (mint) |
 
 Descrições: uma frase curta cada, escrita na implementação.
 
