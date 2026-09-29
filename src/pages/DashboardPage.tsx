@@ -1,5 +1,6 @@
 import { Navigate, useParams } from 'react-router-dom'
 import { BoardShell } from '@/components/features/BoardShell'
+import { FeedAtividades } from '@/components/features/FeedAtividades'
 import { GroupProgressList } from '@/components/features/GroupProgressList'
 import { MetricTile } from '@/components/features/MetricTile'
 import { StatusDonut } from '@/components/features/StatusDonut'
@@ -7,12 +8,14 @@ import { Button } from '@/components/ui/Button'
 import { StateView } from '@/components/ui/StateView'
 import { estadoDaQuery } from '@/lib/estadoDaQuery'
 import { contarAtrasadas, distribuicaoStatus, taxaDeConclusao } from '@/lib/metrics'
-import { useBoard, useGruposComTarefas } from '@/hooks/useQuadro'
+import { useAtividades, useBoard, useGruposComTarefas } from '@/hooks/useQuadro'
 
 export default function DashboardPage() {
   const { boardId } = useParams<{ boardId: string }>()
   const board = useBoard(boardId)
   const grupos = useGruposComTarefas(boardId)
+  // Antes do early return abaixo — a ordem dos hooks não pode variar.
+  const atividades = useAtividades(boardId, 10)
 
   // Board apagado ou de outro workspace: "tentar de novo" não o traz de volta.
   if (board.isError) return <Navigate to="/paineis" replace />
@@ -30,6 +33,12 @@ export default function DashboardPage() {
       acao: <Button variant="primary">Ver Tabela Principal</Button>,
     },
     () => void grupos.refetch(),
+  )
+
+  const estadoAtividades = estadoDaQuery(
+    atividades,
+    { titulo: 'Nenhuma atividade ainda', descricao: 'Criar tarefas, mudar status e comentar aparece aqui.' },
+    () => void atividades.refetch(),
   )
 
   const conclusao = taxaDeConclusao(tarefas ?? [])
@@ -53,6 +62,19 @@ export default function DashboardPage() {
           </div>
         </div>
       </StateView>
+
+      {/* Fora do StateView das métricas: board sem tarefas ainda tem histórico. */}
+      <section
+        aria-labelledby="titulo-atividades"
+        className="mt-margin rounded-md border border-border bg-surface p-space-md"
+      >
+        <h2 id="titulo-atividades" className="mb-space-md text-title text-ink">
+          Atividades recentes
+        </h2>
+        <StateView estado={estadoAtividades}>
+          <FeedAtividades atividades={atividades.data ?? []} />
+        </StateView>
+      </section>
     </BoardShell>
   )
 }

@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { criarWrapper } from '@/test/query'
 
 vi.mock('@/services/boards', () => ({
+  buscarAtividades: vi.fn(),
   buscarFavoritos: vi.fn(),
   buscarBoard: vi.fn(),
   buscarGruposComTarefas: vi.fn(),
@@ -29,6 +30,7 @@ describe('board da URL que não existe mais (apagado, ou de outro workspace)', (
   beforeEach(() => {
     vi.resetAllMocks()
     vi.mocked(servico.buscarFavoritos).mockResolvedValue([])
+    vi.mocked(servico.buscarAtividades).mockResolvedValue([])
     // O erro que o serviço lança de verdade para board inexistente (PGRST116 via traduzirErro).
     vi.mocked(servico.buscarBoard).mockRejectedValue(
       new ErroDeDados('Registro não encontrado.', { code: 'PGRST116' }),
