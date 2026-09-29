@@ -1,7 +1,6 @@
 import type { GrupoInicial } from '@/types/domain'
 
 export interface Modelo {
-  id: string
   nome: string
   descricao: string
   grupos: GrupoInicial[]
@@ -10,7 +9,6 @@ export interface Modelo {
 // ponytail: catálogo fixo no código. "Salvar board como modelo" pede tabela + RLS (Zona Vermelha) — só se alguém pedir.
 export const MODELOS: Modelo[] = [
   {
-    id: 'sprint',
     nome: 'Sprint de software',
     descricao: 'Do backlog à entrega, com etapa de revisão antes de concluir.',
     grupos: [
@@ -21,7 +19,6 @@ export const MODELOS: Modelo[] = [
     ],
   },
   {
-    id: 'campanha',
     nome: 'Lançamento de campanha',
     descricao: 'Planeje, produza, aprove e publique as peças da campanha.',
     grupos: [
@@ -32,7 +29,6 @@ export const MODELOS: Modelo[] = [
     ],
   },
   {
-    id: 'onboarding',
     nome: 'Onboarding',
     descricao: 'O que preparar para quem chega, do primeiro dia ao primeiro mês.',
     grupos: [

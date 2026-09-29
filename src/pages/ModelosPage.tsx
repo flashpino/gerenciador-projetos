@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/Button'
 import { useCriarBoard, useWorkspaceAtual } from '@/hooks/useQuadro'
@@ -21,11 +20,9 @@ export default function ModelosPage() {
   const workspace = useWorkspaceAtual()
   const criar = useCriarBoard()
   const navigate = useNavigate()
-  const [escolhido, setEscolhido] = useState<string | null>(null)
 
   function usar(modelo: Modelo) {
     if (!workspace.data) return
-    setEscolhido(modelo.id)
     criar.mutate(
       { workspaceId: workspace.data.id, name: modelo.nome, grupos: modelo.grupos },
       { onSuccess: (novo) => navigate(`/boards/${novo.id}`) },
@@ -44,10 +41,10 @@ export default function ModelosPage() {
 
       <ul className="grid gap-space-md md:grid-cols-2 lg:grid-cols-3">
         {MODELOS.map((modelo) => {
-          const criandoEste = criar.isPending && escolhido === modelo.id
+          const criandoEste = criar.isPending && criar.variables?.name === modelo.nome
           return (
             <li
-              key={modelo.id}
+              key={modelo.nome}
               className="flex flex-col gap-space-sm rounded-md border border-border bg-surface p-space-md"
             >
               <h2 className="text-title text-ink">{modelo.nome}</h2>
