@@ -98,12 +98,12 @@ que é o último commit antes da sessão; só você deve rodar isso).
 
 ## 7. O que precisa de você
 
-1. **Falta um `<main>` no `LoginPage`** (Lighthouse: `landmark-one-main`). É só trocar o `div` da linha 45
+1. ~~**Falta um `<main>` no `LoginPage`**~~ **FEITO (seção 10).** Texto original: (Lighthouse: `landmark-one-main`). É só trocar o `div` da linha 45
    de `src/pages/LoginPage.tsx` por `main` (e fechar com `</main>`). **Não apliquei** porque o
    `LoginPage` é o fluxo de autenticação (Zona Vermelha do `CLAUDE.md`), mesmo que a mudança seja só semântica.
 2. **Bundle com pouca folga:** 192 de 200 KB. O `index-*.js` tem 624 KB minificado (o build já avisa
    de chunk grande). Qualquer feature nova pode estourar; vale dividir por rota (Gantt e Dashboard já são lazy).
-3. **Não existe CI nem remote.** O manual (§11.2) manda CI como portão. Quando houver um remote,
+3. ~~**Não existe CI nem remote.**~~ **Workflow escrito (seção 10); falta o remote.** Texto original: O manual (§11.2) manda CI como portão. Quando houver um remote,
    crio o workflow com `lint`, `build`, `test:cov`, `dup`, `dead` e `npm audit`.
 4. **Push** (notificações) é o próximo sub-projeto segundo a spec do PWA. Ele reabre a linha
    `docs/specs.md:148` e exige tabela nova + RLS + edge function + chaves VAPID: Zona Vermelha e
@@ -170,3 +170,24 @@ Recarregar → a nova assume (CSS novo aplicado).
 
 **Estado ao final:** 47 arquivos e 301 testes verdes; `npm run verify` exit 0; `dup` com o mesmo
 clone antigo; `dead` limpo; `npm audit` sem vulnerabilidades; grafo atualizado (1367 nós).
+
+## 10. Atualização final: o que você liberou depois
+
+Você pediu para corrigir "o que depende de mim". Fiz duas coisas; a terceira não fiz, e explico.
+
+| Item | Feito | Como conferi |
+|---|---|---|
+| **`<main>` no `LoginPage`** (`e55a8d6`) | Troquei só a tag do wrapper (`div` → `main`). **A lógica de autenticação não foi tocada.** Teste novo por role (`getByRole('main')`), escrito antes e visto falhar | `npm run verify` exit 0, 302 testes |
+| **CI + Dependabot** (`4d67ac9`) | `.github/workflows/ci.yml` (`npm run verify` + `npm audit`) e `.github/dependabot.yml` (npm semanal, Actions mensal) | YAML válido. Simulei o CI localmente: com o `.env.local` movido de lado e placeholders no ambiente, o **build e os 302 testes passam**. Restaurei o `.env.local` com a data original |
+
+**O CI nunca rodou de verdade.** Não há remote. Quando houver, o primeiro push mostra se algo do
+ambiente do GitHub (Node 22, Linux) difere do seu Windows. Se falhar, o arquivo é curto de ajustar.
+
+**Push (notificações) não fiz, e não é preguiça:** exige tabela nova + RLS + edge function + chaves VAPID
+(segredos), e reabre uma decisão de produto que a `specs.md` fechou ("fora da v1"). Escolher isso sem você
+seria decidir escopo, não só implementar. Se quiser, a próxima sessão começa pela spec dele.
+
+**Um teste instável, para você saber:** `boardInexistente.test.tsx` falhou uma vez numa rodada em que a
+suíte demorou mais de 120s (máquina sob carga, com Chrome e preview abertos). Isolado passou (4/4) e o
+`verify` completo seguinte passou (302/302). Provável causa: `waitFor` com o prazo padrão sob carga.
+Não mexi (não é regressão); se aparecer de novo, subir o prazo desse `waitFor` é o ajuste.
