@@ -8,6 +8,8 @@ export interface ItemMenu {
   rotuloTexto?: string
   aoEscolher: () => void
   selecionado?: boolean
+  /** Continua alcançável por teclado (aria-disabled, não `disabled`) para o leitor de tela ler o rótulo/motivo. */
+  desabilitado?: boolean
 }
 
 interface Props {
@@ -122,11 +124,17 @@ export function Menu({ trigger, items, rotulo, align = 'start' }: Props) {
               role="menuitem"
               tabIndex={i === ativo ? 0 : -1}
               aria-current={item.selecionado || undefined}
-              onClick={() => { item.aoEscolher(); fechar() }}
+              aria-disabled={item.desabilitado || undefined}
+              onClick={() => {
+                if (item.desabilitado) return
+                item.aoEscolher()
+                fechar()
+              }}
               className={cn(
                 'flex min-h-touch w-full items-center gap-space-sm rounded-sm px-space-sm text-left text-body md:min-h-9',
                 'hover:bg-surface-2 focus-visible:bg-surface-2',
                 item.selecionado && 'font-semibold',
+                item.desabilitado && 'cursor-not-allowed text-ink-muted hover:bg-transparent',
               )}
             >
               {item.rotuloTexto && <span className="sr-only">{item.rotuloTexto}</span>}

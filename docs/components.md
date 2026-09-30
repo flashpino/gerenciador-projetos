@@ -49,7 +49,7 @@ Só entra aqui o que aparece em 2 ou mais telas.
 | 5 | **TextInput** | `text` · `textarea` | erro, desabilitado, readonly | `value`, `onChange`, `invalid` | modal, login, busca |
 | 6 | **Select** | — | erro, desabilitado | `options`, `value`, `onChange` | modal |
 | 7 | **Checkbox** | — | checked, indeterminate, disabled | `checked`, `onChange`, `label` | tabela, modal |
-| 8 | **Menu** | — | aberto, item ativo, desabilitado | `trigger`, `items`, `align` | tabela, kanban, gantt, dashboard |
+| 8 | **Menu** | — | aberto, item ativo, item desabilitado (`desabilitado` no item: `aria-disabled`, segue alcançável por teclado) | `trigger`, `items`, `align` | tabela, kanban, gantt, dashboard |
 | 9 | **Modal** | `md` · `lg` · `full` · `drawer` | aberto, fechando | `open`, `onClose`, `title`, `footer` | modal de tarefa, confirmações, drawer de navegação mobile |
 | 10 | **ProgressBar** | `solid` · `segmented` | — | `value` ou `segments[]`, `label` | tabela, kanban, gantt, dashboard |
 | 11 | **StateView** | `loading` · `error` · `empty` | — | `state`, `title`, `action`, `children` | **todas** |
