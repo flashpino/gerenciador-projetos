@@ -5,7 +5,17 @@ vi.mock('@/lib/supabase', () => ({
 }))
 
 import { supabase } from '@/lib/supabase'
-import { adicionarMembro, atualizarNomePerfil, buscarBoard, buscarMembros, buscarWorkspaceAtual, criarBoard } from './boards'
+import {
+  adicionarMembro,
+  atualizarGrupo,
+  atualizarNomePerfil,
+  buscarBoard,
+  buscarMembros,
+  buscarWorkspaceAtual,
+  criarBoard,
+  criarGrupo,
+  removerGrupo,
+} from './boards'
 
 // boards: insert().select().single() → board criado; groups: insert() → o que o teste inspeciona.
 function mockSupabase() {
@@ -139,5 +149,69 @@ describe('atualizarNomePerfil', () => {
     vi.mocked(supabase.from).mockReturnValue({ update: () => ({ eq: () => ({ select: () => ({ single }) }) }) } as never)
 
     await expect(atualizarNomePerfil('u1', '')).rejects.toThrow('Os dados informados não são válidos')
+  })
+})
+
+describe('criarGrupo', () => {
+  beforeEach(() => vi.resetAllMocks())
+
+  it('insere no board com nome, cor e a position vinda de quem chama, e devolve o grupo', async () => {
+    const grupo = { id: 'g2', board_id: 'b1', name: 'Fase 2', color: 'grape', position: 3 }
+    const single = vi.fn().mockResolvedValue({ data: grupo, error: null })
+    const insert = vi.fn(() => ({ select: () => ({ single }) }))
+    vi.mocked(supabase.from).mockReturnValue({ insert } as never)
+
+    await expect(criarGrupo('b1', { name: 'Fase 2', color: 'grape' }, 3)).resolves.toEqual(grupo)
+
+    expect(supabase.from).toHaveBeenCalledWith('groups')
+    expect(insert).toHaveBeenCalledWith({ board_id: 'b1', name: 'Fase 2', color: 'grape', position: 3 })
+  })
+
+  it('traduz o erro do banco (nome fora de 1–120) em vez de vazar o cru', async () => {
+    const single = vi.fn().mockResolvedValue({ data: null, error: { code: '23514', message: 'check violation' } })
+    vi.mocked(supabase.from).mockReturnValue({ insert: () => ({ select: () => ({ single }) }) } as never)
+
+    await expect(criarGrupo('b1', { name: '', color: 'azure' }, 0)).rejects.toThrow('Os dados informados não são válidos')
+  })
+})
+
+describe('atualizarGrupo', () => {
+  beforeEach(() => vi.resetAllMocks())
+
+  it('atualiza só nome e cor do grupo pedido', async () => {
+    const grupo = { id: 'g1', board_id: 'b1', name: 'Backlog', color: 'mint', position: 0 }
+    const single = vi.fn().mockResolvedValue({ data: grupo, error: null })
+    const eq = vi.fn(() => ({ select: () => ({ single }) }))
+    const update = vi.fn(() => ({ eq }))
+    vi.mocked(supabase.from).mockReturnValue({ update } as never)
+
+    await expect(atualizarGrupo('g1', { name: 'Backlog', color: 'mint' })).resolves.toEqual(grupo)
+
+    expect(supabase.from).toHaveBeenCalledWith('groups')
+    expect(update).toHaveBeenCalledWith({ name: 'Backlog', color: 'mint' })
+    expect(eq).toHaveBeenCalledWith('id', 'g1')
+  })
+})
+
+describe('removerGrupo', () => {
+  beforeEach(() => vi.resetAllMocks())
+
+  it('apaga só o grupo pedido', async () => {
+    const eq = vi.fn().mockResolvedValue({ error: null })
+    const remover = vi.fn(() => ({ eq }))
+    vi.mocked(supabase.from).mockReturnValue({ delete: remover } as never)
+
+    await removerGrupo('g1')
+
+    expect(supabase.from).toHaveBeenCalledWith('groups')
+    expect(eq).toHaveBeenCalledWith('id', 'g1')
+  })
+
+  it('propaga o erro traduzido quando o banco recusa', async () => {
+    vi.mocked(supabase.from).mockReturnValue({
+      delete: () => ({ eq: vi.fn().mockResolvedValue({ error: { code: '42501', message: 'rls' } }) }),
+    } as never)
+
+    await expect(removerGrupo('g1')).rejects.toThrow('Você não tem permissão para isso.')
   })
 })

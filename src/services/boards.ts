@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import type { Atividade, Board, Comment, GroupComTarefas, GrupoInicial, Profile, Subtask, Task, TaskComDetalhe } from '@/types/domain'
+import type { Atividade, Board, Comment, Group, GroupComTarefas, GrupoInicial, Profile, Subtask, Task, TaskComDetalhe } from '@/types/domain'
 import { ErroDeDados, traduzirErro } from './erros'
 
 /**
@@ -283,7 +283,28 @@ export async function criarComentario(taskId: string, authorId: string, body: st
   return data as Comment
 }
 
-/*
- * removerTarefa e criarGrupo continuam nao escritas — nada as consome ainda.
- * Voltam no commit da feature que precisar delas.
- */
+/** `position` vem de quem chama (maior atual + 1) — mesmo motivo de criarSubtarefa: sem round-trip só pra calcular. */
+export async function criarGrupo(boardId: string, { name, color }: GrupoInicial, position: number): Promise<Group> {
+  const { data, error } = await supabase
+    .from('groups')
+    .insert({ board_id: boardId, name, color, position })
+    .select()
+    .single()
+
+  if (error) throw traduzirErro(error)
+  return data as Group
+}
+
+export async function atualizarGrupo(id: string, campos: GrupoInicial): Promise<Group> {
+  const { data, error } = await supabase.from('groups').update(campos).eq('id', id).select().single()
+  if (error) throw traduzirErro(error)
+  return data as Group
+}
+
+/** O `on delete cascade` leva as tarefas junto — quem chama só oferece isto para grupo vazio. */
+export async function removerGrupo(id: string): Promise<void> {
+  const { error } = await supabase.from('groups').delete().eq('id', id)
+  if (error) throw traduzirErro(error)
+}
+
+/* removerTarefa continua nao escrita — nada a consome ainda. */
