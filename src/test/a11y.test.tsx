@@ -1,4 +1,5 @@
-import { render } from '@testing-library/react'
+import { act, render } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { axe } from 'vitest-axe'
@@ -47,6 +48,14 @@ vi.mock('@/services/auth', () => ({
   cadastrar: vi.fn(),
 }))
 
+vi.mock('virtual:pwa-register/react', () => ({
+  useRegisterSW: () => ({
+    needRefresh: [true, vi.fn()],
+    offlineReady: [false, vi.fn()],
+    updateServiceWorker: vi.fn(),
+  }),
+}))
+
 import * as servico from '@/services/boards'
 import BoardPage from '@/pages/BoardPage'
 import DashboardPage from '@/pages/DashboardPage'
@@ -56,6 +65,7 @@ import LoginPage from '@/pages/LoginPage'
 import PaineisPage from '@/pages/PaineisPage'
 import AtividadesPage from '@/pages/AtividadesPage'
 import ModelosPage from '@/pages/ModelosPage'
+import { AvisoPWA } from '@/components/features/AvisoPWA'
 import { IntegrantesModal } from '@/components/features/IntegrantesModal'
 import { TaskModal } from '@/components/features/TaskModal'
 
@@ -279,5 +289,30 @@ describe('Acessibilidade automatizada (axe) — telas principais do MVP', () => 
     const dialogo = await findByRole('dialog', { name: 'Integrantes' })
     await findByRole('list', { name: 'Integrantes do workspace' })
     expect(await axe(dialogo)).toHaveNoViolations()
+  })
+
+  it('AvisoPWA (versão nova) não tem violação WCAG', async () => {
+    vi.stubGlobal('matchMedia', () => ({ matches: false }))
+    const { container, findByRole } = render(<AvisoPWA />)
+    await findByRole('button', { name: 'Recarregar' })
+    expect(await axe(container)).toHaveNoViolations()
+    vi.unstubAllGlobals()
+  })
+
+  it('AvisoPWA (instalar) não tem violação WCAG', async () => {
+    vi.stubGlobal('matchMedia', () => ({ matches: false }))
+    const { container, findByRole } = render(<AvisoPWA />)
+    // O de atualizar tem prioridade; "Depois" libera o de instalar.
+    await userEvent.click(await findByRole('button', { name: 'Depois' }))
+    const evento = Object.assign(new Event('beforeinstallprompt'), {
+      prompt: vi.fn(),
+      userChoice: Promise.resolve({ outcome: 'dismissed' }),
+    })
+    act(() => {
+      window.dispatchEvent(evento)
+    })
+    await findByRole('button', { name: 'Instalar' })
+    expect(await axe(container)).toHaveNoViolations()
+    vi.unstubAllGlobals()
   })
 })

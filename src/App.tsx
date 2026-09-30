@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { AppShell } from '@/components/features/AppShell'
+import { AvisoPWA } from '@/components/features/AvisoPWA'
 import { EmConstrucaoPage } from '@/components/features/EmConstrucaoPage'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { RotaProtegida } from '@/components/RotaProtegida'
@@ -92,6 +93,7 @@ export default function App() {
             </Routes>
           </SessaoProvider>
         </BrowserRouter>
+        <AvisoPWA />
       </ErrorBoundary>
     </QueryClientProvider>
   )
