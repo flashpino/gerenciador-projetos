@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { ChevronDown, ChevronRight, Plus } from 'lucide-react'
+import { ChevronDown, ChevronRight, EllipsisVertical, Plus } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Checkbox } from '@/components/ui/Checkbox'
+import { Menu } from '@/components/ui/Menu'
 import { ProgressBar } from '@/components/ui/ProgressBar'
 import { cn } from '@/lib/cn'
 import { distribuicaoStatus, progressoDoGrupo } from '@/lib/metrics'
@@ -33,9 +34,13 @@ interface Props {
   aoEditar: (id: string, campos: CamposEditaveis) => void
   aoAbrir: (task: Task) => void
   aoCriar: () => void
+  aoRenomear: () => void
+  aoExcluir: () => void
+  /** Presente = "Excluir" desabilitado, e o texto vira o motivo mostrado no item. */
+  motivoNaoExcluir?: string
 }
 
-export function TaskGroup({ grupo, membros, aoEditar, aoAbrir, aoCriar }: Props) {
+export function TaskGroup({ grupo, membros, aoEditar, aoAbrir, aoCriar, aoRenomear, aoExcluir, motivoNaoExcluir }: Props) {
   const [aberto, setAberto] = useState(true)
   const tarefas = grupo.tasks
   const progresso = progressoDoGrupo(tarefas)
@@ -45,8 +50,11 @@ export function TaskGroup({ grupo, membros, aoEditar, aoAbrir, aoCriar }: Props)
     rotulo: STATUS[f.status].rotulo,
   }))
 
+  // Sem overflow-hidden na section: cortaria o menu de um grupo vazio (o corte de cantos vai no corpo).
+  // `glass` (backdrop-filter) cria contexto de empilhamento: o grupo com o menu aberto sobe (focus-within)
+  // para o dropdown não ficar atrás do próximo grupo.
   return (
-    <section className="glass mb-margin overflow-hidden rounded-card">
+    <section className="glass relative mb-margin rounded-card focus-within:z-10">
       <header className="flex items-center gap-space-sm border-b border-border px-space-md py-space-sm">
         <span aria-hidden="true" className={cn('h-6 w-1.5 rounded-full', BARRA_GRUPO[grupo.color])} />
         <button
@@ -67,10 +75,34 @@ export function TaskGroup({ grupo, membros, aoEditar, aoAbrir, aoCriar }: Props)
         </Badge>
 
         <span className="ml-auto text-label text-ink-muted">Progresso: {progresso}%</span>
+
+        <Menu
+          rotulo={`Ações do grupo ${grupo.name}`}
+          align="end"
+          items={[
+            { id: 'renomear', rotulo: 'Renomear', aoEscolher: aoRenomear },
+            {
+              id: 'excluir',
+              rotulo: motivoNaoExcluir ? `Excluir (${motivoNaoExcluir})` : 'Excluir',
+              aoEscolher: aoExcluir,
+              desabilitado: Boolean(motivoNaoExcluir),
+            },
+          ]}
+          trigger={(p) => (
+            <button
+              {...p}
+              type="button"
+              className="grid min-h-touch min-w-touch place-items-center rounded hover:bg-surface-3 md:min-h-8 md:min-w-8"
+            >
+              <span className="sr-only">Ações do grupo {grupo.name}</span>
+              <EllipsisVertical aria-hidden="true" className="size-4" />
+            </button>
+          )}
+        />
       </header>
 
       {aberto && (
-        <>
+        <div className="overflow-hidden rounded-b-card">
           {/*
             Tabela a partir de 768px. `hidden` aplica display:none, que remove do
             DOM acessivel — leitor de tela nunca ve as duas versoes ao mesmo tempo.
@@ -226,7 +258,7 @@ export function TaskGroup({ grupo, membros, aoEditar, aoAbrir, aoCriar }: Props)
               Adicionar item
             </Button>
           </div>
-        </>
+        </div>
       )}
     </section>
   )
