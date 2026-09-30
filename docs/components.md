@@ -90,8 +90,9 @@ passam por `src/hooks/` → `src/services/`.
 | Componente | Compõe | Vive em |
 |---|---|---|
 | `BoardShell` | Tabs, Button, FavoritoToggle | todas as 4 views (layout comum + estrela de favorito + ícones desabilitados da barra superior; "convidar" abre `IntegrantesModal` — Sair mora na Sidebar) |
-| `StatusCell` | Badge, Menu | tabela, kanban, modal |
-| `PriorityCell` | Badge, Menu | tabela, modal |
+| `EnumCell` | Badge, Menu | base genérica de `StatusCell` e `PriorityCell` (edita um enum do banco por menu; `bleed` p/ célula de status full-bleed). Não é usada direto nas telas |
+| `StatusCell` | EnumCell | tabela, kanban, modal |
+| `PriorityCell` | EnumCell | tabela, modal |
 | `AssigneeCell` | Avatar, Menu | tabela, kanban, modal |
 | `DueDateCell` | Badge (`tone=atrasado`) | tabela, kanban, gantt |
 | `TaskTable` | StateView, Checkbox, ProgressBar, *Cells | Tabela Principal |
@@ -125,11 +126,13 @@ desabilitados enquanto cria e erro em `role="alert"`. Card inline na página (us
 único; regra dos três).
 
 **Nota sobre `StatusCell` / `PriorityCell` / `AssigneeCell` / `DueDateCell`:**
-parecem 4 componentes quase iguais e a tentação é unificar num `<Cell type=...>`.
-**Não unifique.** Cada um tem editor, validação e formato diferentes; um
-componente genérico viraria um `switch` de 4 ramos que é mais difícil de ler que
-os 4 arquivos. Isso é a regra dos três aplicada ao contrário: são semelhantes na
-aparência, não no comportamento.
+`StatusCell` e `PriorityCell` **são** unificados: editam um enum do banco por menu,
+com o mesmo comportamento, e por isso são wrappers finos de `EnumCell` (a primeira
+versão tinha dois componentes; o comportamento idêntico justificou juntar).
+`AssigneeCell` e `DueDateCell` **não** entram nessa unificação: cada um tem editor,
+validação e formato diferentes, e um `<Cell type=...>` genérico viraria um `switch`
+mais difícil de ler que os arquivos separados. A regra é olhar o comportamento, não
+a aparência.
 
 **Nota sobre `TaskTable` vs `TaskCardList`:** são o mesmo dado em dois layouts,
 e existem separados de propósito. Uma tabela que "vira card" via CSS produz
