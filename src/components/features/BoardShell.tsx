@@ -4,6 +4,7 @@ import { Filter, Plus, Search, UserPlus } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Tabs, type ItemTab } from '@/components/ui/Tabs'
 import { TextInput } from '@/components/ui/TextInput'
+import { useBuscaDoBoard } from '@/hooks/useBuscaDoBoard'
 import { useFiltroTarefas } from '@/hooks/useFiltroTarefas'
 import { useBoard, useMembros } from '@/hooks/useQuadro'
 import { contarFiltros } from '@/lib/filtro'
@@ -29,6 +30,7 @@ export function BoardShell({ titulo, children }: Props) {
   const board = useBoard(boardId)
   const membros = useMembros(board.data?.workspace_id)
   const { filtro, definir } = useFiltroTarefas()
+  const busca = useBuscaDoBoard()
   const [integrantesAberto, setIntegrantesAberto] = useState(false)
   const [filtrosAberto, setFiltrosAberto] = useState(false)
 
@@ -76,8 +78,8 @@ export function BoardShell({ titulo, children }: Props) {
                   type="search"
                   aria-label="Buscar neste quadro"
                   placeholder="Buscar tarefa…"
-                  value={filtro.q}
-                  onChange={(e) => definir({ q: e.target.value })}
+                  value={busca.texto}
+                  onChange={(e) => busca.setTexto(e.target.value)}
                   className="w-40 rounded-full border-transparent bg-transparent pl-10 md:w-56"
                 />
               </div>

@@ -226,3 +226,18 @@ Mockup: `docs/mockups/novo-design-urbanist.html` (referência: `referencias/mode
 
 **Bugs achados e corrigidos no caminho:** `Button` só-ícone tamanho `md` espremia o ícone a 8px (padding do tamanho não era sobrescrito); texto `sr-only` das abas escapava do `overflow` e esticava a página quando as abas passavam da tela; `rounded-sm` maior transformava checkbox, marco do Gantt e legenda do donut em círculos.
 
+---
+
+## Busca e filtros do board ✅ (sub-projeto 9)
+
+Spec: `docs/superpowers/specs/2026-09-30-busca-filtros-design.md` · pedido do usuário: "não é só enfeite".
+
+- [x] `lib/filtro.ts` + 27 testes — ler/escrever a query, casar tarefa, filtrar grupos (busca sem acento/maiúscula em título e descrição; status, prioridade, responsável, atrasadas; E entre categorias, OU dentro)
+- [x] `hooks/useFiltroTarefas`, `useGruposFiltrados`, `useBuscaDoBoard` + testes
+- [x] `FiltroTarefasModal`, `ResumoFiltro`, `VisaoDoBoard`; `BoardShell` com campo de busca e botão "Filtrar" com a contagem no nome acessível
+- [x] Tabela, Kanban e Gantt filtram; Dashboard não (métricas do board inteiro); abas levam a query junto
+- [x] Modal de tarefa continua vendo todos os grupos (inclusive os escondidos pelo filtro)
+- [x] Testado no **navegador real** com o banco: busca, troca de visão, modal, reload, mobile (sem overflow, alvos ≥ 44px)
+- [x] **Bug achado só no navegador:** campo ligado direto à URL perdia teclas ("tarefa" → "trefa"). Corrigido com `useBuscaDoBoard` (ver `docs/patterns.md` §10)
+- [ ] Fora de escopo, de propósito: filtro por período/sprint (não existe no schema), filtros salvos, busca por nome do responsável, busca em comentários e subtarefas
+

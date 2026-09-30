@@ -143,7 +143,25 @@ estoura o container. Qualquer outra divisão percentual no app deve reusar essa 
 
 ---
 
-## 10. O que NÃO fazer
+## 10. Estado de tela na URL, e o campo que perde tecla
+
+Busca e filtros do board moram na query da URL (`?q=…&status=…`): sobrevive à troca de visão, ao
+reload e ao voltar, e o link é compartilhável. A lógica é pura em `lib/filtro.ts`
+(`lerFiltro`/`escreverFiltro`/`aplicarFiltro`), o hook `useFiltroTarefas` só liga isso ao roteador.
+
+**Não ligue um campo de texto direto à URL.** Cada tecla vira uma navegação assíncrona do
+roteador e a seguinte chega antes de a anterior voltar: digitei "tarefa" e a URL ficou "trefa".
+No jsdom **isso não aparece** (tudo é síncrono, o teste passa), só no navegador real. O padrão
+certo é `useBuscaDoBoard`: estado local enquanto se digita, escrita na URL depois de uma pausa
+(250 ms), e um `ref` com o último valor escrito para distinguir "eu escrevi" de "mudou por fora
+(limpar, voltar)". Vale para qualquer campo de texto que reflita na URL.
+
+Lição de processo: teste de digitação em jsdom **não prova** que um campo controlado assíncrono
+funciona. Rode no navegador.
+
+---
+
+## 11. O que NÃO fazer
 
 | Não | Por quê |
 |---|---|

@@ -85,8 +85,11 @@ describe('BoardShell', () => {
     it('digitar vai para a URL e as abas levam a busca junto para a outra visão', async () => {
       renderizar()
       await userEvent.type(screen.getByRole('searchbox', { name: 'Buscar neste quadro' }), 'api')
+      // O campo mostra na hora; a URL (e as abas) só depois da pausa de digitação.
       expect(screen.getByRole('searchbox', { name: 'Buscar neste quadro' })).toHaveValue('api')
-      expect(screen.getByRole('link', { name: 'Kanban' })).toHaveAttribute('href', '/boards/b1/kanban?q=api')
+      await vi.waitFor(() =>
+        expect(screen.getByRole('link', { name: 'Kanban' })).toHaveAttribute('href', '/boards/b1/kanban?q=api'),
+      )
       expect(screen.getByRole('link', { name: 'Tabela Principal' })).toHaveAttribute('href', '/boards/b1?q=api')
     })
   })

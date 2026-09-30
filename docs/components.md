@@ -101,7 +101,10 @@ passam por `src/hooks/` → `src/services/`.
 
 | Componente | Compõe | Vive em |
 |---|---|---|
-| `BoardShell` | Tabs, Button, FavoritoToggle | todas as 4 views (layout comum + estrela de favorito + ícones desabilitados da barra superior; "convidar" abre `IntegrantesModal` — Sair mora na Sidebar) |
+| `BoardShell` | Tabs, TextInput, Button, FavoritoToggle, FiltroTarefasModal | todas as 4 views (layout comum + estrela + **busca e botão Filtrar** (não aparecem no Dashboard) + "convidar" abre `IntegrantesModal`; "Novo item" segue desabilitado — Sair mora na Sidebar) |
+| `FiltroTarefasModal` | Modal, Checkbox, Select, Field, Button | botão "Filtrar" do `BoardShell`. Status e prioridade (caixas), responsável (seletor), "somente atrasadas". Aplica na hora; o estado é a URL (`lib/filtro.ts`) |
+| `ResumoFiltro` | Button | "Mostrando X de Y tarefas" + limpar, quando há busca ou filtro. Só aparece dentro de `VisaoDoBoard` |
+| `VisaoDoBoard` | StateView, ResumoFiltro, Button | Tabela, Kanban e Gantt: os 4 estados da consulta dos grupos + o resumo. Unificado na 3ª ocorrência (regra dos três). "Nada encontrado" com filtro ligado tem texto próprio, diferente do board vazio |
 | `EnumCell` | Badge, Menu | base genérica de `StatusCell` e `PriorityCell` (edita um enum do banco por menu; o status/prioridade aparece como pílula). Não é usada direto nas telas |
 | `StatusCell` | EnumCell | tabela, kanban, modal |
 | `PriorityCell` | EnumCell | tabela, modal |

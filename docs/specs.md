@@ -71,6 +71,16 @@ Cada critério vira um teste. Se não dá para observar, não é critério.
    tela por texto, não só por cor.
 6. Dado um viewport de 375px, quando a tabela renderiza, então vira lista de cards e
    **não existe scroll horizontal na página**.
+7. Dado um board com várias tarefas, quando digito na busca do board, então só aparecem
+   as tarefas cujo título ou descrição contém o texto (sem diferenciar maiúsculas nem
+   acentos), os grupos sem resultado somem, e o resumo diz "Mostrando X de Y tarefas".
+   *(sub-projeto 9, 2026-09-30)*
+8. Dado que marco filtros (status, prioridade, responsável, atrasadas), quando troco de
+   visão (Tabela, Kanban, Gantt) ou recarrego a página, então o mesmo recorte continua
+   valendo — o estado mora na URL.
+9. Dado que a busca ou os filtros não deixam nada visível, quando a tela renderiza, então
+   aparece "Nenhuma tarefa encontrada" com o botão que limpa tudo — nunca o "Nenhuma
+   tarefa ainda" de um board vazio.
 
 ### F2 — Kanban
 1. Dado um board com tarefas, quando abro o kanban, então existe uma coluna por status

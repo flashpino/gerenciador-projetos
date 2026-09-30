@@ -60,8 +60,11 @@ function renderizar(Pagina: () => React.JSX.Element, rota = '/boards/b1') {
 const aparece = (titulo: string) => screen.queryAllByRole('button', { name: titulo }).length > 0
 const grupoAparece = (nome: string) => screen.queryByRole('heading', { level: 2, name: nome }) !== null
 
-const buscar = (texto: string) =>
-  userEvent.type(screen.getByRole('searchbox', { name: 'Buscar neste quadro' }), texto)
+/** Digita e espera a pausa (debounce) da busca antes de ela ir para a URL e filtrar. */
+async function buscar(texto: string) {
+  await userEvent.type(screen.getByRole('searchbox', { name: 'Buscar neste quadro' }), texto)
+  await new Promise((r) => setTimeout(r, 350))
+}
 
 describe('busca e filtros nas visões do board', () => {
   beforeEach(() => {
