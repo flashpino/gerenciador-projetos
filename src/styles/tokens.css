@@ -170,6 +170,10 @@
     /* Numeros e datas alinham verticalmente em tabela densa (DESIGN.md). */
     font-variant-numeric: tabular-nums;
     -webkit-text-size-adjust: 100%;
+    /* A barra fixa do PWA (AvisoPWA) fica no rodape: ao focar um elemento por
+       teclado o navegador reserva este espaco e o foco nao cai atras dela
+       (WCAG 2.2, 2.4.11). ~104px, maior que a barra em qualquer largura. */
+    scroll-padding-bottom: calc(var(--spacing-touch) * 2 + var(--spacing-gutter));
   }
 
   body {
