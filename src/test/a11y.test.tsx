@@ -41,6 +41,7 @@ vi.mock('@/services/boards', () => ({
   criarBoard: vi.fn(),
   adicionarMembro: vi.fn(),
   removerMembro: vi.fn(),
+  atualizarNomePerfil: vi.fn(),
 }))
 vi.mock('@/services/auth', () => ({
   sair: vi.fn(),
@@ -61,6 +62,8 @@ import BoardPage from '@/pages/BoardPage'
 import DashboardPage from '@/pages/DashboardPage'
 import GanttPage from '@/pages/GanttPage'
 import KanbanPage from '@/pages/KanbanPage'
+import AjudaPage from '@/pages/AjudaPage'
+import ConfiguracoesPage from '@/pages/ConfiguracoesPage'
 import LoginPage from '@/pages/LoginPage'
 import PaineisPage from '@/pages/PaineisPage'
 import AtividadesPage from '@/pages/AtividadesPage'
@@ -314,5 +317,27 @@ describe('Acessibilidade automatizada (axe) — telas principais do MVP', () => 
     await findByRole('button', { name: 'Instalar' })
     expect(await axe(container)).toHaveNoViolations()
     vi.unstubAllGlobals()
+  })
+
+  it('ConfiguracoesPage não tem violação WCAG', async () => {
+    vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace' })
+    vi.mocked(servico.buscarMembros).mockResolvedValue(MEMBROS)
+    const { wrapper: QueryWrapper } = criarWrapper()
+    const { container, findByLabelText } = render(
+      <SessaoContext.Provider value={SESSAO_LOGADA}>
+        <QueryWrapper>
+          <MemoryRouter>
+            <ConfiguracoesPage />
+          </MemoryRouter>
+        </QueryWrapper>
+      </SessaoContext.Provider>,
+    )
+    await findByLabelText('Nome de exibição')
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
+  it('AjudaPage não tem violação WCAG', async () => {
+    const { container } = render(<AjudaPage />)
+    expect(await axe(container)).toHaveNoViolations()
   })
 })

@@ -9,8 +9,10 @@ import { RotaProtegida } from '@/components/RotaProtegida'
 import { SessaoProvider } from '@/components/SessaoProvider'
 import { StateView } from '@/components/ui/StateView'
 import AberturaPage from '@/pages/AberturaPage'
+import AjudaPage from '@/pages/AjudaPage'
 import AtividadesPage from '@/pages/AtividadesPage'
 import BoardPage from '@/pages/BoardPage'
+import ConfiguracoesPage from '@/pages/ConfiguracoesPage'
 import KanbanPage from '@/pages/KanbanPage'
 import LoginPage from '@/pages/LoginPage'
 import ModelosPage from '@/pages/ModelosPage'
@@ -79,14 +81,8 @@ export default function App() {
                     path="/notificacoes"
                     element={<EmConstrucaoPage titulo="Notificações" descricao="Central de notificações em construção." />}
                   />
-                  <Route
-                    path="/ajuda"
-                    element={<EmConstrucaoPage titulo="Ajuda" descricao="Central de ajuda em construção." />}
-                  />
-                  <Route
-                    path="/configuracoes"
-                    element={<EmConstrucaoPage titulo="Configurações" descricao="Configurações da conta em construção." />}
-                  />
+                  <Route path="/ajuda" element={<AjudaPage />} />
+                  <Route path="/configuracoes" element={<ConfiguracoesPage />} />
                 </Route>
               </Route>
               <Route path="*" element={<NaoEncontrada />} />
