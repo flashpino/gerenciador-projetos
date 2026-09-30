@@ -188,6 +188,7 @@ Spec: `docs/superpowers/specs/2026-09-29-pwa-design.md` · Plano: `docs/superpow
 - [x] `src/components/features/AvisoPWA.tsx` + teste + axe — versão nova tem prioridade sobre instalar
 - [x] `knip.json` sem `ignoreDependencies`; `docs/DEPS-PENDENTES.md` apagado (última pendência usada)
 - [x] Build gera `sw.js` + `manifest.webmanifest` (precache de 16 arquivos)
-- [ ] Checagem manual no navegador (manifest sem erro, instalar pelo aviso, aviso de versão nova) — ver "Verificação" abaixo
+- [x] Checagem manual no Chrome (`vite preview`, 2026-09-29): manifest e 3 ícones servem 200; service worker ativo; console sem erro; o Chrome disparou `beforeinstallprompt` (critérios de instalação atendidos); aviso aparece; "Agora não" grava a marca e não volta após reload; layout estreito (500px, mínimo da janela) com alvos de 44px, margem de 16px e sem scroll horizontal
+- [ ] **Não testado:** o aviso de *versão nova* (exige publicar dois builds em sequência com o SW do primeiro instalado) e o clique real em "Instalar" (abre a janela nativa do sistema). Ambos cobertos só por teste unitário com mock
 
 **Decisões e limites:** só o Chromium dispara `beforeinstallprompt`. No iPhone o app é instalável pelo menu do Safari, mas sem botão nosso (spec, "Fora de escopo"). Cores do manifest (`#0073ea`, `#ffffff`) repetem `--color-primary`/`--color-surface` de `tokens.css` com comentário apontando a fonte, porque manifest não lê variável CSS.
