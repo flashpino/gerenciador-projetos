@@ -111,12 +111,12 @@ export default function BoardPage() {
           ? // Mesma divisão do kanban (colunasPorStatus), só os status com tarefa; o bloco é uma visão, não um grupo.
             colunasPorStatus(grupos.data ?? [])
               .filter((c) => c.tarefas.length > 0)
-              .map((c, position) => (
+              .map((c) => (
                 <TaskGroup
                   key={c.status}
                   status={c.status}
                   // `color` não é usada em modo status (a barra vem de `status`); o tipo só a exige.
-                  grupo={{ id: `status-${c.status}`, board_id: boardId ?? '', name: c.rotulo, color: 'azure', position, tasks: c.tarefas }}
+                  grupo={{ name: c.rotulo, color: 'azure', tasks: c.tarefas }}
                   membros={membros.data ?? []}
                   aoEditar={(id, campos) => editar.mutate({ id, campos })}
                   aoAbrir={abrirParaEditar}

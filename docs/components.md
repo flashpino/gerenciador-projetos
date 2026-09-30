@@ -111,7 +111,7 @@ passam por `src/hooks/` → `src/services/`.
 | `AssigneeCell` | Avatar, Menu | tabela, kanban, modal |
 | `DueDateCell` | Badge (`tone=atrasado`) | tabela, kanban, gantt |
 | `TaskTable` | StateView, Checkbox, ProgressBar, *Cells | Tabela Principal |
-| `TaskGroup` | ProgressBar, Badge, Button | Tabela Principal |
+| `TaskGroup` | ProgressBar, Badge, Button, Menu | Tabela Principal. Um grupo real (menu ⋮ Renomear/Excluir, "Adicionar item") ou, com `status`, um bloco de visão "agrupar por status" (sem menu nem adicionar, barra na cor do status) — variante, não componente novo |
 | `TaskCardList` | StateView, *Cells | Tabela Principal **em 375px** |
 | `KanbanBoard` | Tabs, KanbanColumn | Kanban |
 | `KanbanColumn` | Badge, TaskCard | Kanban |

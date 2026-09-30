@@ -270,5 +270,19 @@ Motivo: o mockup tem "+ Adicionar Novo Grupo" e a auditoria Stitch já apontava 
 - [x] Regra de exclusão: só grupo **vazio** (o `on delete cascade` apagaria as tarefas) e **nunca o último** (`tasks.group_id` NOT NULL). A checagem lê a lista sem filtro de busca
 - [x] `TaskGroup`: `overflow-hidden` saiu da section e `focus-within:z-10` evita o dropdown ficar atrás do grupo seguinte (`glass` cria contexto de empilhamento)
 - [ ] **Não verificado no navegador real:** o empilhamento do dropdown e o corte de cantos só existem em CSS, que o jsdom não calcula. Olhar um grupo vazio e o menu de um grupo de cima sobre o de baixo
-- [ ] **Segue aberto (entrega 2):** o desencontro tabela × kanban continua. A tabela agrupa por grupo, o kanban por status. Proposta: alternador "Agrupar por: Grupo | Status" na tabela
+- [x] **Entrega 2 (abaixo):** o desencontro tabela × kanban foi resolvido com o alternador "Agrupar por"
 - [ ] Fora de escopo: reordenar grupos por arrastar, excluir grupo com tarefas (com confirmação)
+
+---
+
+## Tabela agrupada por status ✅
+
+Motivo: a tabela agrupava só por grupo e o kanban só por status, então a mesma tarefa aparecia em "A fazer" numa tela e em "Em andamento" na outra.
+
+- [x] `useAgrupamento`: `?agrupar=status` na URL (padrão `grupo` não vai para a URL); preserva busca, filtros e demais parâmetros
+- [x] `BoardPage`: `Select` "Agrupar por: Grupo | Status". Em Status reaproveita `colunasPorStatus` do kanban, só os status com tarefa
+- [x] `TaskGroup` ganhou a variante `status` (bloco de visão): sem menu do grupo, sem "Adicionar item", barra na cor do status; "Novo grupo" some da página
+- [x] Mudar o status inline move a tarefa de bloco na hora (a visão deriva da cache do update otimista)
+- [x] Critérios 10 e 11 no F1 do `specs.md`
+- [ ] **Não verificado no navegador real:** só jsdom. Olhar a barra colorida do bloco e o select no celular (375px)
+- [ ] Fora de escopo, de propósito: lembrar a escolha entre sessões, agrupar por prioridade/responsável, criar tarefa dentro de um bloco de status

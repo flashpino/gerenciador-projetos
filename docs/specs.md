@@ -81,6 +81,16 @@ Cada critério vira um teste. Se não dá para observar, não é critério.
 9. Dado que a busca ou os filtros não deixam nada visível, quando a tela renderiza, então
    aparece "Nenhuma tarefa encontrada" com o botão que limpa tudo — nunca o "Nenhuma
    tarefa ainda" de um board vazio.
+10. Dado a tabela com grupos, quando uso "Novo grupo" ou o menu ⋮ do cabeçalho, então
+    consigo criar (nome e cor), renomear e recolorir um grupo. **Excluir só vale para grupo
+    vazio e nunca para o último** (o banco apagaria as tarefas junto; sem grupo não há onde
+    criar tarefa) — nos demais casos o item aparece desabilitado com o motivo. *(2026-09-30)*
+11. Dado que escolho "Agrupar por: Status", quando a tabela renderiza, então os blocos são os
+    status que têm tarefa, na ordem do kanban — a tarefa "Em andamento" não aparece sob um
+    grupo chamado "A fazer". Mudar o status move a tarefa de bloco **imediatamente**; busca e
+    filtros continuam valendo; a escolha mora na URL (`?agrupar=status`) e o padrão é "Grupo".
+    Nesse modo o bloco é só uma visão: não há criar/renomear/excluir grupo nem "Adicionar
+    item" (não há grupo de destino). *(2026-09-30)*
 
 ### F2 — Kanban
 1. Dado um board com tarefas, quando abro o kanban, então existe uma coluna por status

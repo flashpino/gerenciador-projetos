@@ -29,7 +29,7 @@ const TEXTO_GRUPO: Record<GroupColor, string> = {
 }
 
 interface Props {
-  grupo: GroupComTarefas
+  grupo: Pick<GroupComTarefas, 'name' | 'color' | 'tasks'>
   membros: Profile[]
   aoEditar: (id: string, campos: CamposEditaveis) => void
   aoAbrir: (task: Task) => void
