@@ -1,5 +1,9 @@
 # Relatório da sessão autônoma — 2026-09-29
 
+> **Atualizado:** a primeira versão cobria só o PWA. Você pediu o projeto inteiro; o que foi
+> feito depois está na seção 9 (Configurações, Ajuda, desempenho). O que estava em "precisa de você"
+> continua valendo.
+
 Para auditar e alterar o que quiser. Cada decisão tem o motivo e como desfazer.
 Tudo está em commits locais. **Nada foi enviado (`git push`) e nenhuma migration foi aplicada.**
 
@@ -22,6 +26,11 @@ e uma checagem manual no Chrome.
 | `1f07ebb` | Docs (`components.md`, `progresso.md`); `AvisoPWA` passou a usar `<output>` |
 | `582e4f0` | Registro da checagem manual no `progresso.md` |
 | `6a0b948` | `components.md`: `EnumCell` e nota de unificação (divergência antiga doc-vs-código) |
+| `cf4544f` | Este relatório (1ª versão) |
+| `8c0aaf8` | Configurações: serviço `atualizarNomePerfil`, hook, página, testes |
+| `1a46d7e` | Ajuda + rotas `/ajuda` e `/configuracoes` no ar + axe das duas |
+| `2236c46` | `scroll-padding-bottom` para a barra do PWA não cobrir o foco (WCAG 2.4.11) |
+| `01f16c2` | Páginas por rota com `React.lazy`; `Suspense` único no `AppShell` |
 
 Para desfazer tudo do PWA: `git revert` na faixa `2919d14..582e4f0` (ou `git reset --hard 5600cd1`,
 que é o último commit antes da sessão; só você deve rodar isso).
@@ -84,6 +93,9 @@ que é o último commit antes da sessão; só você deve rodar isso).
 - **375px exato:** o Chrome travou a janela em 500px de largura. O layout é o mesmo mobile-first, mas
   não medi 375.
 
+> **Correção posterior:** o "aviso de versão nova" **foi** testado de verdade depois (seção 9). Só o
+> clique real em "Instalar" continua sem teste real.
+
 ## 7. O que precisa de você
 
 1. **Falta um `<main>` no `LoginPage`** (Lighthouse: `landmark-one-main`). É só trocar o `div` da linha 45
@@ -112,3 +124,49 @@ Também mudei `.claude/settings.local.json` (ignorado pelo git): liberei `git`, 
 `graphify`, `Edit` e `Write`, e **bloqueei** `git push`, `git reset --hard` e `npm install`. Você
 adicionou `ECC_GATEGUARD=off`. Para voltar ao normal, apague o arquivo `.claude/settings.local.json`
 ou os blocos acima.
+
+## 9. Depois do PWA: o resto do projeto
+
+Levantei o backlog lendo `docs/specs.md`, a spec da casca e o `progresso.md`. Os 6 sub-projetos da
+casca e as F0–F5 já estavam concluídos. Sobravam as 3 rotas "em construção" e a folga do bundle.
+
+**Feito**
+
+| Item | Decisão e motivo |
+|---|---|
+| **Configurações** (`/configuracoes`) | Só o **nome de exibição**. É o único dado do perfil que a UI usa em todo lugar. Sem migration: a policy `profiles_update` (só o próprio perfil) e o `check` de 1–120 caracteres **já existiam**. E-mail só de leitura |
+| **Ajuda** (`/ajuda`) | Página estática, 8 perguntas em `<details>` nativo (teclado e leitor de tela de graça, sem componente novo). Só descreve o que existe hoje; os nomes de botões foram conferidos no código |
+| **Desempenho** | `React.lazy` em mais 6 páginas; `Suspense` único no `AppShell` (antes era repetido por rota, e passou da regra dos três). Inicial ~191 → ~176 KB gzip; folga de 8 para ~23 KB |
+| **Acessibilidade** | `scroll-padding-bottom` global: a barra fixa do PWA podia cobrir o elemento focado por teclado (WCAG 2.2, 2.4.11) |
+
+**Verificado contra o banco real** (conta de teste `teste.a@exemplo.dev`, banco de desenvolvimento
+documentado na memória do projeto): o `update` do próprio perfil passa pela RLS, o nome gravou aparado
+(`"  Usuária A (editado)  "` virou `"Usuária A (editado)"`) e voltou após reload. **Restaurei o nome
+original** ("Usuária A de Teste") e limpei sessão, service worker e caches do navegador.
+
+**Verificado também:** as 5 rotas lazy e o Kanban abrem no navegador com a Sidebar no lugar; e o fluxo
+de atualização do PWA funcionou de verdade: versão nova em espera → aviso "Nova versão disponível" →
+Recarregar → a nova assume (CSS novo aplicado).
+
+**Decisões de não fazer, com motivo**
+
+1. **Notificações continua "em construção".** Sem menção, push ou e-mail (todos fora da v1 no
+   `specs.md`), ela repetiria `/atividades`. A versão distinta ("o que outras pessoas fizeram nas minhas
+   tarefas") exige um join `activities → tasks` que **não consegui validar contra o banco**, então não
+   entreguei uma consulta às cegas. Reabrir junto com push.
+2. **`<main>` no `LoginPage`:** Zona Vermelha, segue como proposta (seção 7).
+3. **CI e push:** sem remote, sem segredos; seguem na seção 7.
+4. **Sem migration nova nesta sessão.** Nenhuma. Nada foi aplicado no banco além do `update` do nome
+   feito pelo app na conta de teste (e revertido).
+
+**Observações que não são bug meu, mas você deve saber**
+
+- **Um 401 no console logo depois do login:** uma chamada `GET workspaces` sai antes do token novo
+  assentar; a mesma chamada repetida em seguida dá 200 e o `retry: 1` do `QueryClient` recupera. É uma
+  corrida antiga na virada de sessão, sem efeito visível. Vale investigar se você quiser o console limpo.
+- **A Sidebar mostra o nome via `useMembros`**, então trocar o nome em Configurações atualiza a
+  Sidebar pela invalidação de `['membros']`. Não testei isso visualmente (a Sidebar estava recolhida na
+  janela estreita); o teste unitário cobre a invalidação.
+
+**Estado ao final:** 47 arquivos e 301 testes verdes; `npm run verify` exit 0; `dup` com o mesmo
+clone antigo; `dead` limpo; `npm audit` sem vulnerabilidades; grafo atualizado (1367 nós).

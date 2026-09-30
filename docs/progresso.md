@@ -189,6 +189,24 @@ Spec: `docs/superpowers/specs/2026-09-29-pwa-design.md` · Plano: `docs/superpow
 - [x] `knip.json` sem `ignoreDependencies`; `docs/DEPS-PENDENTES.md` apagado (última pendência usada)
 - [x] Build gera `sw.js` + `manifest.webmanifest` (precache de 16 arquivos)
 - [x] Checagem manual no Chrome (`vite preview`, 2026-09-29): manifest e 3 ícones servem 200; service worker ativo; console sem erro; o Chrome disparou `beforeinstallprompt` (critérios de instalação atendidos); aviso aparece; "Agora não" grava a marca e não volta após reload; layout estreito (500px, mínimo da janela) com alvos de 44px, margem de 16px e sem scroll horizontal
-- [ ] **Não testado:** o aviso de *versão nova* (exige publicar dois builds em sequência com o SW do primeiro instalado) e o clique real em "Instalar" (abre a janela nativa do sistema). Ambos cobertos só por teste unitário com mock
+- [x] Aviso de *versão nova* testado de verdade no Chrome (2026-09-29): com o service worker do build anterior ativo e o novo em espera, a barra mostra "Nova versão disponível"; "Recarregar" faz o novo assumir (sem SW em espera, CSS novo aplicado). **Segue sem teste real:** o clique em "Instalar" (abre a janela nativa do sistema) — coberto só por teste unitário com mock
 
 **Decisões e limites:** só o Chromium dispara `beforeinstallprompt`. No iPhone o app é instalável pelo menu do Safari, mas sem botão nosso (spec, "Fora de escopo"). Cores do manifest (`#0073ea`, `#ffffff`) repetem `--color-primary`/`--color-surface` de `tokens.css` com comentário apontando a fonte, porque manifest não lê variável CSS.
+
+---
+
+## Configurações e Ajuda ✅ (sub-projetos 7 e 8)
+
+Spec: `docs/superpowers/specs/2026-09-29-configuracoes-ajuda-design.md` · decididos de forma autônoma (ver `docs/relatorio-autonomo-2026-09-29.md`).
+
+- [x] `services/boards.ts` `atualizarNomePerfil` + `hooks/useQuadro.ts` `useAtualizarNome` + `pages/ConfiguracoesPage.tsx` — só o nome de exibição; e-mail só de leitura. Sem migration: a policy `profiles_update` e o check de 1–120 já existiam
+- [x] `lib/ajuda.ts` + `pages/AjudaPage.tsx` — 8 perguntas em `<details>` nativo, só sobre o que existe hoje
+- [x] Rotas `/configuracoes` e `/ajuda` no ar; testes de serviço, de página e axe
+- [x] Testado contra o **banco real** (conta de teste, `vite preview`): o `update` do próprio perfil passa pela RLS, o nome grava aparado e volta após reload; nome original restaurado depois
+- [x] Corrigido junto: `scroll-padding-bottom` em `tokens.css` para a barra fixa do PWA não cobrir o foco por teclado (WCAG 2.2, 2.4.11)
+- [ ] **Notificações segue "em construção", de propósito.** Sem menção, push ou e-mail (fora da v1) ela repetiria `/atividades`. A versão "atividades nas tarefas atribuídas a mim" exige um join `activities → tasks` que não pude validar contra o banco. Reabrir junto com push
+
+## Desempenho — páginas por rota ✅
+
+- [x] `React.lazy` em Kanban, Painéis, Atividades, Modelos, Ajuda e Configurações (Gantt e Dashboard já eram). `Suspense` único dentro do `AppShell` (a Sidebar não some na troca de página)
+- [x] Carregamento inicial ~191 KB → ~176 KB gzip (limite da spec: 200 KB). O Kanban com dnd-kit (14 KB gzip) só baixa ao abrir o Kanban
