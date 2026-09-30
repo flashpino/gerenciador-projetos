@@ -1,4 +1,4 @@
-import { act, render } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -69,6 +69,8 @@ import PaineisPage from '@/pages/PaineisPage'
 import AtividadesPage from '@/pages/AtividadesPage'
 import ModelosPage from '@/pages/ModelosPage'
 import { AvisoPWA } from '@/components/features/AvisoPWA'
+import { FiltroTarefasModal } from '@/components/features/FiltroTarefasModal'
+import { FILTRO_VAZIO } from '@/lib/filtro'
 import { IntegrantesModal } from '@/components/features/IntegrantesModal'
 import { TaskModal } from '@/components/features/TaskModal'
 
@@ -339,5 +341,19 @@ describe('Acessibilidade automatizada (axe) — telas principais do MVP', () => 
   it('AjudaPage não tem violação WCAG', async () => {
     const { container } = render(<AjudaPage />)
     expect(await axe(container)).toHaveNoViolations()
+  })
+
+  it('FiltroTarefasModal aberto, com filtros marcados, não tem violação WCAG', async () => {
+    render(
+      <FiltroTarefasModal
+        aberto
+        aoFechar={() => {}}
+        aoMudar={() => {}}
+        membros={MEMBROS}
+        filtro={{ ...FILTRO_VAZIO, status: ['working'], responsavel: 'u1', atrasadas: true }}
+      />,
+    )
+    const dialogo = await screen.findByRole('dialog', { name: 'Filtrar tarefas' })
+    expect(await axe(dialogo)).toHaveNoViolations()
   })
 })

@@ -1,18 +1,18 @@
 import { useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
-import { StateView } from '@/components/ui/StateView'
-import { estadoDaQuery } from '@/lib/estadoDaQuery'
 import { Button } from '@/components/ui/Button'
 import { BoardShell } from '@/components/features/BoardShell'
 import { TaskGroup } from '@/components/features/TaskGroup'
 import { TaskModal } from '@/components/features/TaskModal'
-import { useAtualizarTarefa, useBoard, useGruposComTarefas, useMembros } from '@/hooks/useQuadro'
+import { VisaoDoBoard } from '@/components/features/VisaoDoBoard'
+import { useGruposFiltrados } from '@/hooks/useGruposFiltrados'
+import { useAtualizarTarefa, useBoard, useMembros } from '@/hooks/useQuadro'
 import type { Task } from '@/types/domain'
 
 export default function BoardPage() {
   const { boardId } = useParams<{ boardId: string }>()
   const board = useBoard(boardId)
-  const grupos = useGruposComTarefas(boardId)
+  const grupos = useGruposFiltrados(boardId)
   const membros = useMembros(board.data?.workspace_id)
   const editar = useAtualizarTarefa(boardId)
 
@@ -40,17 +40,6 @@ export default function BoardPage() {
   // Board apagado ou de outro workspace: "tentar de novo" não o traz de volta.
   if (board.isError) return <Navigate to="/paineis" replace />
 
-  // Os QUATRO estados, num lugar so. Nenhuma tela do app inventa a propria regra.
-  const estado = estadoDaQuery(
-    board.isPending ? { ...grupos, isPending: true } : grupos,
-    {
-      titulo: 'Nenhuma tarefa ainda',
-      descricao: 'Crie o primeiro grupo para comecar a organizar o trabalho da squad.',
-      acao: <Button variant="primary">Criar primeiro grupo</Button>,
-    },
-    () => void grupos.refetch(),
-  )
-
   return (
     <BoardShell titulo={board.data?.name ?? 'Quadro'}>
       {editar.isError && (
@@ -59,7 +48,15 @@ export default function BoardPage() {
         </p>
       )}
 
-      <StateView estado={estado}>
+      <VisaoDoBoard
+        grupos={grupos}
+        boardPendente={board.isPending}
+        vazio={{
+          titulo: 'Nenhuma tarefa ainda',
+          descricao: 'Crie o primeiro grupo para comecar a organizar o trabalho da squad.',
+          acao: <Button variant="primary">Criar primeiro grupo</Button>,
+        }}
+      >
         {grupos.data?.map((g) => (
           <TaskGroup
             key={g.id}
@@ -70,7 +67,7 @@ export default function BoardPage() {
             aoCriar={() => abrirParaCriar(g.id)}
           />
         ))}
-      </StateView>
+      </VisaoDoBoard>
 
       {board.data && (
         <TaskModal
@@ -78,8 +75,8 @@ export default function BoardPage() {
           aoFechar={fecharModal}
           boardId={board.data.id}
           taskId={taskIdModal}
-          grupoInicialId={grupoParaCriar ?? grupos.data?.[0]?.id ?? ''}
-          grupos={(grupos.data ?? []).map((g) => ({ id: g.id, name: g.name }))}
+          grupoInicialId={grupoParaCriar ?? grupos.todos?.[0]?.id ?? ''}
+          grupos={(grupos.todos ?? []).map((g) => ({ id: g.id, name: g.name }))}
           membros={membros.data ?? []}
         />
       )}
