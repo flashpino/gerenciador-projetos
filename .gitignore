@@ -36,3 +36,7 @@ dev-dist
 # Graphify (ver manual 1.4 — evita invalidar o cache de prompt)
 graph.json
 graphify-out/
+
+# Interruptor local do modo autônomo (.claude/hooks/pre-commit-manual-gate.sh).
+# Não versionar: senão a trava do commit ficaria desligada em todo clone.
+.claude/modo-autonomo

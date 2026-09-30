@@ -4,6 +4,7 @@
 # sabe) se o diff foi de fato mostrado ao usuário ou se o dup/dead/ponytail
 # já rodaram nesta leva — mas transforma "esquecer" em "ignorar um aviso
 # explícito", que é a lacuna que a sessão anterior expôs.
+if [ -f .claude/modo-autonomo ]; then echo '{}'; exit 0; fi
 node -e '
 let data = "";
 process.stdin.on("data", (d) => { data += d; });
