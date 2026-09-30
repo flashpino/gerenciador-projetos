@@ -287,3 +287,16 @@ Motivo: a tabela agrupava só por grupo e o kanban só por status, então a mesm
 - [x] **Verificado no navegador real:** 3 blocos (Em andamento, Em revisão, Pronto) na ordem do kanban, barra na cor de cada status, select ok em 375px e 1440px. Marcar "Concluir" moveu a tarefa de bloco e continuou lá após o servidor responder (dado restaurado depois)
 - [ ] Observação: as abas Kanban/Gantt/Dashboard levam o `?agrupar=status` junto (as abas repassam a query inteira). Inofensivo — voltar à Tabela mantém o agrupamento —, então ficou como está
 - [ ] Fora de escopo, de propósito: lembrar a escolha entre sessões, agrupar por prioridade/responsável, criar tarefa dentro de um bloco de status
+
+---
+
+## Skeleton na troca de página ✅
+
+Motivo: ao clicar em outra página, a tela antiga ficava congelada até a nova chegar. O React Router troca de rota dentro de uma transição do React, e nela o `<Suspense>` **nunca** mostra o fallback — parecia travamento.
+
+- [x] `StateView` em "carregando" agora é um skeleton (`aria-busy`, texto sr-only "Carregando…", sem animação com `prefers-reduced-motion`); vale para a troca de página e para os dados de qualquer visão
+- [x] `BrowserRouter useTransitions={false}` em `App.tsx`: a navegação suspende de verdade e o skeleton aparece na hora, com a sidebar no lugar
+- [x] `App.test.tsx`: rota lazy que nunca carrega → skeleton visível e página antiga escondida (o React a esconde com `display:none`, não a desmonta). Sem a prop, o teste falha
+- [x] Verificado no navegador real (rede Slow 3G, CPU 4x): a tela vira o skeleton no clique
+- [ ] Ainda genérico (3 cartões) para todas as telas; skeletons com a forma de cada visão (tabela, kanban) ficaram de fora
+- [ ] `buscaEFiltros.test.tsx`: `findBy/waitFor` de 4 s → 8 s. O teste "a busca ignora acento" digita 12 letras (~4,4 s isolado) e falhava 1 vez em 3 na suíte inteira com cobertura; nenhuma asserção foi tocada

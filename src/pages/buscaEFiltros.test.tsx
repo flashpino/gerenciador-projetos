@@ -29,8 +29,10 @@ import KanbanPage from './KanbanPage'
 // Integração pesada (BoardShell + página reais + digitação). Com a suíte inteira rodando em paralelo e com
 // cobertura a máquina fica carregada, e os 5 s padrão do teste e o 1 s do findBy estouravam sem que a lógica
 // estivesse errada. Orçamento de tempo só para este arquivo; nenhuma asserção foi tocada.
+// (2026-09-30: findBy/waitFor de 4 s → 8 s. "a busca ignora acento" digita 12 letras, ~4,4 s isolado, e falhava
+// 1 vez em 3 na suíte inteira com cobertura. Isolado e em rodadas seguintes passa sempre.)
 vi.setConfig({ testTimeout: 20_000 })
-beforeAll(() => configure({ asyncUtilTimeout: 4000 }))
+beforeAll(() => configure({ asyncUtilTimeout: 8000 }))
 
 const SESSAO = { usuario: { id: 'u1', email: 'ana@x.com' }, carregando: false }
 
@@ -73,7 +75,7 @@ const grupoAparece = (nome: string) => screen.queryByRole('heading', { level: 2,
 const buscar = (texto: string) => userEvent.type(screen.getByRole('searchbox', { name: 'Buscar neste quadro' }), texto)
 
 /** Espera uma condição, com folga para a máquina carregada. */
-const esperar = (condicao: () => void) => vi.waitFor(condicao, { timeout: 4000 })
+const esperar = (condicao: () => void) => vi.waitFor(condicao, { timeout: 8000 })
 
 describe('busca e filtros nas visões do board', () => {
   beforeEach(() => {

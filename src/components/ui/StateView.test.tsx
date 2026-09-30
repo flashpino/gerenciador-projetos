@@ -9,6 +9,14 @@ describe('StateView', () => {
     expect(screen.queryByText('conteudo')).not.toBeInTheDocument()
   })
 
+  it('carregamento é um skeleton: região ocupada, só o texto "Carregando…" para o leitor de tela', () => {
+    render(<StateView estado={{ tipo: 'carregando' }}>conteudo</StateView>)
+    const regiao = screen.getByRole('status')
+    expect(regiao).toHaveAttribute('aria-busy', 'true')
+    // Os blocos do skeleton são decoração (aria-hidden): nada de texto solto além do aviso.
+    expect(regiao).toHaveTextContent(/^Carregando…$/)
+  })
+
   it('mostra o erro com role alert e um botao de tentar de novo', () => {
     render(
       <StateView estado={{ tipo: 'erro', mensagem: 'Deu ruim', aoTentarDeNovo: () => {} }}>

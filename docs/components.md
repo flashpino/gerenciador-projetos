@@ -75,6 +75,11 @@ discriminado e obriga os quatro: loading, erro, vazio, sucesso. "Esqueci o
 estado vazio" é o erro nº 3 do manual; com este componente ele deixa de ser
 possível por construção, não por disciplina.
 
+**O `loading` do StateView é um skeleton** (3 cartões de vidro pulsantes, `aria-hidden`), não um spinner:
+região `<output aria-busy>` com o texto sr-only "Carregando…". Serve à troca de página (o `<Suspense>` do
+`AppShell` usa o mesmo estado) e ao carregamento dos dados de qualquer visão. Sem `animate-pulse` com
+`prefers-reduced-motion`. O skeleton é interno ao StateView, não um primitivo à parte: só ele o usa.
+
 **#12 Tabs decide o elemento pelo `href` do item.** Item com `href` vira `<nav>`
 + link com `aria-current="page"`; sem `href` vira `role="tablist"` + `role="tab"`.
 Motivo: `role="tablist"` pressupõe painéis no mesmo documento. O seletor de views

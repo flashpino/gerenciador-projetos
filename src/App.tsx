@@ -39,7 +39,11 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary>
-        <BrowserRouter>
+        {/*
+          Sem transição do React na navegação: com ela (padrão), ao ir para uma rota lazy a tela ANTIGA fica
+          congelada até o chunk chegar e o <Suspense> do AppShell nunca mostra o skeleton — parece travado.
+        */}
+        <BrowserRouter useTransitions={false}>
           <SessaoProvider>
             <Routes>
               <Route path="/login" element={<LoginPage />} />
