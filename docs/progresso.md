@@ -241,3 +241,20 @@ Spec: `docs/superpowers/specs/2026-09-30-busca-filtros-design.md` · pedido do u
 - [x] **Bug achado só no navegador:** campo ligado direto à URL perdia teclas ("tarefa" → "trefa"). Corrigido com `useBuscaDoBoard` (ver `docs/patterns.md` §10)
 - [ ] Fora de escopo, de propósito: filtro por período/sprint (não existe no schema), filtros salvos, busca por nome do responsável, busca em comentários e subtarefas
 
+---
+
+## Integração Claude → sistema ✅ (sub-projeto 10)
+
+Spec: `docs/superpowers/specs/2026-09-30-integracao-claude-design.md` · Guia: `docs/integracao-claude.md`.
+Pedido: o Claude, em outra sessão (talvez outra conta), cria as tarefas de um plano e vai atualizando o status. Novo e existente.
+
+- [x] **Sem mudança no servidor:** conta de serviço = membro do workspace (o RLS existente já permite criar/editar boards, grupos, tarefas e subtarefas). Sem migration, sem edge function, sem tocar em auth
+- [x] `integracao-claude/`: CLI sem dependências (`gp.mjs`), `nucleo.mjs` (puro), `api.mjs` (HTTP), `comandos.mjs`, `ambiente.mjs`, `SKILL.md`, `instalar.mjs`
+- [x] `importar` de plano `.md` (formato do `superpowers:writing-plans`) ou `.json`; idempotente por `ref` (tag `ref:X` em `tasks.tags`, invisível na interface); `--criar` (novo), `--board`/`vincular` (existente), `--dry-run`
+- [x] `iniciar`/`concluir`/`revisar`/`travar`/`status`/`comentar`, `tarefas`, `eu`, `boards`
+- [x] Reimportar nunca desfaz: status, progresso e subtarefas só **avançam**; a tarefa nunca muda de grupo
+- [x] **106 testes** (núcleo, API com fetch falso, comandos contra uma API em memória que prova a idempotência de ponta a ponta)
+- [x] Skill instalada em `~/.claude/skills/gerenciador-projetos/` (vale para toda sessão desta máquina)
+- [ ] **Falta o passo humano:** criar a conta de serviço, convidá-la no workspace e rodar `gp configurar` (envolve senha). Sem isso a CLI responde "configuração incompleta"
+- [ ] **Não testado contra o banco real:** só contra o falso. O primeiro `gp eu` + `gp importar --dry-run` reais são a verificação que falta
+

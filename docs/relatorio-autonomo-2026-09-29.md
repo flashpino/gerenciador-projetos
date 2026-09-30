@@ -286,3 +286,63 @@ inteira digitada de uma vez: nada se perdeu. A lição está em `docs/patterns.m
   teste todas as tarefas estão sem responsável e sem prazo, então não havia o que filtrar de verdade lá.
 - **Board grande (200 tarefas):** o filtro é uma passada em memória (`useMemo`), deve ser barato, mas não medi.
 
+## 13. Integração Claude → sistema (sub-projeto 10)
+
+Pedido: "que o Claude alimente o sistema com as tarefas: quando o plano for criado ele cria as tarefas e, conforme conclui,
+altera os status; em outra sessão, talvez com outra conta; para projetos novos e existentes."
+Spec: `docs/superpowers/specs/2026-09-30-integracao-claude-design.md` · Guia: `docs/integracao-claude.md`.
+
+### Decisão central: conta de serviço + CLI, sem tocar no servidor
+
+Li o RLS antes de desenhar: **qualquer membro do workspace já pode criar e editar boards, grupos, tarefas e subtarefas**, e comentar
+como si mesmo. Então a ponte é uma conta comum do app, convidada no workspace, e uma CLI que entra com ela. **Nenhuma migration, nenhuma
+edge function, nenhuma chave de serviço, nada de auth do app.** O acesso é o de um membro (lê e escreve o workspace dela; nada dos outros).
+
+**Por que não token de API + edge function:** exigiria tabela nova, RLS, função com chave de serviço e deploy (Zona Vermelha e segredos), para
+entregar o mesmo resultado. Fica como evolução se um dia o bot não puder ser membro.
+
+### O que resolve, pergunta por pergunta
+
+| Você pediu | Como |
+|---|---|
+| Claude cria as tarefas quando o plano é definido | `gp importar plano.md`: o markdown do `superpowers:writing-plans` funciona direto (`### Task N` → tarefa, `- [ ] Step` → subtarefa) |
+| Altera o status conforme conclui | `gp iniciar/concluir/revisar/travar <ref>`; ou marca as caixas do plano e reimporta (sincroniza tudo) |
+| Outra sessão | A skill é instalada na máquina (`~/.claude/skills`), não no projeto: toda sessão a enxerga |
+| Talvez outra conta | Config por máquina; em outra máquina/conta: `instalar.mjs --destino` + `configurar`, ou variáveis `GP_*` |
+| Projeto novo | `--criar "Nome"`: cria board e vincula o projeto (`.gerenciador.json`) |
+| Projeto já existente | `boards` → `vincular` → `importar`; tarefas sem `ref` **não são tocadas** |
+
+### Decisões e motivo
+
+1. **Identidade da tarefa = tag `ref:X`** em `tasks.tags` (a interface nunca lê `tags`): reimportar atualiza em vez de duplicar, sem migration.
+   Contra: se um dia a UI mostrar etiquetas, é preciso filtrar o prefixo `ref:`.
+2. **Reimportar nunca desfaz.** Status, progresso e subtarefas só avançam; recuar exige `gp status` explícito. Motivo: o plano e o board
+   podem estar defasados entre si, e perder progresso em silêncio é pior que não sincronizar.
+3. **Campo omitido no plano só vale para criar.** Preencher um padrão na validação faria uma reimportação sobrescrever a prioridade que uma
+   pessoa ajustou (um teste meu apontou isso antes de eu implementar).
+4. **Nome repetido nunca é escolha silenciosa.** Todo usuário nasce com um "Meu Workspace": ambiguidade é erro que lista os **ids e o dono**.
+5. **`--criar` repetido não duplica o board:** reaproveita o de mesmo nome no workspace (o erro mais provável é o Claude rodar o comando duas vezes).
+6. **`travar` exige o motivo** (`--comentario`); `concluir` põe progresso 100 (o checkbox da interface não põe, e deixava a média do grupo em 0%).
+7. **A senha nunca passa pelo Claude:** `configurar` é do humano, com senha oculta, e só grava se o login funcionar. Arquivo em `~/.config`, modo 0600.
+   Nenhum erro imprime senha, token ou e-mail (há teste), e um comando desconhecido é rejeitado antes de gastar um login.
+8. **Zero dependências** (só `fetch`, Node 18+): a CLI é copiável para outra máquina sem `npm install`.
+
+### Bugs que os testes acharam antes de existir usuário
+
+- `comando in TRATAMENTO` aceitava `toString`/`constructor` (herdados de `Object.prototype`): `gp toString` tentaria executar uma função nativa. Corrigido com `Object.hasOwn`.
+- O `path.join` do Windows usa `\`: meu `fs` falso indexava por `/` e 4 testes falharam. O código é multiplataforma; o defeito era do teste.
+
+### Também corrigi (não é da integração, mas o `verify` acusou)
+
+- `buscaEFiltros.test.tsx` (sub-projeto 9) tinha um **sleep fixo de 350 ms** esperando o *debounce*: frágil por construção, e falhou quando a suíte
+  cresceu. Troquei por espera pelo resultado e dei orçamento de tempo ao arquivo (os 5 s padrão estouravam sob carga). Nenhuma asserção foi alterada.
+
+### Verificado / NÃO verificado
+
+- **Verificado:** 106 testes novos; `npm run verify` exit 0 (480 testes); CLI executada de verdade: ajuda (exit 0), sem config (exit 2, sem vazar nada),
+  servidor inalcançável (exit 1), comando desconhecido (exit 2); a cópia instalada em `~/.claude/skills` executa.
+- **NÃO verificado contra o banco real.** Todo o comportamento de gravação foi provado contra uma API em memória com o mesmo contrato. O primeiro
+  `gp eu` e `gp importar --dry-run` reais são a verificação que falta, e dependem de você criar e configurar a conta de serviço (senha).
+  Não usei `.env.local` nem a conta de teste para isso, de propósito.
+- **Não testado:** o `configurar` interativo em terminal de verdade (senha oculta); o comportamento em macOS/Linux (código usa `path`/`fs`, mas rodei só no Windows).
+
