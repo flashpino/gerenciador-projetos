@@ -117,7 +117,7 @@ passam por `src/hooks/` → `src/services/`.
 | `BoardCard` | Menu | um board em Meus Painéis — link pro board + menu Renomear/Excluir |
 | `BoardFormModal` | Modal, Field, TextInput, Button | criar e renomear board (PaineisPage, Sidebar) — mesma dualidade criar/editar do TaskModal |
 | `ExcluirBoardDialog` | Modal, Field, TextInput, Button (`danger`) | exclusão definitiva de board, confirmada digitando o nome. Separado do BoardFormModal: regra destrutiva diferente, nada em comum além do Modal |
-| `AppUpdatePrompt` | Button | shell (nova versão do PWA) |
+| `AvisoPWA` | Button | raiz do app (`App.tsx`), fora das rotas. Barra fixa no rodapé com no máximo um aviso: versão nova do PWA (prioridade) ou instalar o app. Novo porque nenhum componente existente é um aviso global; não vira `Toast` genérico porque só ele usa (ver "FORA dos primitivos"). Spec: `docs/superpowers/specs/2026-09-29-pwa-design.md` |
 
 **`ModelosPage` sem `StateView`:** o catálogo de `lib/modelos.ts` é estático — não
 há loading/erro/vazio de lista. O único estado assíncrono é criar o board: botões

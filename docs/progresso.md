@@ -17,7 +17,7 @@ Fonte da verdade dos critérios: `docs/specs.md` seção 3.
 | F5 | Detalhe da Tarefa (modal) | ✅ concluída — commit `a529625` |
 
 **Infra:** migrations `0001_init` + `0002_advisors` aplicadas, RLS testado (3 blocos OK).
-PWA (`vite-plugin-pwa`) instalado, ainda não usado — fica para depois do MVP funcional (Fase 7 do manual).
+PWA instalável: manifest, ícones, aviso de nova versão e botão Instalar (seção "PWA" abaixo). Sem offline, por decisão do produto.
 
 ---
 
@@ -174,3 +174,20 @@ Sem automação — atualizo este arquivo no mesmo commit que fecha um critério
 uma funcionalidade. Se ele divergir do código, o código venceu (mesma regra do
 `docs/patterns.md`). Pergunte "oq falta" a qualquer momento para eu recalcular
 contra `docs/specs.md` e corrigir este arquivo se estiver desatualizado.
+
+---
+
+## PWA ✅
+
+Spec: `docs/superpowers/specs/2026-09-29-pwa-design.md` · Plano: `docs/superpowers/plans/2026-09-29-pwa.md`
+
+- [x] `scripts/gerar-icones.py` + `public/pwa-192.png`, `pwa-512.png`, `pwa-maskable-512.png`, `apple-touch-icon.png`, `favicon.svg`
+- [x] `vite.config.ts` — `VitePWA` com `registerType: 'prompt'`, manifest pt-BR, precache só dos arquivos do app, sem cache de runtime (Supabase nunca vem do cache)
+- [x] `index.html` — `theme-color` e `apple-touch-icon`
+- [x] `src/hooks/useInstalarApp.ts` + teste — guarda o `beforeinstallprompt`, dispensa gravada em `localStorage`
+- [x] `src/components/features/AvisoPWA.tsx` + teste + axe — versão nova tem prioridade sobre instalar
+- [x] `knip.json` sem `ignoreDependencies`; `docs/DEPS-PENDENTES.md` apagado (última pendência usada)
+- [x] Build gera `sw.js` + `manifest.webmanifest` (precache de 16 arquivos)
+- [ ] Checagem manual no navegador (manifest sem erro, instalar pelo aviso, aviso de versão nova) — ver "Verificação" abaixo
+
+**Decisões e limites:** só o Chromium dispara `beforeinstallprompt`. No iPhone o app é instalável pelo menu do Safari, mas sem botão nosso (spec, "Fora de escopo"). Cores do manifest (`#0073ea`, `#ffffff`) repetem `--color-primary`/`--color-surface` de `tokens.css` com comentário apontando a fonte, porque manifest não lê variável CSS.

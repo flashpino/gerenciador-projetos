@@ -33,8 +33,7 @@ export function AvisoPWA() {
   if (!aviso) return null
 
   return (
-    <div
-      role="status"
+    <output
       className="fixed inset-x-gutter bottom-gutter z-40 flex flex-wrap items-center gap-space-sm rounded-md border border-border bg-surface p-space-md shadow-overlay md:left-auto md:right-margin md:bottom-margin"
     >
       <p className="flex-1 text-body text-ink">{aviso.texto}</p>
@@ -44,6 +43,6 @@ export function AvisoPWA() {
       <Button size="sm" variant="primary" onClick={aviso.principal.acao}>
         {aviso.principal.rotulo}
       </Button>
-    </div>
+    </output>
   )
 }
