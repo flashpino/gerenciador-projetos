@@ -25,8 +25,18 @@ const VARIANTES: Record<Variant, string> = {
  * Aplicar o tamanho compacto em mobile quebraria WCAG 2.5.8.
  */
 const TAMANHOS: Record<Size, string> = {
-  sm: 'min-h-touch md:min-h-8 px-space-md text-label',
-  md: 'min-h-touch md:min-h-10 px-space-lg text-body',
+  sm: 'min-h-touch md:min-h-8 text-label',
+  md: 'min-h-touch md:min-h-10 text-body',
+}
+
+/**
+ * Padding lateral separado do tamanho de propósito: tailwind-merge não conhece
+ * os nomes `px-space-*` do nosso tema, então `px-space-lg` e `px-0` conviveriam
+ * e o padding do tamanho espremeria o ícone do botão só-ícone (8px de largura útil).
+ */
+const PADDING_X: Record<Size, string> = {
+  sm: 'px-space-md',
+  md: 'px-space-lg',
 }
 
 export function Button({
@@ -47,12 +57,12 @@ export function Button({
       disabled={disabled || loading}
       aria-busy={loading || undefined}
       className={cn(
-        'inline-flex items-center justify-center gap-space-sm rounded font-semibold',
+        'inline-flex items-center justify-center gap-space-sm rounded-full font-semibold',
         'transition-[background-color,filter] duration-fast',
         'active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50',
         VARIANTES[variant],
         TAMANHOS[size],
-        iconOnly && 'min-w-touch md:min-w-8 px-0',
+        iconOnly ? 'min-w-touch px-0 md:min-w-8' : PADDING_X[size],
         className,
       )}
       {...rest}

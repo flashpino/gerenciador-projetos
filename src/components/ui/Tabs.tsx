@@ -58,10 +58,13 @@ export function Tabs({
 
   const aparencia = (ativo: boolean) =>
     cn(
-      'flex min-h-touch shrink-0 items-center gap-space-xs whitespace-nowrap px-space-md text-body md:min-h-9',
+      'flex min-h-touch shrink-0 items-center gap-space-xs whitespace-nowrap text-body',
       variant === 'underline'
-        ? cn('border-b-2', ativo ? 'border-primary font-semibold text-primary' : 'border-transparent text-ink-muted')
-        : cn('rounded-full', ativo ? 'bg-primary font-semibold text-primary-fg' : 'bg-surface-2 text-ink-muted'),
+        ? cn('border-b-2 px-space-md md:min-h-9', ativo ? 'border-primary font-semibold text-primary' : 'border-transparent text-ink-muted')
+        : cn(
+            'rounded-full px-space-lg font-semibold transition-colors duration-fast',
+            ativo ? 'bg-primary text-primary-fg' : 'text-ink hover:bg-glass-strong',
+          ),
     )
 
   if (items[0]?.href !== undefined) {

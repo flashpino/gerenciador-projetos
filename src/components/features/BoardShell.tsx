@@ -41,8 +41,11 @@ export function BoardShell({ titulo, children }: Props) {
   return (
     // <div>, não <main>: o AppShell já é o landmark main de toda rota autenticada.
     <div className="mx-auto max-w-canvas p-gutter md:p-margin">
-      <div className="mb-gutter flex items-center justify-between gap-space-md">
-        <h1 className="text-display">{titulo}</h1>
+      <div className="mb-gutter flex flex-wrap items-center justify-between gap-space-md">
+        <div className="flex min-w-0 items-center gap-space-sm">
+          <h1 className="min-w-0 truncate text-display">{titulo}</h1>
+          <FavoritoToggle boardId={boardId} nome={titulo} />
+        </div>
         {/*
           Ícones do Stitch (buscar/filtrar/convidar/novo item) desabilitados
           por enquanto — a estrela (sub-projeto 3) e convidar (sub-projeto 6) já funcionam.
@@ -51,8 +54,7 @@ export function BoardShell({ titulo, children }: Props) {
           seção "Barra superior do board"). "Sair" saiu daqui — mora no
           rodapé da Sidebar agora (docs/components.md, nota de BoardShell).
         */}
-        <div className="flex items-center gap-space-xs">
-          <FavoritoToggle boardId={boardId} nome={titulo} />
+        <div className="glass flex items-center gap-space-xs rounded-full p-space-xs">
           <Button
             variant="ghost"
             size="sm"
@@ -89,10 +91,11 @@ export function BoardShell({ titulo, children }: Props) {
         </div>
       </div>
       <Tabs
+        variant="pill"
         rotulo="Visões do quadro"
         items={views}
         value={pathname}
-        className="mb-margin border-b border-border"
+        className="glass mb-margin w-fit max-w-full rounded-full p-space-xs"
       />
       {children}
       {board.data && (
