@@ -38,7 +38,7 @@
     "@vitest/coverage-v8": "^5.0.1",
     "axe-core": "^4.13.0",
     "jscpd": "^5.2.1",
-    "jsdom": "^29.1.1",
+    "jsdom": "^30.1.1",
     "knip": "^6.35.1",
     "oxlint": "^1.81.0",
     "tailwindcss": "^4.3.3",
