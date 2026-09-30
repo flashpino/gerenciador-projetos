@@ -53,8 +53,10 @@ export function Tabs({
   items, value, onChange, variant = 'underline', rotulo, idPainel, className,
 }: Props) {
   // A faixa rola dentro de si mesma em 375px. A PÁGINA nunca rola na horizontal
-  // (docs/responsive.md, regra global) — por isso o overflow vive aqui.
-  const faixa = cn('flex gap-space-xs overflow-x-auto', className)
+  // (docs/responsive.md, regra global) — por isso o overflow vive aqui. `relative`
+  // prende o texto sr-only (position:absolute) de cada aba dentro da faixa: sem
+  // isso ele escapa do overflow e estica a página quando as abas passam da tela.
+  const faixa = cn('relative flex gap-space-xs overflow-x-auto', className)
 
   const aparencia = (ativo: boolean) =>
     cn(

@@ -80,7 +80,7 @@ export function TaskGroup({ grupo, membros, aoEditar, aoAbrir, aoCriar }: Props)
               Tarefas do grupo {grupo.name}, {tarefas.length} itens
             </caption>
             <thead>
-              <tr className="border-b border-border text-left text-label text-ink-muted">
+              <tr className="border-b border-border bg-surface-2 text-left text-label text-ink-muted">
                 <th scope="col" className="w-10 px-space-sm py-space-sm">
                   <span className="sr-only">Selecionar</span>
                 </th>
@@ -186,7 +186,7 @@ export function TaskGroup({ grupo, membros, aoEditar, aoAbrir, aoCriar }: Props)
                     type="button"
                     onClick={() => aoAbrir(t)}
                     className={cn(
-                      'flex-1 text-left text-body font-medium',
+                      'min-h-touch flex-1 text-left text-body font-medium',
                       t.status === 'done' && 'text-ink-muted line-through',
                     )}
                   >

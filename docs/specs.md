@@ -2,7 +2,7 @@
 
 **Versão:** 1.0 · 2026-09-15
 **Fase do manual:** 1.3
-**Referência visual e funcional:** `arquivos stitch/` (design system "Kinetic Workstream")
+**Referência visual e funcional:** `arquivos stitch/` (funcionalidades; o design system "Kinetic Workstream" foi substituído em 2026-09-29 pelo visual de `docs/mockups/novo-design-urbanist.html`: Urbanist, índigo, vidro fosco)
 
 Este documento é a fonte da verdade sobre escopo. Se um pedido contradiz o que está
 aqui, a contradição é apontada — não resolvida em silêncio.

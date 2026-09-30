@@ -36,8 +36,9 @@ dentro do próprio container — a página não rola. Essa exceção é delibera
 | Largura | Comportamento |
 |---|---|
 | 375 | Sidebar vira **drawer** sobre o conteúdo, aberto por botão com `aria-expanded`. Fecha com `Esc`, no clique fora e ao navegar. Foco preso enquanto aberto |
-| 768 | Sidebar como rail de ícones, 64px, rótulo em tooltip |
-| 1440 | Sidebar completa, 240px, ícone + rótulo |
+| 768 e acima | **Trilho** lateral de botões redondos de 48px (88px de coluna), sem rótulo visível: o nome vai no `title` (tooltip) e no texto `sr-only`. Fixo (`sticky`) enquanto a página rola |
+
+Até 2026-09-29 havia uma 3ª forma ("Sidebar completa", 240px, ícone + rótulo a partir de 1440). Foi removida com o novo design (`docs/mockups/novo-design-urbanist.html`): o trilho serve de 768 para cima. O nome do workspace fica no `title` do logo e, no celular, na faixa do topo.
 
 O seletor de views (Tabela/Kanban/Gantt/Dashboard) é `Tabs` em todas as larguras.
 Em 375px ele rola horizontalmente **dentro da própria faixa** — isso é `Tabs`,

@@ -1,6 +1,6 @@
 # Inventário de Componentes
 
-**Fase do manual:** 4.2 · Atualizado em 2026-09-15
+**Fase do manual:** 4.2 · Atualizado em 2026-09-29 (novo design: Urbanist, índigo, vidro fosco)
 
 ---
 
@@ -22,6 +22,18 @@ força priorização. Sem teto o agente lista 40 e constrói 40, dos quais 25 s�
 usados uma vez.
 
 ---
+
+## Novo design (2026-09-29)
+
+Mockup aprovado: `docs/mockups/novo-design-urbanist.html`. Tudo vem de `src/styles/tokens.css`.
+
+- **Card = vidro.** Use a classe `glass` (ou `glass-strong`, mais opaca, para cartão dentro de coluna) mais `rounded-card`. Campo, modal e menu continuam **opacos** (`bg-surface`): quem digita ou decide precisa de fundo firme. Não invente `bg-white/60` no componente.
+- **Cor de gráfico = `-strong`.** O fundo suave de status (`bg-status-*`) é claro demais para delimitar forma. Donut e borda de barra do Gantt usam `--color-status-*-strong` (`CORES_STATUS`, `BORDA_STATUS`).
+- **Raios:** `rounded-full` (pílula: botão, badge, aba), `rounded-card` (cards), `rounded` (campos). Para forma pequena que precisa ficar quadrada (caixa do checkbox, losango do marco, amostra de legenda) use `rounded-xs` — `rounded-sm` agora é 8px e vira círculo em 16px.
+- **`Button`:** sempre pílula; o padding lateral saiu do tamanho (`PADDING_X`) porque `tailwind-merge` não conhece `px-space-*` e o `px-0` do botão só-ícone perdia a briga.
+- **`Badge`:** sempre pílula. A variante `bleed` (célula inteira colorida) foi removida: não tinha mais uso.
+- **`Tabs` `variant="pill"`** agora é também o seletor de views do board, dentro de um contêiner `glass`.
+- **Contraste:** `npm run contrast` mede texto, borda e cor de gráfico também contra o **vidro** (branco a 62% sobre o `canvas`, o pior caso). Um token novo de cor entra com o par `-fg` ou `-strong` correspondente, senão o portão reprova.
 
 ## Tabela 1 — PRIMITIVOS (`src/components/ui/`)
 
@@ -90,7 +102,7 @@ passam por `src/hooks/` → `src/services/`.
 | Componente | Compõe | Vive em |
 |---|---|---|
 | `BoardShell` | Tabs, Button, FavoritoToggle | todas as 4 views (layout comum + estrela de favorito + ícones desabilitados da barra superior; "convidar" abre `IntegrantesModal` — Sair mora na Sidebar) |
-| `EnumCell` | Badge, Menu | base genérica de `StatusCell` e `PriorityCell` (edita um enum do banco por menu; `bleed` p/ célula de status full-bleed). Não é usada direto nas telas |
+| `EnumCell` | Badge, Menu | base genérica de `StatusCell` e `PriorityCell` (edita um enum do banco por menu; o status/prioridade aparece como pílula). Não é usada direto nas telas |
 | `StatusCell` | EnumCell | tabela, kanban, modal |
 | `PriorityCell` | EnumCell | tabela, modal |
 | `AssigneeCell` | Avatar, Menu | tabela, kanban, modal |
@@ -110,7 +122,7 @@ passam por `src/hooks/` → `src/services/`.
 | `SubtaskList` | Checkbox, Button, StateView | TaskModal |
 | `CommentList` | Avatar, TextInput, StateView | TaskModal |
 | `AppShell` | Sidebar | container de toda rota autenticada (docs/superpowers/specs/2026-09-17-casca-sidebar-design.md) |
-| `Sidebar` | Avatar, Button, Modal (`drawer`) | identidade do workspace, nav, rodapé — dentro do AppShell |
+| `Sidebar` | Avatar, Button, Modal (`drawer`) | navegação do workspace, dentro do AppShell. Duas formas: **trilho** de botões redondos (md+) e **drawer** com rótulos (celular). Mesma função de item para as duas |
 | `EmConstrucaoPage` | StateView | 3 rotas "em construção" (Notificações, Ajuda, Configurações) |
 | `FeedAtividades` | Badge | lista de eventos (criou, mudou status, comentou) — `/atividades` e card do Dashboard. Só apresentação; o texto vem de `lib/atividade.ts` |
 | `IntegrantesModal` | Modal, Badge, Button, Field, TextInput, StateView | diálogo do botão "Convidar integrantes" do `BoardShell`. Novo porque nenhum modal existente lista pessoas; `BoardFormModal`/`TaskModal` editam uma entidade só |

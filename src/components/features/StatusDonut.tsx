@@ -51,7 +51,7 @@ export function StatusDonut({ fatias }: Props) {
           <li key={f.status} className="flex items-center gap-space-sm text-body text-ink">
             <span
               aria-hidden="true"
-              className="size-3 rounded-sm"
+              className="size-3 rounded-xs"
               style={{ backgroundColor: CORES_STATUS[f.status] }}
             />
             <span>

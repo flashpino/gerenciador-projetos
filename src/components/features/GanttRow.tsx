@@ -25,7 +25,7 @@ export function GanttRow({ task, inicioTimeline, escala }: Props) {
         <div
           aria-hidden="true"
           style={{ left: esquerda }}
-          className="absolute top-1/2 size-4 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-sm bg-priority-critical"
+          className="absolute top-1/2 size-4 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-xs bg-priority-critical"
         />
       </div>
     )

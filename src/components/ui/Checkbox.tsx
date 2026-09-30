@@ -24,7 +24,7 @@ export function Checkbox({ checked, onChange, label, rotuloOculto, disabled, cla
         checked={checked}
         disabled={disabled}
         onChange={(e) => onChange(e.target.checked)}
-        className="peer size-4 appearance-none rounded-sm border border-border-strong bg-surface checked:border-primary checked:bg-primary disabled:opacity-50"
+        className="peer size-4 appearance-none rounded-xs border border-border-strong bg-surface checked:border-primary checked:bg-primary disabled:opacity-50"
       />
       <Check
         aria-hidden="true"

@@ -66,7 +66,7 @@ export function TaskCard({ task, membros, aoMover, aoAbrir }: Props) {
           type="button"
           onClick={aoAbrir}
           className={cn(
-            'flex-1 text-left text-body font-medium hover:underline',
+            'min-h-touch flex-1 text-left text-body font-medium hover:underline md:min-h-0',
             task.status === 'done' && 'text-ink-muted line-through',
           )}
         >

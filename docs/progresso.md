@@ -210,3 +210,19 @@ Spec: `docs/superpowers/specs/2026-09-29-configuracoes-ajuda-design.md` · decid
 
 - [x] `React.lazy` em Kanban, Painéis, Atividades, Modelos, Ajuda e Configurações (Gantt e Dashboard já eram). `Suspense` único dentro do `AppShell` (a Sidebar não some na troca de página)
 - [x] Carregamento inicial ~191 KB → ~176 KB gzip (limite da spec: 200 KB). O Kanban com dnd-kit (14 KB gzip) só baixa ao abrir o Kanban
+
+---
+
+## Novo design (Urbanist, índigo, vidro fosco) ✅
+
+Mockup: `docs/mockups/novo-design-urbanist.html` (referência: `referencias/modelo2`, fora do git).
+
+- [x] **A. Tokens** — paleta, fonte Urbanist, raios, sombras, degradê de fundo, utilitário `glass`, cores `-strong` para gráficos. Ícones e cor do manifest do PWA no índigo
+- [x] **B. Casca** — `Sidebar` vira trilho de botões redondos (md+), drawer com rótulos no celular; abas do board em pílula de vidro; título com a estrela ao lado
+- [x] **C. Superfícies** — cards de vidro (tabela, kanban, dashboard, modelos, ajuda, configurações, atividades, login), status e prioridade em pílula (variante `bleed` removida), Gantt com borda forte
+- [x] **Portão de contraste** passou de 32 para 50 pares: agora também texto, borda, cores de gráfico e títulos de grupo contra o vidro
+- [x] **QA no navegador real** (build de produção): as 10 telas em 500px sem rolagem horizontal e sem alvo de toque < 44px; Lighthouse mobile no board: acessibilidade 100, boas práticas 100
+- [ ] **Não feito:** barra de ícones fixa embaixo no celular (o mockup tinha; mantive o drawer, que já existia e tem testes); saudação "Bom dia, Ana" e o botão "Nova tarefa" primário no topo (o produto tem o "Novo item" ainda desabilitado)
+
+**Bugs achados e corrigidos no caminho:** `Button` só-ícone tamanho `md` espremia o ícone a 8px (padding do tamanho não era sobrescrito); texto `sr-only` das abas escapava do `overflow` e esticava a página quando as abas passavam da tela; `rounded-sm` maior transformava checkbox, marco do Gantt e legenda do donut em círculos.
+

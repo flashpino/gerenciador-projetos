@@ -2,6 +2,7 @@ import { useDroppable } from '@dnd-kit/core'
 import { Badge } from '@/components/ui/Badge'
 import { cn } from '@/lib/cn'
 import type { ColunaKanban } from '@/lib/kanban'
+import { STATUS } from '@/lib/status'
 import type { Profile, Task, TaskStatus } from '@/types/domain'
 import { TaskCard } from './TaskCard'
 
@@ -32,7 +33,10 @@ export function KanbanColumn({ coluna, membros, aoMover, aoAbrir, className }: P
         {/* h2, não h3: mesma correção de GanttChart.tsx — nenhuma h2 existe
             entre o h1 da página (BoardShell) e este cabeçalho de coluna
             (achado do axe em src/test/a11y.test.tsx, regra heading-order). */}
-        <h2 id={`col-${coluna.status}`} className="text-subtitle">
+        <h2
+          id={`col-${coluna.status}`}
+          className={cn('rounded-full px-space-md py-space-xs text-label font-semibold', STATUS[coluna.status].classe)}
+        >
           {coluna.rotulo}
         </h2>
         <Badge variant="soft">
