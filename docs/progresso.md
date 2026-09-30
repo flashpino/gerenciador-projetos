@@ -258,3 +258,17 @@ Pedido: o Claude, em outra sessão (talvez outra conta), cria as tarefas de um p
 - [ ] **Falta o passo humano:** criar a conta de serviço, convidá-la no workspace e rodar `gp configurar` (envolve senha). Sem isso a CLI responde "configuração incompleta"
 - [ ] **Não testado contra o banco real:** só contra o falso. O primeiro `gp eu` + `gp importar --dry-run` reais são a verificação que falta
 
+---
+
+## Gerenciar grupos na tabela ✅
+
+Motivo: o mockup tem "+ Adicionar Novo Grupo" e a auditoria Stitch já apontava a lacuna; sem criar grupo, a tabela ficava presa ao "A fazer" padrão, que parece um status mas é só uma seção (a tarefa muda de status sem mudar de grupo).
+
+- [x] Serviço `criarGrupo`, `atualizarGrupo`, `removerGrupo` (sem migration: a policy `groups_all` já cobre insert/update/delete) + hooks `useCriarGrupo`, `useAtualizarGrupo`, `useRemoverGrupo`
+- [x] `GrupoFormModal` (nome + cor, criar e renomear) e botão "Novo grupo" na `BoardPage`; "Criar primeiro grupo" deixou de ser botão morto
+- [x] Menu ⋮ no cabeçalho do grupo: Renomear e Excluir. `Menu` ganhou o item `desabilitado` (`aria-disabled`)
+- [x] Regra de exclusão: só grupo **vazio** (o `on delete cascade` apagaria as tarefas) e **nunca o último** (`tasks.group_id` NOT NULL). A checagem lê a lista sem filtro de busca
+- [x] `TaskGroup`: `overflow-hidden` saiu da section e `focus-within:z-10` evita o dropdown ficar atrás do grupo seguinte (`glass` cria contexto de empilhamento)
+- [ ] **Não verificado no navegador real:** o empilhamento do dropdown e o corte de cantos só existem em CSS, que o jsdom não calcula. Olhar um grupo vazio e o menu de um grupo de cima sobre o de baixo
+- [ ] **Segue aberto (entrega 2):** o desencontro tabela × kanban continua. A tabela agrupa por grupo, o kanban por status. Proposta: alternador "Agrupar por: Grupo | Status" na tabela
+- [ ] Fora de escopo: reordenar grupos por arrastar, excluir grupo com tarefas (com confirmação)

@@ -144,8 +144,8 @@ inventário de componentes e o `responsive.md` passou a contradizer o
 | "+ Adicionar item..." como input inline no rodapé do grupo | ◐ é um botão que abre o modal, não um input inline |
 | Rodapé: Total de tarefas · distribuição segmentada · Média % | ✅ |
 | Rodapé: "N integrantes" e intervalo de datas do grupo | ❌ |
-| "+ Adicionar Novo Grupo" | ❌ e o serviço `criarGrupo` está explicitamente não escrito ([boards.ts:148](../src/services/boards.ts#L148)) |
-| Estado vazio com ação "Criar primeiro grupo" | 🔴 o botão existe e **não tem `onClick`** ([BoardPage.tsx:44](../src/pages/BoardPage.tsx#L44)) |
+| "+ Adicionar Novo Grupo" | ✅ entregue (2026-09-30): botão "Novo grupo" no fim da tabela + renomear/recolorir/excluir pelo menu ⋮ do grupo. Exclui só grupo vazio e nunca o último |
+| Estado vazio com ação "Criar primeiro grupo" | ✅ corrigido (2026-09-30): o botão abre o modal "Novo grupo" |
 | Lista de cards abaixo de 768px em vez de tabela virada por CSS | ✅ decisão boa e acima do Stitch (ver `components.md`) |
 
 ### Tela 2 — Kanban (`quadro_de_projetos_visualiza_o_kanban`)
@@ -259,8 +259,8 @@ Não são questões de fidelidade ao Stitch. São coisas quebradas.
    O `StateView` cumpriu o papel dele — obrigou o estado vazio a existir. Ninguém
    ligou o fio.
 
-2. **Não existe forma de criar um grupo pela UI.** `criarGrupo` está declarado como
-   não escrito em [boards.ts:148](../src/services/boards.ts#L148). Na prática o
+2. ~~**Não existe forma de criar um grupo pela UI.**~~ **Resolvido em 2026-09-30** (criar, renomear e excluir grupo na tabela). Texto original: `criarGrupo` estava declarado como
+   não escrito em `boards.ts`. Na prática o
    trigger `handle_new_user` semeia grupos no cadastro, então o caso raramente
    aparece — mas quem apagar todos os grupos fica sem saída.
 

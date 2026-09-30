@@ -15,8 +15,7 @@ export interface Board {
   created_at: string
 }
 
-// Nao exportado: so serve de base para GroupComTarefas, no mesmo arquivo.
-interface Group {
+export interface Group {
   id: string
   board_id: string
   name: string
