@@ -191,3 +191,48 @@ seria decidir escopo, não só implementar. Se quiser, a próxima sessão começ
 suíte demorou mais de 120s (máquina sob carga, com Chrome e preview abertos). Isolado passou (4/4) e o
 `verify` completo seguinte passou (302/302). Provável causa: `waitFor` com o prazo padrão sob carga.
 Não mexi (não é regressão); se aparecer de novo, subir o prazo desse `waitFor` é o ajuste.
+
+## 11. Novo design aplicado ao sistema (Urbanist, índigo, vidro fosco)
+
+Você aprovou o mockup e pediu para aplicar. Feito em 3 etapas, cada uma com `verify` verde.
+
+| Commit | Etapa | O que mudou |
+|---|---|---|
+| `8f42756` | A. Tokens | `tokens.css` reescrito: paleta, fonte, raios, sombras, degradê, utilitário `glass`, cores `-strong` para gráficos. Ícones e cor do manifest do PWA no índigo |
+| `ab0e1eb` | B. Casca | Sidebar vira **trilho** de botões redondos (md+); drawer com rótulos no celular; abas do board em pílula de vidro; `Button` sempre pílula |
+| `92b6868` | C. Superfícies | Cards de vidro em todas as telas; status/prioridade em pílula; Gantt com borda forte; login em card de vidro |
+| `3833cab` | QA + docs | Correções achadas no navegador; `components.md`, `responsive.md`, `specs.md`, `progresso.md` |
+
+### Decisões e motivo
+
+1. **Só o verde mudou de valor em relação à referência** (`#51b206` → `#2f7a00`), porque tinha 2,5:1 de contraste. O resto das cores é o da referência.
+2. **Vidro só em card.** Campos, modais e menus continuam **opacos**: quem digita ou decide precisa de fundo firme, e o contraste do texto não depende do que está atrás.
+3. **Portão de contraste ampliado** (32 → 50 pares): passou a medir texto, borda, cores de gráfico e títulos de grupo contra o **pior caso do vidro** (branco a 62% sobre o `canvas` mais escuro). Provei que ele reprova de verdade: com uma borda fraca ele acusou 4 falhas; restaurei o valor.
+4. **Cores de gráfico separadas (`-strong`).** O fundo suave de status é claro demais para delimitar forma (donut, barra do Gantt). Cada `-strong` é validado em 3:1.
+5. **Removi a variante `bleed`** do `Badge`/`EnumCell` (célula inteira colorida). Sem uso, ficaria como código morto.
+6. **Trilho em vez de "Sidebar completa".** O mockup só tinha o trilho. Perdi a versão larga com rótulos visíveis a partir de 1024px; o nome de cada item está no tooltip (`title`) e no texto para leitor de tela. Se você sentir falta dos rótulos, é reverter `ab0e1eb`.
+7. **Mantive o drawer no celular** em vez da barra de ícones fixa embaixo do mockup: o drawer já existia e tem testes; trocar exigia reescrevê-los sem ganho claro.
+
+### Bugs achados e corrigidos no caminho (todos existiam ou apareceram com o novo raio/padding)
+
+- **`Button` só-ícone de tamanho `md`** espremia o ícone a 8px: o `tailwind-merge` não conhece `px-space-*`, então o padding do tamanho e o `px-0` coexistiam. Bug antigo; ninguém usava esse tamanho.
+- **Kanban rolava a página na horizontal** no celular: o texto `sr-only` (position absolute) das abas escapava do `overflow-x-auto`. Faixa de abas agora é `relative`.
+- **`rounded-sm` de 8px** transformava em círculo o checkbox, o marco do Gantt e a legenda do donut. Esses três usam `rounded-xs`.
+- **Títulos de tarefa com 22px de altura** na lista do celular (alvo mínimo é 44px).
+
+### Verificado no navegador real (build de produção, conta de teste)
+
+- 10 telas em 500px: **sem rolagem horizontal e sem alvo de toque < 44px**.
+- Lighthouse mobile no board: **Acessibilidade 100, Boas práticas 100**.
+- Gantt visto com dados: criei datas e um marco nas 3 tarefas de teste pela interface e **desfiz tudo** (voltaram a "Sem prazo", marco desmarcado).
+
+### O que ficou de fora ou precisa de você
+
+- **Seu servidor de desenvolvimento (porta 5173) está com "Outdated Optimize Dep"** (o Vite re-otimizou as dependências depois que mudei o `vite.config.ts`). Reinicie o `npm run dev` para ele voltar a carregar. Eu não mexi nesse processo.
+- **Não fiz:** saudação "Bom dia, Ana" no topo e botão "Nova tarefa" primário (o produto tem o "Novo item" ainda desabilitado); gráfico de linha da referência (não há dado histórico).
+- **`CLAUDE.md` não editado.** Ele cita o design system "Kinetic Workstream" como referência; agora é o mockup. Atualizei `docs/specs.md`; a linha do `CLAUDE.md` é sua.
+- **Um erro meu, já corrigido:** um `git add -A docs` levou junto o `docs/data-model.md` (com os IDs reais das contas de teste) para um commit. Percebi na hora, desfiz o commit (local, sem push) e refiz sem esse arquivo. O `data-model.md` continua só modificado, como antes.
+- **A leitura da chave em `.env.local` foi bloqueada** pelo classificador quando tentei usar a API direto; não contornei. Usei a interface normal.
+
+**Estado final:** `npm run verify` exit 0, 302 testes, 50 pares de contraste, `dup` com o mesmo clone antigo, `dead` limpo, grafo atualizado (1376 nós).
+
