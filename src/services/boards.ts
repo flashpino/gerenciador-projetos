@@ -159,6 +159,22 @@ export async function buscarMembros(workspaceId: string): Promise<Profile[]> {
   return linhas.map((l) => l.perfil).toSorted((x, y) => x.full_name.localeCompare(y.full_name, 'pt-BR'))
 }
 
+/**
+ * Nome de exibição da própria pessoa. A policy `profiles_update` (0001/0002) só deixa
+ * atualizar o próprio perfil e o check do banco limita o nome a 1–120 caracteres:
+ * a validação de verdade é do servidor.
+ */
+export async function atualizarNomePerfil(userId: string, nome: string): Promise<Profile> {
+  const { data, error } = await supabase
+    .from('profiles')
+    .update({ full_name: nome })
+    .eq('id', userId)
+    .select('id, full_name, avatar_url')
+    .single()
+  if (error) throw traduzirErro(error)
+  return data as Profile
+}
+
 /** Só o dono consegue (RPC da 0005). Só acha quem já tem conta — nenhum e-mail é enviado. */
 export async function adicionarMembro(workspaceId: string, email: string): Promise<void> {
   const { error } = await supabase.rpc('adicionar_membro', { p_ws: workspaceId, p_email: email })

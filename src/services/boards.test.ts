@@ -5,7 +5,7 @@ vi.mock('@/lib/supabase', () => ({
 }))
 
 import { supabase } from '@/lib/supabase'
-import { adicionarMembro, buscarBoard, buscarMembros, buscarWorkspaceAtual, criarBoard } from './boards'
+import { adicionarMembro, atualizarNomePerfil, buscarBoard, buscarMembros, buscarWorkspaceAtual, criarBoard } from './boards'
 
 // boards: insert().select().single() → board criado; groups: insert() → o que o teste inspeciona.
 function mockSupabase() {
@@ -114,5 +114,30 @@ describe('buscarBoard', () => {
     vi.mocked(supabase.from).mockReturnValue({ select: () => ({ eq: () => ({ single }) }) } as never)
 
     await expect(buscarBoard('b1')).resolves.toEqual({ id: 'b1', name: 'Sprint', workspace_id: 'w1', owner_id: 'u1' })
+  })
+})
+
+describe('atualizarNomePerfil', () => {
+  beforeEach(() => vi.resetAllMocks())
+
+  it('atualiza só o full_name do perfil da pessoa e devolve o perfil', async () => {
+    const single = vi.fn().mockResolvedValue({ data: { id: 'u1', full_name: 'Ana Souza', avatar_url: null }, error: null })
+    const eq = vi.fn(() => ({ select: () => ({ single }) }))
+    const update = vi.fn(() => ({ eq }))
+    vi.mocked(supabase.from).mockReturnValue({ update } as never)
+
+    const perfil = await atualizarNomePerfil('u1', 'Ana Souza')
+
+    expect(supabase.from).toHaveBeenCalledWith('profiles')
+    expect(update).toHaveBeenCalledWith({ full_name: 'Ana Souza' })
+    expect(eq).toHaveBeenCalledWith('id', 'u1')
+    expect(perfil).toEqual({ id: 'u1', full_name: 'Ana Souza', avatar_url: null })
+  })
+
+  it('traduz o erro do banco (constraint do nome) em vez de vazar o cru', async () => {
+    const single = vi.fn().mockResolvedValue({ data: null, error: { code: '23514', message: 'check violation' } })
+    vi.mocked(supabase.from).mockReturnValue({ update: () => ({ eq: () => ({ select: () => ({ single }) }) }) } as never)
+
+    await expect(atualizarNomePerfil('u1', '')).rejects.toThrow('Os dados informados não são válidos')
   })
 })

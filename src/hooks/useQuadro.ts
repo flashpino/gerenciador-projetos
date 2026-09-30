@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient, type QueryKey } from '@tanstack/
 import type { CamposEditaveis, NovaTarefa } from '@/services/boards'
 import {
   adicionarMembro,
+  atualizarNomePerfil,
   atualizarSubtarefa,
   atualizarTarefa,
   buscarAtividades,
@@ -185,6 +186,18 @@ export function useAdicionarMembro() {
     mutationFn: ({ workspaceId, email }: { workspaceId: string; email: string }) => adicionarMembro(workspaceId, email),
     onSuccess: (_nada, { workspaceId }) => {
       void qc.invalidateQueries({ queryKey: chaves.membros(workspaceId) })
+    },
+  })
+}
+
+export function useAtualizarNome() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ userId, nome }: { userId: string; nome: string }) => atualizarNomePerfil(userId, nome),
+    onSuccess: () => {
+      // O nome aparece na Sidebar, nos responsáveis e nos autores do feed.
+      void qc.invalidateQueries({ queryKey: ['membros'] })
+      void qc.invalidateQueries({ queryKey: chaves.todasAtividades })
     },
   })
 }
