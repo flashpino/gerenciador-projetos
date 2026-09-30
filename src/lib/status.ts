@@ -38,11 +38,11 @@ export const PRIORIDADES: readonly TaskPriority[] = ['low', 'medium', 'high', 'c
  * este mapa existe separado de STATUS.classe.
  */
 export const CORES_STATUS: Record<TaskStatus, string> = {
-  not_started: 'var(--color-status-not-started)',
-  working: 'var(--color-status-working)',
-  review: 'var(--color-status-review)',
-  done: 'var(--color-status-done)',
-  stuck: 'var(--color-status-stuck)',
+  not_started: 'var(--color-status-not-started-strong)',
+  working: 'var(--color-status-working-strong)',
+  review: 'var(--color-status-review-strong)',
+  done: 'var(--color-status-done-strong)',
+  stuck: 'var(--color-status-stuck-strong)',
 }
 
 export const rotuloStatus = (s: TaskStatus): string => STATUS[s].rotulo

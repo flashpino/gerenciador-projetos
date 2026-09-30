@@ -19,9 +19,10 @@ export default defineConfig({
         display: 'standalone',
         start_url: '/',
         // O manifest não lê variável CSS. Mesmos valores de src/styles/tokens.css:
-        // --color-primary e --color-surface. Mudou lá, muda aqui.
-        theme_color: '#0073ea',
-        background_color: '#ffffff',
+        // --color-primary e --color-canvas-hi (o splash abre no tom claro do degradê).
+        // Mudou lá, muda aqui.
+        theme_color: '#3e30d9',
+        background_color: '#e3e8f5',
         icons: [
           { src: 'pwa-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'pwa-512.png', sizes: '512x512', type: 'image/png' },

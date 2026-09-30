@@ -3,13 +3,13 @@
 Precisa do Pillow (pip install pillow). Não entra no package.json: roda só quando
 o ícone muda, e o resultado é versionado.
 Cores = tokens de src/styles/tokens.css (manifest e PNG não leem variável CSS):
-  #0073ea = --color-primary · #ffffff = --color-surface
+  #3e30d9 = --color-primary · #ffffff = --color-surface
 """
 from pathlib import Path
 
 from PIL import Image, ImageDraw
 
-AZUL = "#0073ea"
+AZUL = "#3e30d9"
 BRANCO = "#ffffff"
 PUBLIC = Path(__file__).resolve().parent.parent / "public"
 

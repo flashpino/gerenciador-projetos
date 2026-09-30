@@ -33,6 +33,16 @@ export function contrast(a, b) {
   return (hi + 0.05) / (lo + 0.05)
 }
 
+/** Cor efetiva de um card de vidro: branco com a opacidade do token sobre o canvas (pior caso, o tom mais escuro). */
+function vidroEfetivo(canvasHex) {
+  const css = readFileSync(TOKENS, 'utf8')
+  const m = css.match(/--color-glass:\s*rgb\(\s*255\s+255\s+255\s*\/\s*([0-9.]+)\s*\)/)
+  if (!m) return null
+  const alfa = Number(m[1])
+  const canal = (i) => Math.round(255 * alfa + Number.parseInt(canvasHex.slice(1 + i * 2, 3 + i * 2), 16) * (1 - alfa))
+  return '#' + [0, 1, 2].map((i) => canal(i).toString(16).padStart(2, '0')).join('')
+}
+
 /** @returns {Record<string,string>} todos os --color-* do tokens.css */
 function lerTokens() {
   const css = readFileSync(TOKENS, 'utf8')
@@ -70,6 +80,22 @@ if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith
   for (const [nome, bg] of [['surface', t.surface], ['canvas', t.canvas], ['surface-2', t['surface-2']]]) {
     checagens.push([`border-strong sobre ${nome}`, t['border-strong'], bg, AA_COMPONENTE])
     checagens.push([`anel de foco (primary) sobre ${nome}`, t.primary, bg, AA_COMPONENTE])
+  }
+
+  // 4. Vidro (card) e cores de grafico. O texto e os limites de componente ficam sobre o
+  // vidro, cuja cor real depende do que esta atras; medimos o pior caso (sobre o canvas).
+  const vidro = vidroEfetivo(t.canvas)
+  if (vidro) {
+    checagens.push(['ink sobre vidro', t.ink, vidro, AA_TEXTO])
+    checagens.push(['ink-muted sobre vidro', t['ink-muted'], vidro, AA_TEXTO])
+    checagens.push(['primary (texto/link) sobre vidro', t.primary, vidro, AA_TEXTO])
+    checagens.push(['border-strong sobre vidro', t['border-strong'], vidro, AA_COMPONENTE])
+  }
+  // Cor "-strong" e cor de GRAFICO (donut, borda de barra): forma precisa de 3:1 (WCAG 1.4.11).
+  for (const nome of Object.keys(t)) {
+    if (!nome.endsWith('-strong') || nome === 'border-strong') continue
+    checagens.push([`${nome} (grafico) sobre surface`, t[nome], t.surface, AA_COMPONENTE])
+    if (vidro) checagens.push([`${nome} (grafico) sobre vidro`, t[nome], vidro, AA_COMPONENTE])
   }
 
   const falhas = []

@@ -1,120 +1,139 @@
 /* =============================================================================
    TOKENS — fonte UNICA de cor, espaco, tipografia, raio e sombra.
-   Derivado de "arquivos stitch/kinetic_workstream/DESIGN.md".
+   Origem: "arquivos stitch/kinetic_workstream/DESIGN.md", refeito em 2026-09-29
+   a partir de referencias/modelo2 (Urbanist, indigo, vidro fosco) — mockup
+   aprovado em docs/mockups/novo-design-urbanist.html.
 
    Tailwind v4 e CSS-first: este bloco @theme E a configuracao. Nao existe
    tailwind.config. Isso elimina por construcao a duplicacao de tokens que a
    Fase 4.1 do manual alerta — nao ha um segundo arquivo para divergir.
 
-   CORRECAO DE ACESSIBILIDADE sobre a paleta original do Stitch:
-   9 de 14 pares cor/texto reprovavam em WCAG 2.2 AA (o pior: branco sobre o
-   ambar "Em Revisao", 1.90:1 contra os 4.5:1 exigidos). Resolvido preferindo
-   trocar a cor do TEXTO a escurecer o fundo, o que preservou 5 das 8 cores
-   originais. Rode `npm run contrast` — e portao do verify, nao decoracao.
+   ACESSIBILIDADE: a referencia usava um verde (#51b206) com 2.5:1 de contraste
+   — reprova texto (4.5:1) e componente (3:1). Aqui o verde e #2f7a00. Cada par
+   fundo/-fg e cada cor "-strong" (grafico) e conferido por `npm run contrast`,
+   que e portao do verify, nao decoracao — inclusive contra o vidro (a cor real
+   do fundo de um card de vidro depende do que esta atras dele).
    ============================================================================= */
 
 @theme {
   /* --- Tipografia ------------------------------------------------------- */
-  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-sans: 'Urbanist', ui-sans-serif, system-ui, -apple-system, sans-serif;
 
-  --text-display: 2rem;          /* 32px */
+  --text-display: 2.125rem;      /* 34px */
   --text-display--line-height: 2.5rem;
-  --text-display--font-weight: 700;
+  --text-display--font-weight: 600;
   --text-display--letter-spacing: -0.02em;
 
   --text-headline: 1.5rem;       /* 24px */
   --text-headline--line-height: 2rem;
-  --text-headline--font-weight: 700;
+  --text-headline--font-weight: 600;
   --text-headline--letter-spacing: -0.015em;
 
-  --text-title: 1.125rem;        /* 18px */
+  --text-title: 1.1875rem;       /* 19px */
   --text-title--line-height: 1.5rem;
   --text-title--font-weight: 600;
   --text-title--letter-spacing: -0.01em;
 
-  --text-subtitle: 0.9375rem;    /* 15px */
-  --text-subtitle--line-height: 1.25rem;
+  --text-subtitle: 1rem;         /* 16px */
+  --text-subtitle--line-height: 1.375rem;
   --text-subtitle--font-weight: 600;
 
-  --text-body: 0.875rem;         /* 14px */
-  --text-body--line-height: 1.25rem;
+  --text-body: 0.9375rem;        /* 15px */
+  --text-body--line-height: 1.375rem;
 
-  --text-cell: 0.8125rem;        /* 13px — densidade de tabela */
-  --text-cell--line-height: 1.125rem;
+  --text-cell: 0.875rem;         /* 14px — densidade de tabela */
+  --text-cell--line-height: 1.25rem;
   --text-cell--font-weight: 500;
 
-  --text-label: 0.75rem;         /* 12px */
-  --text-label--line-height: 1rem;
+  --text-label: 0.8125rem;       /* 13px */
+  --text-label--line-height: 1.125rem;
   --text-label--font-weight: 600;
   --text-label--letter-spacing: 0.01em;
 
-  --text-micro: 0.6875rem;       /* 11px — badges compactos */
-  --text-micro--line-height: 0.875rem;
+  --text-micro: 0.75rem;         /* 12px — badges compactos */
+  --text-micro--line-height: 1rem;
   --text-micro--font-weight: 700;
   --text-micro--letter-spacing: 0.02em;
 
-  /* --- Superficies ------------------------------------------------------ */
-  --color-canvas: #f6f7fb;        /* nivel 0: shell do app */
-  --color-surface: #ffffff;       /* nivel 1: tabelas, cards, paineis */
-  --color-surface-2: #f0f3f8;     /* nivel 2: sub-header, hover de linha */
-  --color-surface-3: #e7e9f2;     /* pressionado / selecionado */
+  /* --- Superficies ------------------------------------------------------ *
+   * `canvas` e o tom MAIS ESCURO do degrade de fundo: e contra ele que o
+   * contraste e medido (pior caso). O degrade em si sai de canvas-hi -> canvas.
+   * `surface` e opaco de proposito (inputs, modais, menus). Card = glass. */
+  --color-canvas: #cfd6ee;        /* nivel 0: fundo do app (fim do degrade) */
+  --color-canvas-hi: #e3e8f5;     /* inicio do degrade */
+  --color-surface: #ffffff;       /* nivel 1: campos, modais, menus (opaco) */
+  --color-surface-2: #eef1fa;     /* nivel 2: cabecalho de tabela, hover de linha */
+  --color-surface-3: #dfe4f3;     /* trilho de progresso, pressionado */
 
-  --color-border: #e6e9ef;        /* divisor de grade — decorativo */
-  --color-border-strong: #898c97; /* limite de componente: 3:1 nos 3 fundos */
+  /* Vidro fosco: branco translucido + blur (utilitario `glass`, abaixo). */
+  --color-glass: rgb(255 255 255 / 0.62);
+  --color-glass-strong: rgb(255 255 255 / 0.88);
+  --color-glass-border: rgb(255 255 255 / 0.78);
 
-  --color-sidebar: #1c1f33;
-  --color-sidebar-hover: #2a2e47;
-  --color-sidebar-fg: #f0efff;
-  --color-sidebar-fg-muted: #a9aec5;
+  --color-border: #d3d9ec;        /* divisor de grade — decorativo */
+  --color-border-strong: #646c8a; /* limite de componente: 3:1 no canvas, na surface e no vidro */
+
+  /* Trilho lateral: agora claro (vidro), nao mais escuro. */
+  --color-sidebar: #e6eaf8;
+  --color-sidebar-hover: #ffffff;
+  --color-sidebar-fg: #1c1e3c;
+  --color-sidebar-fg-muted: #4b5271;
 
   /* --- Texto ------------------------------------------------------------ */
-  --color-ink: #323338;           /* 12.60:1 sobre surface */
-  --color-ink-muted: #676879;     /*  5.48:1 sobre surface */
+  --color-ink: #1c1e3c;           /* 14.3:1 sobre o vidro */
+  --color-ink-muted: #4b5271;     /*  6.8:1 sobre o vidro */
   --color-ink-inverse: #ffffff;
 
   /* --- Acao ------------------------------------------------------------- */
-  --color-primary: #0073ea;       /* 4.53:1 com texto branco */
-  --color-primary-hover: #0060c2;
-  --color-primary-soft: #ebf3ff;  /* fundo de item ativo na navegacao */
+  --color-primary: #3e30d9;       /* 7.99:1 com texto branco */
+  --color-primary-hover: #2f23b5;
+  --color-primary-soft: #e6e3ff;  /* fundo de item ativo na navegacao */
   --color-primary-fg: #ffffff;
 
   /* --- Status ----------------------------------------------------------- *
-   * Cada status e um PAR fundo+texto ja validado em 4.5:1.
-   * Use sempre o -fg correspondente; nunca combine fundo de um com texto de outro.
-   * A cor nunca e o unico portador de significado: todo status tambem tem rotulo. */
-  --color-status-not-started: #c4c4c4;
-  --color-status-not-started-fg: #323338;   /* 7.23:1 — tinta, nao o #676879 do Stitch (3.14) */
+   * Cada status e um PAR fundo suave + texto escuro, validado em 4.5:1.
+   * `-strong` e a cor de GRAFICO (donut, borda do gantt): validada em 3:1
+   * contra a surface, porque o fundo suave e claro demais para sozinho
+   * delimitar uma forma. Cor nunca e o unico portador de significado:
+   * todo status tambem tem rotulo. */
+  --color-status-not-started: #e1e5ef;
+  --color-status-not-started-fg: #3b4256;
+  --color-status-not-started-strong: #6a7290;
 
-  --color-status-working: #0078d6;          /* Stitch #0086F0 escurecido: 3.70 -> 4.51 */
-  --color-status-working-fg: #ffffff;
+  --color-status-working: #dcd8ff;
+  --color-status-working-fg: #2a1fb0;
+  --color-status-working-strong: #3e30d9;
 
-  --color-status-review: #fdab3d;           /* cor original preservada */
-  --color-status-review-fg: #323338;        /* 6.64:1 — a troca de texto salvou o ambar */
+  --color-status-review: #ffe6b0;
+  --color-status-review-fg: #6b4200;
+  --color-status-review-strong: #b7791f;
 
-  --color-status-done: #00ca72;             /* cor original preservada */
-  --color-status-done-fg: #323338;          /* 5.82:1 */
+  --color-status-done: #d3f0bd;
+  --color-status-done-fg: #245c00;
+  --color-status-done-strong: #2f7a00;
 
-  --color-status-stuck: #df304a;            /* Stitch #E2445C escurecido: 4.03 -> 4.51 */
-  --color-status-stuck-fg: #ffffff;
+  --color-status-stuck: #ffd9d6;
+  --color-status-stuck-fg: #8a1c14;
+  --color-status-stuck-strong: #c2362d;
 
   /* --- Prioridade ------------------------------------------------------- */
-  --color-priority-low: #579bfc;
-  --color-priority-low-fg: #323338;         /* 4.50:1 */
-  --color-priority-medium: #fdab3d;
-  --color-priority-medium-fg: #323338;
-  --color-priority-high: #df304a;
-  --color-priority-high-fg: #ffffff;
-  --color-priority-critical: #401694;
-  --color-priority-critical-fg: #ffffff;    /* 11.93:1 */
+  --color-priority-low: #e1e5ef;
+  --color-priority-low-fg: #3b4256;
+  --color-priority-medium: #d6e7fb;
+  --color-priority-medium-fg: #1f4f8a;
+  --color-priority-high: #ffe0c2;
+  --color-priority-high-fg: #7a3d00;
+  --color-priority-critical: #b4232a;
+  --color-priority-critical-fg: #ffffff;
 
   /* --- Identidade de grupo ---------------------------------------------- */
-  --color-group-azure: #579bfc;
-  --color-group-azure-fg: #323338;
-  --color-group-grape: #9c53da;             /* Stitch #A25DDC: 4.09 -> 4.50 */
+  --color-group-azure: #3e30d9;
+  --color-group-azure-fg: #ffffff;
+  --color-group-grape: #7a35c7;
   --color-group-grape-fg: #ffffff;
-  --color-group-mint: #00c875;
-  --color-group-mint-fg: #323338;
-  --color-group-crimson: #df304a;
+  --color-group-mint: #2f7a00;
+  --color-group-mint-fg: #ffffff;
+  --color-group-crimson: #b4232a;
   --color-group-crimson-fg: #ffffff;
 
   /* --- Feedback --------------------------------------------------------- */
@@ -122,7 +141,7 @@
   --color-danger-fg: #ffffff;
   --color-danger-soft: #ffdad6;
   --color-danger-ink: #93000a;              /* texto de erro sobre superficie clara */
-  --color-success: #00884b;
+  --color-success: #2f7a00;                 /* 5.38:1 com branco */
   --color-success-fg: #ffffff;
 
   /* --- Espacamento ------------------------------------------------------ */
@@ -144,23 +163,44 @@
   --spacing-row: 2.5rem;                    /* 40px */
   --spacing-row-header: 2.75rem;            /* 44px */
   --spacing-canvas: 90rem;                  /* 1440px — largura maxima do shell do board */
+  --spacing-rail: 5.5rem;                   /* 88px — trilho lateral (botoes de 48px) */
 
   /* --- Raio -------------------------------------------------------------- */
-  --radius-sm: 0.25rem;
-  --radius-DEFAULT: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.5rem;
+  --radius-sm: 0.5rem;
+  --radius-DEFAULT: 0.75rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-xl: 2rem;
+  --radius-card: 1.625rem;                  /* cards de vidro */
 
   /* --- Elevacao ---------------------------------------------------------- */
-  --shadow-drag: 0 4px 12px rgb(0 0 0 / 0.08);
-  --shadow-overlay: 0 8px 24px -4px rgb(0 0 0 / 0.12), 0 2px 6px -1px rgb(0 0 0 / 0.04);
+  --shadow-card: 0 14px 34px -16px rgb(46 53 110 / 0.35);
+  --shadow-drag: 0 6px 16px -6px rgb(46 53 110 / 0.35);
+  --shadow-overlay: 0 18px 40px -14px rgb(46 53 110 / 0.5), 0 2px 6px -1px rgb(46 53 110 / 0.08);
 
   /* --- Movimento --------------------------------------------------------- */
   --duration-instant: 80ms;
   --duration-fast: 140ms;
   --duration-normal: 220ms;
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* --- Vidro fosco -----------------------------------------------------------
+   Card = fundo branco translucido + blur. Use `glass` (cards) ou `glass-strong`
+   (cartao dentro de coluna, mais opaco). Quem precisa de fundo OPACO (campo,
+   modal, menu) continua em bg-surface. O contraste do texto sobre o vidro e
+   medido pelo check-contrast contra o pior caso (vidro sobre o canvas). */
+@utility glass {
+  background-color: var(--color-glass);
+  border: 1px solid var(--color-glass-border);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-card);
+}
+
+@utility glass-strong {
+  background-color: var(--color-glass-strong);
+  border: 1px solid var(--color-glass-border);
+  backdrop-filter: blur(16px);
 }
 
 /* --- Base ---------------------------------------------------------------- */
@@ -177,16 +217,21 @@
   }
 
   body {
-    background-color: var(--color-canvas);
     color: var(--color-ink);
+    background-color: var(--color-canvas);
+    background-image:
+      radial-gradient(1100px 560px at 8% -8%, var(--color-canvas-hi) 0%, transparent 62%),
+      linear-gradient(160deg, var(--color-canvas-hi), var(--color-canvas));
+    background-attachment: fixed;
+    min-height: 100dvh;
   }
 
   /* Foco visivel em TUDO que recebe foco. Nao remova: e requisito WCAG 2.4.7
      e a violacao mais comum em codigo gerado. */
   :focus-visible {
-    outline: 2px solid var(--color-primary);
+    outline: 3px solid var(--color-primary);
     outline-offset: 2px;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-DEFAULT);
   }
 
   /* Respeita quem pediu menos movimento (WCAG 2.3.3). */
@@ -218,15 +263,17 @@
   }
   .barra-progresso::-webkit-progress-value {
     background-color: var(--color-primary);
+    border-radius: var(--radius-xl);
     transition: inline-size var(--duration-normal) var(--ease-out-soft);
   }
   .barra-progresso::-moz-progress-bar {
     background-color: var(--color-primary);
+    border-radius: var(--radius-xl);
   }
   .barra-progresso[data-completo]::-webkit-progress-value {
-    background-color: var(--color-status-done);
+    background-color: var(--color-status-done-strong);
   }
   .barra-progresso[data-completo]::-moz-progress-bar {
-    background-color: var(--color-status-done);
+    background-color: var(--color-status-done-strong);
   }
 }
