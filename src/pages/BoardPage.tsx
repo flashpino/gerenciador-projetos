@@ -2,14 +2,23 @@ import { useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { Field } from '@/components/ui/Field'
+import { Select } from '@/components/ui/Select'
 import { BoardShell } from '@/components/features/BoardShell'
 import { GrupoFormModal } from '@/components/features/GrupoFormModal'
 import { TaskGroup } from '@/components/features/TaskGroup'
 import { TaskModal } from '@/components/features/TaskModal'
 import { VisaoDoBoard } from '@/components/features/VisaoDoBoard'
+import { useAgrupamento, type Agrupamento } from '@/hooks/useAgrupamento'
 import { useGruposFiltrados } from '@/hooks/useGruposFiltrados'
 import { useAtualizarTarefa, useBoard, useMembros, useRemoverGrupo } from '@/hooks/useQuadro'
+import { colunasPorStatus } from '@/lib/kanban'
 import type { Group, Task } from '@/types/domain'
+
+const OPCOES_AGRUPAMENTO: { value: Agrupamento; label: string }[] = [
+  { value: 'grupo', label: 'Grupo' },
+  { value: 'status', label: 'Status' },
+]
 
 export default function BoardPage() {
   const { boardId } = useParams<{ boardId: string }>()
@@ -18,6 +27,8 @@ export default function BoardPage() {
   const membros = useMembros(board.data?.workspace_id)
   const editar = useAtualizarTarefa(boardId)
   const removerGrupo = useRemoverGrupo(boardId)
+  const { agrupamento, definir: definirAgrupamento } = useAgrupamento()
+  const porStatus = agrupamento === 'status'
 
   // null = modal fechado. string = editando essa tarefa. '' = criando (o
   // grupo alvo vai em grupoParaCriar).
@@ -86,26 +97,53 @@ export default function BoardPage() {
           ),
         }}
       >
-        {grupos.data?.map((g) => (
-          <TaskGroup
-            key={g.id}
-            grupo={g}
-            membros={membros.data ?? []}
-            aoEditar={(id, campos) => editar.mutate({ id, campos })}
-            aoAbrir={abrirParaEditar}
-            aoCriar={() => abrirParaCriar(g.id)}
-            aoRenomear={() => abrirGrupo(g)}
-            aoExcluir={() => removerGrupo.mutate(g.id)}
-            motivoNaoExcluir={motivoNaoExcluir(g.id)}
-          />
-        ))}
-        <Button
-          variant="secondary"
-          iconStart={<Plus aria-hidden="true" className="size-4" />}
-          onClick={() => abrirGrupo(null)}
-        >
-          Novo grupo
-        </Button>
+        <div className="mb-margin w-full md:w-56">
+          <Field label="Agrupar por">
+            <Select
+              value={agrupamento}
+              options={OPCOES_AGRUPAMENTO}
+              onChange={(e) => definirAgrupamento(e.target.value as Agrupamento)}
+            />
+          </Field>
+        </div>
+
+        {porStatus
+          ? // Mesma divisão do kanban (colunasPorStatus), só os status com tarefa; o bloco é uma visão, não um grupo.
+            colunasPorStatus(grupos.data ?? [])
+              .filter((c) => c.tarefas.length > 0)
+              .map((c, position) => (
+                <TaskGroup
+                  key={c.status}
+                  status={c.status}
+                  // `color` não é usada em modo status (a barra vem de `status`); o tipo só a exige.
+                  grupo={{ id: `status-${c.status}`, board_id: boardId ?? '', name: c.rotulo, color: 'azure', position, tasks: c.tarefas }}
+                  membros={membros.data ?? []}
+                  aoEditar={(id, campos) => editar.mutate({ id, campos })}
+                  aoAbrir={abrirParaEditar}
+                />
+              ))
+          : grupos.data?.map((g) => (
+              <TaskGroup
+                key={g.id}
+                grupo={g}
+                membros={membros.data ?? []}
+                aoEditar={(id, campos) => editar.mutate({ id, campos })}
+                aoAbrir={abrirParaEditar}
+                aoCriar={() => abrirParaCriar(g.id)}
+                aoRenomear={() => abrirGrupo(g)}
+                aoExcluir={() => removerGrupo.mutate(g.id)}
+                motivoNaoExcluir={motivoNaoExcluir(g.id)}
+              />
+            ))}
+        {!porStatus && (
+          <Button
+            variant="secondary"
+            iconStart={<Plus aria-hidden="true" className="size-4" />}
+            onClick={() => abrirGrupo(null)}
+          >
+            Novo grupo
+          </Button>
+        )}
       </VisaoDoBoard>
 
       {board.data && (

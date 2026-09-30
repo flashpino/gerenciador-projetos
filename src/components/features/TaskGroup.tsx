@@ -7,9 +7,9 @@ import { Menu } from '@/components/ui/Menu'
 import { ProgressBar } from '@/components/ui/ProgressBar'
 import { cn } from '@/lib/cn'
 import { distribuicaoStatus, progressoDoGrupo } from '@/lib/metrics'
-import { STATUS } from '@/lib/status'
+import { CORES_STATUS, STATUS } from '@/lib/status'
 import type { CamposEditaveis } from '@/services/boards'
-import type { GroupColor, GroupComTarefas, Profile, Task } from '@/types/domain'
+import type { GroupColor, GroupComTarefas, Profile, Task, TaskStatus } from '@/types/domain'
 import { AssigneeCell } from './AssigneeCell'
 import { DueDateCell } from './DueDateCell'
 import { PriorityCell, StatusCell } from './EnumCell'
@@ -33,14 +33,30 @@ interface Props {
   membros: Profile[]
   aoEditar: (id: string, campos: CamposEditaveis) => void
   aoAbrir: (task: Task) => void
-  aoCriar: () => void
-  aoRenomear: () => void
-  aoExcluir: () => void
+  /**
+   * Criar/renomear/excluir só existem para um GRUPO de verdade. No bloco por status (`status`) são omitidos:
+   * ele é uma visão, sem grupo de destino.
+   */
+  aoCriar?: () => void
+  aoRenomear?: () => void
+  aoExcluir?: () => void
+  /** Modo "agrupar por status": bloco de uma visão, com a cor do status no lugar da cor do grupo. */
+  status?: TaskStatus
   /** Presente = "Excluir" desabilitado, e o texto vira o motivo mostrado no item. */
   motivoNaoExcluir?: string
 }
 
-export function TaskGroup({ grupo, membros, aoEditar, aoAbrir, aoCriar, aoRenomear, aoExcluir, motivoNaoExcluir }: Props) {
+export function TaskGroup({
+  grupo,
+  membros,
+  aoEditar,
+  aoAbrir,
+  aoCriar,
+  aoRenomear,
+  aoExcluir,
+  motivoNaoExcluir,
+  status,
+}: Props) {
   const [aberto, setAberto] = useState(true)
   const tarefas = grupo.tasks
   const progresso = progressoDoGrupo(tarefas)
@@ -56,7 +72,11 @@ export function TaskGroup({ grupo, membros, aoEditar, aoAbrir, aoCriar, aoRenome
   return (
     <section className="glass relative mb-margin rounded-card focus-within:z-10">
       <header className="flex items-center gap-space-sm border-b border-border px-space-md py-space-sm">
-        <span aria-hidden="true" className={cn('h-6 w-1.5 rounded-full', BARRA_GRUPO[grupo.color])} />
+        <span
+          aria-hidden="true"
+          className={cn('h-6 w-1.5 rounded-full', !status && BARRA_GRUPO[grupo.color])}
+          style={status ? { backgroundColor: CORES_STATUS[status] } : undefined}
+        />
         <button
           type="button"
           onClick={() => setAberto((v) => !v)}
@@ -68,7 +88,7 @@ export function TaskGroup({ grupo, membros, aoEditar, aoAbrir, aoCriar, aoRenome
           ) : (
             <ChevronRight aria-hidden="true" className="size-4" />
           )}
-          <h2 className={cn('text-title', TEXTO_GRUPO[grupo.color])}>{grupo.name}</h2>
+          <h2 className={cn('text-title', status ? 'text-ink' : TEXTO_GRUPO[grupo.color])}>{grupo.name}</h2>
         </button>
         <Badge variant="soft">
           {tarefas.length} {tarefas.length === 1 ? 'item' : 'itens'}
@@ -76,6 +96,7 @@ export function TaskGroup({ grupo, membros, aoEditar, aoAbrir, aoCriar, aoRenome
 
         <span className="ml-auto text-label text-ink-muted">Progresso: {progresso}%</span>
 
+        {aoRenomear && aoExcluir && (
         <Menu
           rotulo={`Ações do grupo ${grupo.name}`}
           align="end"
@@ -99,6 +120,7 @@ export function TaskGroup({ grupo, membros, aoEditar, aoAbrir, aoCriar, aoRenome
             </button>
           )}
         />
+        )}
       </header>
 
       {aberto && (
@@ -248,16 +270,18 @@ export function TaskGroup({ grupo, membros, aoEditar, aoAbrir, aoCriar, aoRenome
             ))}
           </ul>
 
-          <div className="border-t border-border p-space-sm">
-            <Button
-              variant="ghost"
-              size="sm"
-              iconStart={<Plus aria-hidden="true" className="size-4" />}
-              onClick={aoCriar}
-            >
-              Adicionar item
-            </Button>
-          </div>
+          {aoCriar && (
+            <div className="border-t border-border p-space-sm">
+              <Button
+                variant="ghost"
+                size="sm"
+                iconStart={<Plus aria-hidden="true" className="size-4" />}
+                onClick={aoCriar}
+              >
+                Adicionar item
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </section>
