@@ -30,6 +30,11 @@ describe('LoginPage', () => {
     vi.mocked(useSessao).mockReturnValue({ usuario: null, carregando: false })
   })
 
+  it('o formulário fica dentro do landmark main (a rota /login está fora do AppShell)', () => {
+    renderPagina()
+    expect(screen.getByRole('main')).toContainElement(screen.getByRole('heading', { level: 1, name: 'Entrar' }))
+  })
+
   it('quem já tem sessão é redirecionado para / sem ver o formulário de novo', async () => {
     vi.mocked(useSessao).mockReturnValue({ usuario: { id: 'u1', email: 'a@x.com' }, carregando: false })
     renderPagina()

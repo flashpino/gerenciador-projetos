@@ -42,7 +42,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center gap-space-lg px-space-lg">
+    <main className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center gap-space-lg px-space-lg">
       <h1 className="text-headline text-ink">{modo === 'entrar' ? 'Entrar' : 'Criar conta'}</h1>
 
       <form onSubmit={aoSubmeter} className="flex flex-col gap-space-md">
@@ -94,6 +94,6 @@ export default function LoginPage() {
       >
         {modo === 'entrar' ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Entrar'}
       </Button>
-    </div>
+    </main>
   )
 }
