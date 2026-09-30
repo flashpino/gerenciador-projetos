@@ -1,7 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { configure, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { SessaoContext } from '@/hooks/sessaoContext'
 import { criarTarefaFixture as tarefa } from '@/test/fixtures'
 import { criarWrapper } from '@/test/query'
@@ -25,6 +25,12 @@ import * as servico from '@/services/boards'
 import BoardPage from './BoardPage'
 import GanttPage from './GanttPage'
 import KanbanPage from './KanbanPage'
+
+// Integração pesada (BoardShell + página reais + digitação). Com a suíte inteira rodando em paralelo e com
+// cobertura a máquina fica carregada, e os 5 s padrão do teste e o 1 s do findBy estouravam sem que a lógica
+// estivesse errada. Orçamento de tempo só para este arquivo; nenhuma asserção foi tocada.
+vi.setConfig({ testTimeout: 20_000 })
+beforeAll(() => configure({ asyncUtilTimeout: 4000 }))
 
 const SESSAO = { usuario: { id: 'u1', email: 'ana@x.com' }, carregando: false }
 
@@ -60,11 +66,14 @@ function renderizar(Pagina: () => React.JSX.Element, rota = '/boards/b1') {
 const aparece = (titulo: string) => screen.queryAllByRole('button', { name: titulo }).length > 0
 const grupoAparece = (nome: string) => screen.queryByRole('heading', { level: 2, name: nome }) !== null
 
-/** Digita e espera a pausa (debounce) da busca antes de ela ir para a URL e filtrar. */
-async function buscar(texto: string) {
-  await userEvent.type(screen.getByRole('searchbox', { name: 'Buscar neste quadro' }), texto)
-  await new Promise((r) => setTimeout(r, 350))
-}
+/**
+ * Só digita. A busca vai para a URL depois de uma pausa (debounce, em tempo real): quem chama espera pelo
+ * RESULTADO com `esperar`, nunca por um sleep fixo (frágil sob carga).
+ */
+const buscar = (texto: string) => userEvent.type(screen.getByRole('searchbox', { name: 'Buscar neste quadro' }), texto)
+
+/** Espera uma condição, com folga para a máquina carregada. */
+const esperar = (condicao: () => void) => vi.waitFor(condicao, { timeout: 4000 })
 
 describe('busca e filtros nas visões do board', () => {
   beforeEach(() => {
@@ -92,8 +101,8 @@ describe('busca e filtros nas visões do board', () => {
       await screen.findByRole('heading', { level: 2, name: 'Em desenvolvimento' })
       await buscar('deploy')
 
+      await esperar(() => expect(aparece('Login social')).toBe(false))
       expect(aparece('Deploy do beta')).toBe(true)
-      expect(aparece('Login social')).toBe(false)
       expect(aparece('Documentar API')).toBe(false)
       expect(grupoAparece('Backlog')).toBe(false)
       expect(grupoAparece('Ideias')).toBe(false)
@@ -107,6 +116,8 @@ describe('busca e filtros nas visões do board', () => {
       renderizar(BoardPage)
       await screen.findByRole('heading', { level: 2, name: 'G' })
       await buscar('CONFIGURACAO')
+      // O resumo só aparece depois que o filtro foi aplicado: prova que a busca casou sem acento.
+      await esperar(() => expect(screen.getByRole('status')).toHaveTextContent('Mostrando 1 de 1 tarefa'))
       expect(aparece('Configuração inicial')).toBe(true)
     })
 
@@ -130,8 +141,8 @@ describe('busca e filtros nas visões do board', () => {
       await screen.findByRole('heading', { level: 2, name: 'Em desenvolvimento' })
       expect(aparece('Login social') && aparece('Deploy do beta')).toBe(true)
       await buscar('login')
+      await esperar(() => expect(aparece('Deploy do beta')).toBe(false))
       expect(aparece('Login social')).toBe(true)
-      expect(aparece('Deploy do beta')).toBe(false)
     })
 
     it('nada encontrado: estado vazio próprio (não "Nenhuma tarefa ainda") e o botão traz tudo de volta', async () => {
@@ -139,7 +150,7 @@ describe('busca e filtros nas visões do board', () => {
       await screen.findByRole('heading', { level: 2, name: 'Em desenvolvimento' })
       await buscar('zzzz')
 
-      expect(await screen.findByText('Nenhuma tarefa encontrada')).toBeInTheDocument()
+      expect(await screen.findByText('Nenhuma tarefa encontrada', {}, { timeout: 4000 })).toBeInTheDocument()
       expect(screen.queryByText('Nenhuma tarefa ainda')).not.toBeInTheDocument()
 
       await userEvent.click(screen.getByRole('button', { name: 'Limpar busca e filtros' }))
