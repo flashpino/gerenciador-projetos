@@ -8,7 +8,7 @@ import * as servico from '@/services/push'
 import { useNotificacoesPush } from './useNotificacoesPush'
 
 /** Navegador falso: Notification + service worker + PushManager. */
-function montarNavegador({ permissao = 'default', concede = 'granted', inscrito = false } = {}) {
+function montarNavegador({ permissao = 'default', concede = 'granted', inscrito = false, registrado = true } = {}) {
   const inscricao = {
     endpoint: 'https://push/x',
     unsubscribe: vi.fn().mockResolvedValue(true),
@@ -20,7 +20,15 @@ function montarNavegador({ permissao = 'default', concede = 'granted', inscrito 
   }
   vi.stubGlobal('Notification', { permission: permissao, requestPermission: vi.fn().mockResolvedValue(concede) })
   vi.stubGlobal('PushManager', function PushManager() {})
-  Object.defineProperty(navigator, 'serviceWorker', { configurable: true, value: { ready: Promise.resolve({ pushManager }) } })
+  const registro = { pushManager }
+  Object.defineProperty(navigator, 'serviceWorker', {
+    configurable: true,
+    value: {
+      // Sem service worker registrado, `ready` nunca resolve — igual ao navegador de verdade.
+      ready: registrado ? Promise.resolve(registro) : new Promise(() => {}),
+      getRegistration: vi.fn().mockResolvedValue(registrado ? registro : undefined),
+    },
+  })
   return { pushManager, inscricao }
 }
 
@@ -91,6 +99,12 @@ describe('useNotificacoesPush', () => {
   it('navegador sem Push (ex.: iPhone sem o app instalado): "sem-suporte"', async () => {
     const { result } = montar()
     await waitFor(() => expect(result.current.estado).toBe('sem-suporte'))
+  })
+
+  it('sem service worker registrado (ex.: modo dev): não fica carregando para sempre', async () => {
+    montarNavegador({ registrado: false })
+    const { result } = montar()
+    await waitFor(() => expect(result.current.estado).toBe('sem-service-worker'))
   })
 
   it('sem a chave pública configurada: "nao-configurado"', async () => {

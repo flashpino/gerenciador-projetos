@@ -1,7 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { removerInscricaoPush, salvarInscricaoPush } from '@/services/push'
 
-export type EstadoPush = 'carregando' | 'sem-suporte' | 'nao-configurado' | 'negado' | 'inativo' | 'ativo'
+export type EstadoPush =
+  | 'carregando'
+  | 'sem-suporte'
+  | 'sem-service-worker'
+  | 'nao-configurado'
+  | 'negado'
+  | 'inativo'
+  | 'ativo'
 
 const CHAVE = ['push'] as const
 
@@ -20,7 +27,10 @@ async function lerEstado(): Promise<Exclude<EstadoPush, 'carregando'>> {
   if (!suportaPush()) return 'sem-suporte'
   if (!chavePublica()) return 'nao-configurado'
   if (Notification.permission === 'denied') return 'negado'
-  const registro = await navigator.serviceWorker.ready
+  // getRegistration, não `ready`: sem service worker registrado (modo dev, ou o registro falhou) `ready`
+  // nunca resolve e a tela ficaria em "carregando" para sempre.
+  const registro = await navigator.serviceWorker.getRegistration()
+  if (!registro) return 'sem-service-worker'
   return (await registro.pushManager.getSubscription()) ? 'ativo' : 'inativo'
 }
 

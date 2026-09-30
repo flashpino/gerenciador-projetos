@@ -97,6 +97,8 @@ const AVISO: Partial<Record<EstadoPush, string>> = {
   'sem-suporte':
     'Este navegador não recebe notificações. No iPhone, instale o app (Compartilhar → Adicionar à Tela de Início) e abra por lá.',
   'nao-configurado': 'As notificações ainda não foram configuradas no servidor.',
+  'sem-service-worker':
+    'O serviço de notificações do app não está ativo nesta aba. Recarregue a página; em modo de desenvolvimento ele fica desligado.',
   negado: 'As notificações estão bloqueadas para este site. Libere nas configurações do navegador e recarregue.',
 }
 
