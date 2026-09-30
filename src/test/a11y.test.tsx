@@ -305,7 +305,8 @@ describe('Acessibilidade automatizada (axe) — telas principais do MVP', () => 
   })
 
   it('AvisoPWA (instalar) não tem violação WCAG', async () => {
-    vi.stubGlobal('matchMedia', () => ({ matches: false }))
+    // Celular (toque como ponteiro principal): no computador o aviso de instalar não aparece mais.
+    vi.stubGlobal('matchMedia', (q: string) => ({ matches: q === '(pointer: coarse)' }))
     const { container, findByRole } = render(<AvisoPWA />)
     // O de atualizar tem prioridade; "Depois" libera o de instalar.
     await userEvent.click(await findByRole('button', { name: 'Depois' }))

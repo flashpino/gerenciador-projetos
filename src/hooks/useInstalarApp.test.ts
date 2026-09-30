@@ -2,9 +2,16 @@ import { act, renderHook } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useInstalarApp } from './useInstalarApp'
 
-// jsdom não implementa matchMedia; o hook usa para saber se já roda instalado.
-function modoStandalone(ativo: boolean) {
-  vi.stubGlobal('matchMedia', (q: string) => ({ matches: ativo && q === '(display-mode: standalone)' }))
+const UA_ANDROID = 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 Chrome/129.0 Mobile Safari/537.36'
+const UA_IPHONE = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1'
+const UA_PC = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/129.0 Safari/537.36'
+
+/** jsdom não tem matchMedia nem muda o userAgent: o dispositivo é montado à mão. */
+function dispositivo({ ua = UA_ANDROID, toque = true, standalone = false } = {}) {
+  vi.stubGlobal('matchMedia', (q: string) => ({
+    matches: (q === '(pointer: coarse)' && toque) || (q === '(display-mode: standalone)' && standalone),
+  }))
+  vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue(ua)
 }
 
 function dispararEvento() {
@@ -19,25 +26,38 @@ function dispararEvento() {
   return { evento, prompt }
 }
 
-describe('useInstalarApp', () => {
+describe('useInstalarApp — o aviso de instalar é para o CELULAR', () => {
   beforeEach(() => {
     localStorage.clear()
-    modoStandalone(false)
+    dispositivo()
   })
   afterEach(() => {
     vi.unstubAllGlobals()
     vi.restoreAllMocks()
   })
 
-  it('sem evento do navegador, não oferece instalar', () => {
+  it('computador: não oferece, mesmo com o evento do navegador', () => {
+    dispositivo({ ua: UA_PC, toque: false })
     const { result } = renderHook(() => useInstalarApp())
-    expect(result.current.podeInstalar).toBe(false)
+    dispararEvento()
+    expect(result.current.modo).toBe('nenhum')
   })
 
-  it('com o evento, oferece instalar e segura o mini-infobar', () => {
+  it('iPhone (o Safari não tem o evento): instruções do Compartilhar', () => {
+    dispositivo({ ua: UA_IPHONE })
+    const { result } = renderHook(() => useInstalarApp())
+    expect(result.current.modo).toBe('ios')
+  })
+
+  it('Android sem o evento: instrução pelo menu do navegador', () => {
+    const { result } = renderHook(() => useInstalarApp())
+    expect(result.current.modo).toBe('manual')
+  })
+
+  it('Android com o evento: botão de instalar, e segura o mini-infobar', () => {
     const { result } = renderHook(() => useInstalarApp())
     const { evento } = dispararEvento()
-    expect(result.current.podeInstalar).toBe(true)
+    expect(result.current.modo).toBe('botao')
     expect(evento.defaultPrevented).toBe(true)
   })
 
@@ -46,14 +66,14 @@ describe('useInstalarApp', () => {
     const { prompt } = dispararEvento()
     await act(() => result.current.instalar())
     expect(prompt).toHaveBeenCalledOnce()
-    expect(result.current.podeInstalar).toBe(false)
+    expect(result.current.modo).not.toBe('botao')
   })
 
   it('dispensar() grava a marca e esconde', () => {
     const { result } = renderHook(() => useInstalarApp())
     dispararEvento()
     act(() => result.current.dispensar())
-    expect(result.current.podeInstalar).toBe(false)
+    expect(result.current.modo).toBe('nenhum')
     expect(localStorage.getItem('pwa-instalar-dispensado')).not.toBeNull()
   })
 
@@ -61,23 +81,23 @@ describe('useInstalarApp', () => {
     localStorage.setItem('pwa-instalar-dispensado', '1')
     const { result } = renderHook(() => useInstalarApp())
     dispararEvento()
-    expect(result.current.podeInstalar).toBe(false)
+    expect(result.current.modo).toBe('nenhum')
   })
 
   it('já instalado (standalone), não oferece', () => {
-    modoStandalone(true)
+    dispositivo({ standalone: true })
     const { result } = renderHook(() => useInstalarApp())
     dispararEvento()
-    expect(result.current.podeInstalar).toBe(false)
+    expect(result.current.modo).toBe('nenhum')
   })
 
-  it('appinstalled descarta o evento', () => {
+  it('appinstalled: some de vez (não volta como instrução manual)', () => {
     const { result } = renderHook(() => useInstalarApp())
     dispararEvento()
     act(() => {
       window.dispatchEvent(new Event('appinstalled'))
     })
-    expect(result.current.podeInstalar).toBe(false)
+    expect(result.current.modo).toBe('nenhum')
   })
 
   it('storage bloqueado não quebra: oferece e dispensa na sessão', () => {
@@ -89,8 +109,8 @@ describe('useInstalarApp', () => {
     })
     const { result } = renderHook(() => useInstalarApp())
     dispararEvento()
-    expect(result.current.podeInstalar).toBe(true)
+    expect(result.current.modo).toBe('botao')
     act(() => result.current.dispensar())
-    expect(result.current.podeInstalar).toBe(false)
+    expect(result.current.modo).toBe('nenhum')
   })
 })

@@ -12,7 +12,7 @@ export function AvisoPWA() {
     needRefresh: [temVersaoNova],
     updateServiceWorker,
   } = useRegisterSW()
-  const { podeInstalar, instalar, dispensar } = useInstalarApp()
+  const { modo, instalar, dispensar } = useInstalarApp()
   const [adiado, setAdiado] = useState(false)
 
   const aviso =
@@ -22,13 +22,23 @@ export function AvisoPWA() {
           secundario: { rotulo: 'Depois', acao: () => setAdiado(true) },
           principal: { rotulo: 'Recarregar', acao: () => void updateServiceWorker(true) },
         }
-      : podeInstalar
+      : modo === 'botao'
         ? {
             texto: 'Instalar o app no seu dispositivo',
             secundario: { rotulo: 'Agora não', acao: dispensar },
             principal: { rotulo: 'Instalar', acao: () => void instalar() },
           }
-        : null
+        : // Sem o evento do navegador não há botão possível: o jeito é ensinar o caminho.
+          modo === 'ios' || modo === 'manual'
+          ? {
+              texto:
+                modo === 'ios'
+                  ? 'Para instalar: toque em Compartilhar e depois em "Adicionar à Tela de Início".'
+                  : 'Para instalar: abra o menu ⋮ do navegador e toque em "Instalar app".',
+              secundario: null,
+              principal: { rotulo: 'Entendi', acao: dispensar },
+            }
+          : null
 
   if (!aviso) return null
 
@@ -37,9 +47,11 @@ export function AvisoPWA() {
       className="fixed inset-x-gutter bottom-gutter z-40 flex animate-entrar flex-wrap items-center gap-space-sm glass-strong rounded-card p-space-md pl-space-lg shadow-overlay md:left-auto md:right-margin md:bottom-margin"
     >
       <p className="flex-1 text-body text-ink">{aviso.texto}</p>
-      <Button size="sm" variant="ghost" onClick={aviso.secundario.acao}>
-        {aviso.secundario.rotulo}
-      </Button>
+      {aviso.secundario && (
+        <Button size="sm" variant="ghost" onClick={aviso.secundario.acao}>
+          {aviso.secundario.rotulo}
+        </Button>
+      )}
       <Button size="sm" variant="primary" onClick={aviso.principal.acao}>
         {aviso.principal.rotulo}
       </Button>

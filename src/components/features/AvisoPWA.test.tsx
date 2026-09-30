@@ -6,7 +6,7 @@ const updateServiceWorker = vi.fn()
 const instalar = vi.fn()
 const dispensar = vi.fn()
 let needRefresh = false
-let podeInstalar = false
+let modo: 'nenhum' | 'botao' | 'ios' | 'manual' = 'nenhum'
 
 vi.mock('virtual:pwa-register/react', () => ({
   useRegisterSW: () => ({
@@ -16,7 +16,7 @@ vi.mock('virtual:pwa-register/react', () => ({
   }),
 }))
 vi.mock('@/hooks/useInstalarApp', () => ({
-  useInstalarApp: () => ({ podeInstalar, instalar, dispensar }),
+  useInstalarApp: () => ({ modo, instalar, dispensar }),
 }))
 
 import { AvisoPWA } from './AvisoPWA'
@@ -25,7 +25,7 @@ describe('AvisoPWA', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     needRefresh = false
-    podeInstalar = false
+    modo = 'nenhum'
   })
 
   it('nada pendente, nada aparece', () => {
@@ -49,8 +49,8 @@ describe('AvisoPWA', () => {
     expect(updateServiceWorker).not.toHaveBeenCalled()
   })
 
-  it('instalação disponível: Instalar e Agora não', async () => {
-    podeInstalar = true
+  it('celular com o evento: Instalar e Agora não', async () => {
+    modo = 'botao'
     render(<AvisoPWA />)
     expect(screen.getByRole('status')).toHaveTextContent('Instalar o app no seu dispositivo')
     await userEvent.click(screen.getByRole('button', { name: 'Instalar' }))
@@ -61,9 +61,27 @@ describe('AvisoPWA', () => {
 
   it('os dois ao mesmo tempo: aparece o de atualizar', () => {
     needRefresh = true
-    podeInstalar = true
+    modo = 'botao'
     render(<AvisoPWA />)
     expect(screen.getByRole('status')).toHaveTextContent('Nova versão disponível')
     expect(screen.queryByRole('button', { name: 'Instalar' })).not.toBeInTheDocument()
+  })
+
+  it('iPhone: ensina o Compartilhar → Adicionar à Tela de Início (não há botão possível)', async () => {
+    modo = 'ios'
+    render(<AvisoPWA />)
+    expect(screen.getByRole('status')).toHaveTextContent('Compartilhar')
+    expect(screen.getByRole('status')).toHaveTextContent('Adicionar à Tela de Início')
+    expect(screen.queryByRole('button', { name: 'Instalar' })).not.toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Entendi' }))
+    expect(dispensar).toHaveBeenCalledOnce()
+  })
+
+  it('celular sem o evento: ensina pelo menu do navegador', async () => {
+    modo = 'manual'
+    render(<AvisoPWA />)
+    expect(screen.getByRole('status')).toHaveTextContent('Instalar app')
+    await userEvent.click(screen.getByRole('button', { name: 'Entendi' }))
+    expect(dispensar).toHaveBeenCalledOnce()
   })
 })

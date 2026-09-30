@@ -369,3 +369,14 @@ Pedido: o master `flashpino@hotmail.com` cadastra, edita e exclui usuários. Dec
 - [x] Sem migration: as FKs já são cascade/set null (conferido)
 - [ ] **Ativação (Zona Vermelha):** publicar a função `usuarios` e marcar o master (SQL em `app_metadata`)
 - [ ] Observado: `boardInexistente.test.tsx` falhou 1 vez na suíte inteira com cobertura e passou isolado e na rodada seguinte (sensível a carga, como o `buscaEFiltros`)
+
+---
+
+## Aviso de instalar: no celular, não no PC ✅
+
+Relato: o "Instalar" só aparecia no PC. Causa: o aviso dependia do `beforeinstallprompt`, que só o Chrome/Edge dispara — o Safari do iPhone nunca, e o Android só em certas condições (e some para sempre se alguém tocou "Agora não").
+
+- [x] `useInstalarApp` devolve `modo`: `botao` (evento disponível), `ios` (instruções Compartilhar → Tela de Início), `manual` (menu ⋮ do navegador), `nenhum` (PC — `pointer: coarse` falso —, já instalado, `appinstalled`, ou dispensado)
+- [x] `AvisoPWA`: botão Instalar ou instrução + "Entendi"
+- [x] Os testes antigos do hook ("com o evento, oferece") foram reescritos porque o requisito mudou (o PC deixou de receber o aviso), não para passar
+- [x] Navegador (emulação): iPhone → instruções do Compartilhar; Android → instrução do menu (em dev não há o evento; no build ele vira botão); PC → nada
