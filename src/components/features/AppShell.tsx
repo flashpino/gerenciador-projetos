@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { Outlet } from 'react-router-dom'
-import { StateView } from '@/components/ui/StateView'
+import { EsqueletoDaRota } from './Esqueletos'
 import { Sidebar } from './Sidebar'
 
 /**
@@ -16,13 +16,8 @@ export function AppShell() {
     <div className="flex min-h-dvh flex-col md:flex-row">
       <Sidebar />
       <main className="min-w-0 flex-1">
-        <Suspense
-          fallback={
-            <StateView estado={{ tipo: 'carregando' }}>
-              <></>
-            </StateView>
-          }
-        >
+        {/* Fallback com a forma da página de destino (a URL já mudou; ver lib/esqueleto). */}
+        <Suspense fallback={<EsqueletoDaRota />}>
           <Outlet />
         </Suspense>
       </main>

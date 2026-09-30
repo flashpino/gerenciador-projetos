@@ -17,6 +17,17 @@ describe('StateView', () => {
     expect(regiao).toHaveTextContent(/^Carregando…$/)
   })
 
+  it('aceita um skeleton com a forma da tela, escondido do leitor de tela', () => {
+    render(
+      <StateView estado={{ tipo: 'carregando' }} esqueleto={<p>forma da tabela</p>}>
+        conteudo
+      </StateView>,
+    )
+    const regiao = screen.getByRole('status')
+    expect(regiao).toHaveTextContent(/^Carregando…forma da tabela$/)
+    expect(screen.getByText('forma da tabela').closest('[aria-hidden="true"]')).not.toBeNull()
+  })
+
   it('mostra o erro com role alert e um botao de tentar de novo', () => {
     render(
       <StateView estado={{ tipo: 'erro', mensagem: 'Deu ruim', aoTentarDeNovo: () => {} }}>

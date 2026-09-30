@@ -1,6 +1,7 @@
 import { Navigate, useParams } from 'react-router-dom'
 import { BoardShell } from '@/components/features/BoardShell'
 import { GanttChart } from '@/components/features/GanttChart'
+import { EsqueletoGantt } from '@/components/features/Esqueletos'
 import { VisaoDoBoard } from '@/components/features/VisaoDoBoard'
 import { Button } from '@/components/ui/Button'
 import { useGruposFiltrados } from '@/hooks/useGruposFiltrados'
@@ -19,6 +20,7 @@ export default function GanttPage() {
       <VisaoDoBoard
         grupos={grupos}
         boardPendente={board.isPending}
+        esqueleto={<EsqueletoGantt />}
         vazio={{
           titulo: 'Nenhuma tarefa ainda',
           descricao: 'Crie tarefas com período definido para vê-las no cronograma.',

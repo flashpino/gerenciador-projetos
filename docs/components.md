@@ -75,10 +75,11 @@ discriminado e obriga os quatro: loading, erro, vazio, sucesso. "Esqueci o
 estado vazio" é o erro nº 3 do manual; com este componente ele deixa de ser
 possível por construção, não por disciplina.
 
-**O `loading` do StateView é um skeleton** (3 cartões de vidro pulsantes, `aria-hidden`), não um spinner:
-região `<output aria-busy>` com o texto sr-only "Carregando…". Serve à troca de página (o `<Suspense>` do
-`AppShell` usa o mesmo estado) e ao carregamento dos dados de qualquer visão. Sem `animate-pulse` com
-`prefers-reduced-motion`. O skeleton é interno ao StateView, não um primitivo à parte: só ele o usa.
+**O `loading` do StateView é um skeleton com a forma da tela**, não um spinner: região `<output aria-busy>`
+com o texto sr-only "Carregando…" e a forma (prop `esqueleto`) dentro de `aria-hidden`. Sem forma, três
+linhas genéricas (modal, comentários). A peça é `BlocoEsqueleto` (exportada do StateView; `redondo`,
+`sobreFundo` para fora de cartão, onde o cinza padrão some no lavanda). Sem `animate-pulse` com
+`prefers-reduced-motion`.
 
 **#12 Tabs decide o elemento pelo `href` do item.** Item com `href` vira `<nav>`
 + link com `aria-current="page"`; sem `href` vira `role="tablist"` + `role="tab"`.
@@ -109,6 +110,7 @@ passam por `src/hooks/` → `src/services/`.
 | `BoardShell` | Tabs, TextInput, Button, FavoritoToggle, FiltroTarefasModal | todas as 4 views (layout comum + estrela + **busca e botão Filtrar** (não aparecem no Dashboard) + "convidar" abre `IntegrantesModal`; "Novo item" segue desabilitado — Sair mora na Sidebar) |
 | `FiltroTarefasModal` | Modal, Checkbox, Select, Field, Button | botão "Filtrar" do `BoardShell`. Status e prioridade (caixas), responsável (seletor), "somente atrasadas". Aplica na hora; o estado é a URL (`lib/filtro.ts`) |
 | `ResumoFiltro` | Button | "Mostrando X de Y tarefas" + limpar, quando há busca ou filtro. Só aparece dentro de `VisaoDoBoard` |
+| `Esqueletos` | StateView (`BlocoEsqueleto`) | as formas de carregamento por tela: `EsqueletoTabela`, `EsqueletoKanban`, `EsqueletoGantt`, `EsqueletoDashboard`, `EsqueletoPaineis`, `EsqueletoFeed` (espelham os grids e cartões reais) e `EsqueletoDaRota` (página inteira pela rota, `lib/esqueleto.ts` — fallback do `<Suspense>` do AppShell e da abertura). Um arquivo de decoração, não componentes de domínio |
 | `VisaoDoBoard` | StateView, ResumoFiltro, Button | Tabela, Kanban e Gantt: os 4 estados da consulta dos grupos + o resumo. Unificado na 3ª ocorrência (regra dos três). "Nada encontrado" com filtro ligado tem texto próprio, diferente do board vazio |
 | `EnumCell` | Badge, Menu | base genérica de `StatusCell` e `PriorityCell` (edita um enum do banco por menu; o status/prioridade aparece como pílula). Não é usada direto nas telas |
 | `StatusCell` | EnumCell | tabela, kanban, modal |

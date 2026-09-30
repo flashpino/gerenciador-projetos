@@ -3,6 +3,7 @@ import { Navigate, useParams } from 'react-router-dom'
 import { BoardShell } from '@/components/features/BoardShell'
 import { KanbanBoard } from '@/components/features/KanbanBoard'
 import { TaskModal } from '@/components/features/TaskModal'
+import { EsqueletoKanban } from '@/components/features/Esqueletos'
 import { VisaoDoBoard } from '@/components/features/VisaoDoBoard'
 import { Button } from '@/components/ui/Button'
 import { useGruposFiltrados } from '@/hooks/useGruposFiltrados'
@@ -35,6 +36,7 @@ export default function KanbanPage() {
       <VisaoDoBoard
         grupos={grupos}
         boardPendente={board.isPending}
+        esqueleto={<EsqueletoKanban />}
         vazio={{
           titulo: 'Nenhuma tarefa ainda',
           descricao: 'Crie a primeira tarefa para vê-la aparecer numa coluna.',

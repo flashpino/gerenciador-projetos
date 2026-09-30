@@ -5,6 +5,7 @@ import { GroupProgressList } from '@/components/features/GroupProgressList'
 import { MetricTile } from '@/components/features/MetricTile'
 import { StatusDonut } from '@/components/features/StatusDonut'
 import { Button } from '@/components/ui/Button'
+import { EsqueletoDashboard, EsqueletoFeed } from '@/components/features/Esqueletos'
 import { StateView } from '@/components/ui/StateView'
 import { estadoDaQuery } from '@/lib/estadoDaQuery'
 import { contarAtrasadas, distribuicaoStatus, taxaDeConclusao } from '@/lib/metrics'
@@ -46,7 +47,8 @@ export default function DashboardPage() {
 
   return (
     <BoardShell titulo={board.data?.name ?? 'Quadro'}>
-      <StateView estado={estado}>
+      {/* Só métricas e gráficos: o card de atividades abaixo tem o próprio skeleton. */}
+      <StateView estado={estado} esqueleto={<EsqueletoDashboard semAtividades />}>
         <div className="grid grid-cols-1 gap-space-md md:grid-cols-2">
           <MetricTile titulo="Taxa de Conclusão" valor={`${conclusao}%`} progresso={conclusao} />
           <MetricTile titulo="Tarefas Atrasadas" valor={String(atrasadas)} atencao={atrasadas > 0} />
@@ -71,7 +73,7 @@ export default function DashboardPage() {
         <h2 id="titulo-atividades" className="mb-space-md text-title text-ink">
           Atividades recentes
         </h2>
-        <StateView estado={estadoAtividades}>
+        <StateView estado={estadoAtividades} esqueleto={<EsqueletoFeed linhas={3} />}>
           <FeedAtividades atividades={atividades.data ?? []} />
         </StateView>
       </section>

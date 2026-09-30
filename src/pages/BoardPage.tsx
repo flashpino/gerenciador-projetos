@@ -8,6 +8,7 @@ import { BoardShell } from '@/components/features/BoardShell'
 import { GrupoFormModal } from '@/components/features/GrupoFormModal'
 import { TaskGroup } from '@/components/features/TaskGroup'
 import { TaskModal } from '@/components/features/TaskModal'
+import { EsqueletoTabela } from '@/components/features/Esqueletos'
 import { VisaoDoBoard } from '@/components/features/VisaoDoBoard'
 import { useAgrupamento, type Agrupamento } from '@/hooks/useAgrupamento'
 import { useGruposFiltrados } from '@/hooks/useGruposFiltrados'
@@ -87,6 +88,7 @@ export default function BoardPage() {
       <VisaoDoBoard
         grupos={grupos}
         boardPendente={board.isPending}
+        esqueleto={<EsqueletoTabela />}
         vazio={{
           titulo: 'Nenhuma tarefa ainda',
           descricao: 'Crie o primeiro grupo para comecar a organizar o trabalho da squad.',

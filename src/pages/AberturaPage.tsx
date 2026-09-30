@@ -1,4 +1,5 @@
 import { Navigate } from 'react-router-dom'
+import { EsqueletoDaRota } from '@/components/features/Esqueletos'
 import { StateView } from '@/components/ui/StateView'
 import { useBoards } from '@/hooks/useQuadro'
 import { lerUltimoBoard } from '@/lib/ultimoBoard'
@@ -10,7 +11,8 @@ import { lerUltimoBoard } from '@/lib/ultimoBoard'
 export default function AberturaPage() {
   const boards = useBoards()
 
-  if (boards.isPending) return <StateView estado={{ tipo: 'carregando' }}>{null}</StateView>
+  // Vai virar a tabela do primeiro board: já mostra a forma dela.
+  if (boards.isPending) return <EsqueletoDaRota />
 
   if (boards.isError) {
     return (

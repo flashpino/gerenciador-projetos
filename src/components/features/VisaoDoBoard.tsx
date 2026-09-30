@@ -11,6 +11,8 @@ interface Props {
   boardPendente: boolean
   /** Estado vazio de um board SEM tarefas. Com busca/filtro ligado vale o texto próprio abaixo. */
   vazio: { titulo: string; descricao?: string; acao?: ReactNode }
+  /** Forma do skeleton da visão (tabela, kanban, gantt) enquanto os grupos carregam. */
+  esqueleto: ReactNode
   children: ReactNode
 }
 
@@ -22,7 +24,7 @@ interface Props {
  * Nada encontrado com filtro ligado NÃO é "Nenhuma tarefa ainda": esse texto mentiria
  * (o board tem tarefas, o filtro é que as esconde).
  */
-export function VisaoDoBoard({ grupos, boardPendente, vazio, children }: Props) {
+export function VisaoDoBoard({ grupos, boardPendente, vazio, esqueleto, children }: Props) {
   const estado = estadoDaQuery(
     boardPendente ? { ...grupos, isPending: true } : grupos,
     grupos.ativo
@@ -40,7 +42,7 @@ export function VisaoDoBoard({ grupos, boardPendente, vazio, children }: Props) 
   )
 
   return (
-    <StateView estado={estado}>
+    <StateView estado={estado} esqueleto={esqueleto}>
       {grupos.ativo && <ResumoFiltro visiveis={grupos.visiveis} total={grupos.total} aoLimpar={grupos.limpar} />}
       {children}
     </StateView>

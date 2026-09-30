@@ -298,5 +298,7 @@ Motivo: ao clicar em outra página, a tela antiga ficava congelada até a nova c
 - [x] `BrowserRouter useTransitions={false}` em `App.tsx`: a navegação suspende de verdade e o skeleton aparece na hora, com a sidebar no lugar
 - [x] `App.test.tsx`: rota lazy que nunca carrega → skeleton visível e página antiga escondida (o React a esconde com `display:none`, não a desmonta). Sem a prop, o teste falha
 - [x] Verificado no navegador real (rede Slow 3G, CPU 4x): a tela vira o skeleton no clique
-- [ ] Ainda genérico (3 cartões) para todas as telas; skeletons com a forma de cada visão (tabela, kanban) ficaram de fora
+- [x] **Skeleton com a forma de cada tela** (o genérico de 3 cartões não convenceu): tabela (seletor + grupos + linhas), kanban (5 colunas de vidro, pílula de status, cartões), gantt (coluna de nomes + barras), dashboard (métricas, rosca, progresso, feed), painéis (grade de cartões), atividades (feed). A troca de página escolhe a forma pela rota (`lib/esqueleto.ts`)
+- [x] Verificado no navegador real, build de produção, offline (React Query pausa as buscas e a tela fica no skeleton): as 6 telas em 1440px e as 4 visões do board em 375px sem overflow. Achado corrigido: blocos direto sobre o fundo sumiam no lavanda (`sobreFundo`)
+- [ ] Descartado a pedido: pré-carregar o código das páginas (deixaria a troca instantânea também no dev). No build de produção o service worker já faz isso
 - [ ] `buscaEFiltros.test.tsx`: `findBy/waitFor` de 4 s → 8 s. O teste "a busca ignora acento" digita 12 letras (~4,4 s isolado) e falhava 1 vez em 3 na suíte inteira com cobertura; nenhuma asserção foi tocada

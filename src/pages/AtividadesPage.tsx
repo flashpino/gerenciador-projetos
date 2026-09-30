@@ -1,4 +1,5 @@
 import { FeedAtividades } from '@/components/features/FeedAtividades'
+import { EsqueletoFeed } from '@/components/features/Esqueletos'
 import { StateView } from '@/components/ui/StateView'
 import { useAtividades } from '@/hooks/useQuadro'
 import { estadoDaQuery } from '@/lib/estadoDaQuery'
@@ -15,7 +16,14 @@ export default function AtividadesPage() {
   return (
     <div className="mx-auto max-w-canvas p-gutter md:p-margin">
       <h1 className="mb-gutter text-display">Atividades</h1>
-      <StateView estado={estado}>
+      <StateView
+        estado={estado}
+        esqueleto={
+          <div className="glass rounded-card p-space-lg">
+            <EsqueletoFeed />
+          </div>
+        }
+      >
         <div className="glass rounded-card p-space-lg">
           <FeedAtividades atividades={atividades.data ?? []} mostrarBoard />
         </div>

@@ -5,6 +5,7 @@ import { BoardCard } from '@/components/features/BoardCard'
 import { BoardFormModal } from '@/components/features/BoardFormModal'
 import { ExcluirBoardDialog } from '@/components/features/ExcluirBoardDialog'
 import { Button } from '@/components/ui/Button'
+import { EsqueletoPaineis } from '@/components/features/Esqueletos'
 import { StateView } from '@/components/ui/StateView'
 import { useBoards, useFavoritos } from '@/hooks/useQuadro'
 import { estadoDaQuery } from '@/lib/estadoDaQuery'
@@ -79,7 +80,7 @@ export default function PaineisPage({ filtro = 'todos' }: Props) {
         </Button>
       </div>
 
-      <StateView estado={estado}>
+      <StateView estado={estado} esqueleto={<EsqueletoPaineis />}>
         <ul className="grid grid-cols-1 gap-space-md md:grid-cols-2 lg:grid-cols-3">
           {lista?.map((b) => (
             <li key={b.id}>

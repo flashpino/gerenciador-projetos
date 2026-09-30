@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
+import { cn } from '@/lib/cn'
 import { Button } from './Button'
 
 /**
@@ -16,19 +17,21 @@ export type Estado =
 
 interface Props {
   estado: Estado
+  /** Forma do skeleton enquanto carrega (a da tela que vai aparecer). Sem ela, algumas linhas genéricas. */
+  esqueleto?: ReactNode
   children: ReactNode
 }
 
-export function StateView({ estado, children }: Props) {
+export function StateView({ estado, esqueleto, children }: Props) {
   if (estado.tipo === 'pronto') return <>{children}</>
 
   if (estado.tipo === 'carregando') {
     return (
       // <output> e o role=status nativo. `aria-busy` + o texto sr-only: o skeleton e so decoracao (aria-hidden),
       // entao quem usa leitor de tela ouve "Carregando…" e nao uma lista de retangulos.
-      <output aria-busy="true" className="flex flex-col gap-margin p-margin">
+      <output aria-busy="true" className="block">
         <span className="sr-only">Carregando…</span>
-        <Esqueleto />
+        <div aria-hidden="true">{esqueleto ?? <LinhasGenericas />}</div>
       </output>
     )
   }
@@ -55,27 +58,43 @@ export function StateView({ estado, children }: Props) {
   )
 }
 
-/** Bloco cinza pulsante. Sem `animate-pulse` quando a pessoa pede menos movimento. */
-function Bloco({ className }: { className: string }) {
-  return <span aria-hidden="true" className={`block animate-pulse rounded bg-surface-3 motion-reduce:animate-none ${className}`} />
+/**
+ * Peça de skeleton: retângulo cinza pulsante (ou círculo, com `redondo`). Tamanho e forma vêm de `className`.
+ * Sem `animate-pulse` quando a pessoa pede menos movimento. As formas por tela moram em features/Esqueletos.
+ */
+export function BlocoEsqueleto({
+  className,
+  redondo = false,
+  sobreFundo = false,
+  style,
+}: {
+  className?: string
+  redondo?: boolean
+  /** Direto sobre o fundo da página (fora de cartão): o cinza padrão some no lavanda, este é mais escuro. */
+  sobreFundo?: boolean
+  /** Só posição/tamanho calculados (as barras do gantt). Cor nunca: vem do token. */
+  style?: CSSProperties
+}) {
+  return (
+    <span
+      style={style}
+      className={cn(
+        'block animate-pulse motion-reduce:animate-none',
+        sobreFundo ? 'bg-ink-muted/15' : 'bg-surface-3',
+        redondo ? 'rounded-full' : 'rounded',
+        className,
+      )}
+    />
+  )
 }
 
-/**
- * Skeleton de uma tela de dados: 3 cartões de vidro (cabeçalho + linhas). Genérico de propósito — vale para
- * a troca de página (Suspense do AppShell) e para o carregamento dos dados de qualquer visão. Não está no
- * inventário de primitivos: só o StateView o usa (regra dos três).
- */
-function Esqueleto() {
+/** Padrão para quem não passa forma (modal, lista de comentários): três linhas de texto. */
+function LinhasGenericas() {
   return (
-    <div aria-hidden="true" className="flex flex-col gap-margin">
-      {[0, 1, 2].map((i) => (
-        <div key={i} className="glass flex flex-col gap-space-md rounded-card p-space-md">
-          <Bloco className="h-6 w-1/3" />
-          <Bloco className="h-4 w-full" />
-          <Bloco className="h-4 w-5/6" />
-          <Bloco className="h-4 w-2/3" />
-        </div>
-      ))}
+    <div className="flex flex-col gap-space-sm p-space-md">
+      <BlocoEsqueleto className="h-4 w-2/3" />
+      <BlocoEsqueleto className="h-4 w-full" />
+      <BlocoEsqueleto className="h-4 w-5/6" />
     </div>
   )
 }
