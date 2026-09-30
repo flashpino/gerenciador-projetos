@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient, type QueryKey } from '@tanstack/
 import type { CamposEditaveis, NovaTarefa } from '@/services/boards'
 import {
   adicionarMembro,
+  atualizarGrupo,
   atualizarNomePerfil,
   atualizarSubtarefa,
   atualizarTarefa,
@@ -15,11 +16,13 @@ import {
   buscarWorkspaceAtual,
   criarBoard,
   criarComentario,
+  criarGrupo,
   criarSubtarefa,
   criarTarefa,
   desfavoritar,
   favoritar,
   removerBoard,
+  removerGrupo,
   removerMembro,
   removerSubtarefa,
   renomearBoard,
@@ -222,6 +225,35 @@ export function useGruposComTarefas(boardId: string | undefined) {
     // e o erro aparece como "nao encontrado" em vez de "ainda carregando".
     enabled: Boolean(boardId),
   })
+}
+
+/**
+ * Criar/renomear/excluir grupo são ações deliberadas (modal ou menu), sem update
+ * otimista — mesmo motivo de useCriarTarefa. Só reconciliam a lista de grupos.
+ */
+function useMutacaoGrupo<TVars>(boardId: string | undefined, mutationFn: (vars: TVars) => Promise<unknown>) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn,
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: chaves.grupos(boardId ?? '') })
+    },
+  })
+}
+
+/** `position` = maior atual + 1, calculado por quem chama (que já tem a lista). */
+export function useCriarGrupo(boardId: string | undefined) {
+  return useMutacaoGrupo(boardId, ({ grupo, position }: { grupo: GrupoInicial; position: number }) =>
+    criarGrupo(boardId as string, grupo, position),
+  )
+}
+
+export function useAtualizarGrupo(boardId: string | undefined) {
+  return useMutacaoGrupo(boardId, ({ id, campos }: { id: string; campos: GrupoInicial }) => atualizarGrupo(id, campos))
+}
+
+export function useRemoverGrupo(boardId: string | undefined) {
+  return useMutacaoGrupo(boardId, (id: string) => removerGrupo(id))
 }
 
 export interface MutacaoTarefa {

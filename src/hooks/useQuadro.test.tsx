@@ -10,6 +10,8 @@ vi.mock('@/services/boards', () => ({
   criarTarefa: vi.fn(),
   removerTarefa: vi.fn(),
   criarGrupo: vi.fn(),
+  atualizarGrupo: vi.fn(),
+  removerGrupo: vi.fn(),
   buscarTarefaDetalhe: vi.fn(),
   atualizarSubtarefa: vi.fn(),
   criarSubtarefa: vi.fn(),
@@ -33,16 +35,19 @@ import {
   useAlternarFavorito,
   useAtividades,
   useAtualizarSubtarefa,
+  useAtualizarGrupo,
   useAtualizarTarefa,
   useBoard,
   useBoards,
   useCriarBoard,
   useCriarComentario,
+  useCriarGrupo,
   useCriarSubtarefa,
   useCriarTarefa,
   useExcluirBoard,
   useFavoritos,
   useGruposComTarefas,
+  useRemoverGrupo,
   useRemoverSubtarefa,
   useRenomearBoard,
   useTarefaDetalhe,
@@ -410,5 +415,48 @@ describe('atividades', () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
     expect(espiao).toHaveBeenCalledWith({ queryKey: ['atividades'] })
+  })
+})
+
+describe('grupos — criar, renomear e excluir', () => {
+  beforeEach(() => vi.resetAllMocks())
+
+  it('useCriarGrupo repassa board, nome/cor e position e invalida a lista de grupos', async () => {
+    vi.mocked(servico.criarGrupo).mockResolvedValue({ id: 'g2' } as never)
+    const { wrapper, client } = criarWrapper()
+    const espiao = vi.spyOn(client, 'invalidateQueries')
+    const { result } = renderHook(() => useCriarGrupo('b1'), { wrapper })
+
+    result.current.mutate({ grupo: { name: 'Fase 2', color: 'grape' }, position: 1 })
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(servico.criarGrupo).toHaveBeenCalledWith('b1', { name: 'Fase 2', color: 'grape' }, 1)
+    expect(espiao).toHaveBeenCalledWith({ queryKey: ['grupos', 'b1'] })
+  })
+
+  it('useAtualizarGrupo repassa id e campos e invalida a lista de grupos', async () => {
+    vi.mocked(servico.atualizarGrupo).mockResolvedValue({ id: 'g1' } as never)
+    const { wrapper, client } = criarWrapper()
+    const espiao = vi.spyOn(client, 'invalidateQueries')
+    const { result } = renderHook(() => useAtualizarGrupo('b1'), { wrapper })
+
+    result.current.mutate({ id: 'g1', campos: { name: 'Backlog', color: 'mint' } })
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(servico.atualizarGrupo).toHaveBeenCalledWith('g1', { name: 'Backlog', color: 'mint' })
+    expect(espiao).toHaveBeenCalledWith({ queryKey: ['grupos', 'b1'] })
+  })
+
+  it('useRemoverGrupo repassa o id e invalida a lista de grupos', async () => {
+    vi.mocked(servico.removerGrupo).mockResolvedValue(undefined)
+    const { wrapper, client } = criarWrapper()
+    const espiao = vi.spyOn(client, 'invalidateQueries')
+    const { result } = renderHook(() => useRemoverGrupo('b1'), { wrapper })
+
+    result.current.mutate('g1')
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(servico.removerGrupo).toHaveBeenCalledWith('g1')
+    expect(espiao).toHaveBeenCalledWith({ queryKey: ['grupos', 'b1'] })
   })
 })
