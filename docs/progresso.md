@@ -269,7 +269,7 @@ Motivo: o mockup tem "+ Adicionar Novo Grupo" e a auditoria Stitch já apontava 
 - [x] Menu ⋮ no cabeçalho do grupo: Renomear e Excluir. `Menu` ganhou o item `desabilitado` (`aria-disabled`)
 - [x] Regra de exclusão: só grupo **vazio** (o `on delete cascade` apagaria as tarefas) e **nunca o último** (`tasks.group_id` NOT NULL). A checagem lê a lista sem filtro de busca
 - [x] `TaskGroup`: `overflow-hidden` saiu da section e `focus-within:z-10` evita o dropdown ficar atrás do grupo seguinte (`glass` cria contexto de empilhamento)
-- [ ] **Não verificado no navegador real:** o empilhamento do dropdown e o corte de cantos só existem em CSS, que o jsdom não calcula. Olhar um grupo vazio e o menu de um grupo de cima sobre o de baixo
+- [x] **Verificado no navegador real** (2026-09-30, banco de dev, conta A, 375px e 1440px): criar grupo verde, menu ⋮ de grupo com tarefas ("Excluir" esmaecido com o motivo) e de grupo vazio (dropdown inteiro, sem corte), excluir o grupo de teste (removido do banco). Sem overflow horizontal
 - [x] **Entrega 2 (abaixo):** o desencontro tabela × kanban foi resolvido com o alternador "Agrupar por"
 - [ ] Fora de escopo: reordenar grupos por arrastar, excluir grupo com tarefas (com confirmação)
 
@@ -284,5 +284,6 @@ Motivo: a tabela agrupava só por grupo e o kanban só por status, então a mesm
 - [x] `TaskGroup` ganhou a variante `status` (bloco de visão): sem menu do grupo, sem "Adicionar item", barra na cor do status; "Novo grupo" some da página
 - [x] Mudar o status inline move a tarefa de bloco na hora (a visão deriva da cache do update otimista)
 - [x] Critérios 10 e 11 no F1 do `specs.md`
-- [ ] **Não verificado no navegador real:** só jsdom. Olhar a barra colorida do bloco e o select no celular (375px)
+- [x] **Verificado no navegador real:** 3 blocos (Em andamento, Em revisão, Pronto) na ordem do kanban, barra na cor de cada status, select ok em 375px e 1440px. Marcar "Concluir" moveu a tarefa de bloco e continuou lá após o servidor responder (dado restaurado depois)
+- [ ] Observação: as abas Kanban/Gantt/Dashboard levam o `?agrupar=status` junto (as abas repassam a query inteira). Inofensivo — voltar à Tabela mantém o agrupamento —, então ficou como está
 - [ ] Fora de escopo, de propósito: lembrar a escolha entre sessões, agrupar por prioridade/responsável, criar tarefa dentro de um bloco de status
