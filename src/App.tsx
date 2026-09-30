@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react'
+import { lazy } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { AppShell } from '@/components/features/AppShell'
@@ -7,28 +7,22 @@ import { EmConstrucaoPage } from '@/components/features/EmConstrucaoPage'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { RotaProtegida } from '@/components/RotaProtegida'
 import { SessaoProvider } from '@/components/SessaoProvider'
-import { StateView } from '@/components/ui/StateView'
 import AberturaPage from '@/pages/AberturaPage'
-import AjudaPage from '@/pages/AjudaPage'
-import AtividadesPage from '@/pages/AtividadesPage'
 import BoardPage from '@/pages/BoardPage'
-import ConfiguracoesPage from '@/pages/ConfiguracoesPage'
-import KanbanPage from '@/pages/KanbanPage'
 import LoginPage from '@/pages/LoginPage'
-import ModelosPage from '@/pages/ModelosPage'
 import NaoEncontrada from '@/pages/NaoEncontrada'
-import PaineisPage from '@/pages/PaineisPage'
 
-// Gantt e Dashboard carregam por rota — nao pesam na primeira tela
-// (docs/specs.md, requisito de performance).
+// Carregam por rota — nao pesam na primeira tela (docs/specs.md, requisito de
+// performance). O <Suspense> fica no AppShell.
 const GanttPage = lazy(() => import('@/pages/GanttPage'))
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'))
-
-const carregandoRota = (
-  <StateView estado={{ tipo: 'carregando' }}>
-    <></>
-  </StateView>
-)
+// Kanban leva o dnd-kit; as demais só são abertas depois da primeira tela.
+const KanbanPage = lazy(() => import('@/pages/KanbanPage'))
+const PaineisPage = lazy(() => import('@/pages/PaineisPage'))
+const AtividadesPage = lazy(() => import('@/pages/AtividadesPage'))
+const ModelosPage = lazy(() => import('@/pages/ModelosPage'))
+const AjudaPage = lazy(() => import('@/pages/AjudaPage'))
+const ConfiguracoesPage = lazy(() => import('@/pages/ConfiguracoesPage'))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -54,22 +48,8 @@ export default function App() {
                   <Route path="/" element={<AberturaPage />} />
                   <Route path="/boards/:boardId" element={<BoardPage />} />
                   <Route path="/boards/:boardId/kanban" element={<KanbanPage />} />
-                  <Route
-                    path="/boards/:boardId/gantt"
-                    element={
-                      <Suspense fallback={carregandoRota}>
-                        <GanttPage />
-                      </Suspense>
-                    }
-                  />
-                  <Route
-                    path="/boards/:boardId/dashboard"
-                    element={
-                      <Suspense fallback={carregandoRota}>
-                        <DashboardPage />
-                      </Suspense>
-                    }
-                  />
+                  <Route path="/boards/:boardId/gantt" element={<GanttPage />} />
+                  <Route path="/boards/:boardId/dashboard" element={<DashboardPage />} />
                   {/* Rotas "em construção" — cada sub-projeto da auditoria
                       (docs/superpowers/specs/2026-09-17-casca-sidebar-design.md)
                       substitui a sua por conteúdo real quando chegar a vez. */}
