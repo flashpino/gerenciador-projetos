@@ -236,3 +236,53 @@ Você aprovou o mockup e pediu para aplicar. Feito em 3 etapas, cada uma com `ve
 
 **Estado final:** `npm run verify` exit 0, 302 testes, 50 pares de contraste, `dup` com o mesmo clone antigo, `dead` limpo, grafo atualizado (1376 nós).
 
+## 12. Busca e filtros do board (sub-projeto 9)
+
+Pedido: "a busca e os filtros devem funcionar, não é só enfeite". Antes, os dois ícones do topo do
+board estavam desabilitados ("em breve"). Spec: `docs/superpowers/specs/2026-09-30-busca-filtros-design.md`.
+
+| Commit | O que fez |
+|---|---|
+| `a207b38` | Busca e filtros funcionando em Tabela, Kanban e Gantt; `VisaoDoBoard` unifica estados + resumo |
+| `1c2dd4e` | Corrige o campo de busca que perdia teclas; docs (critérios F1.7–F1.9, componentes, padrões) |
+
+### O que faz
+
+- **Busca** no título e na descrição, sem diferenciar maiúsculas nem acentos ("usuaria" acha "Usuária").
+- **Filtros:** status e prioridade (vários), responsável (uma pessoa ou "Sem responsável"), "somente atrasadas".
+  Categorias diferentes se combinam com E; vários valores da mesma categoria, OU.
+- **O estado mora na URL** (`?q=…&status=…`): sobrevive à troca de visão e ao reload, e o link é compartilhável.
+- **"Mostrando X de Y tarefas"** + botão de limpar aparecem quando há recorte.
+- **Nada encontrado** tem texto próprio ("Nenhuma tarefa encontrada"), não o "Nenhuma tarefa ainda".
+
+### Decisões e motivo
+
+1. **Dashboard não filtra** e os controles somem nele: "taxa de conclusão" de um recorte enganaria.
+2. **Sem migration, sem Zona Vermelha:** é filtro de cliente sobre dados que a tela já baixa. RLS continua decidindo o que se lê.
+3. **O modal de tarefa usa os grupos SEM filtro:** um grupo escondido pelo filtro continua sendo destino válido ao criar tarefa.
+4. **Fora de escopo, de propósito:** filtro por período/sprint (não existe no schema, e a `specs.md` já o excluía), filtros salvos,
+   busca por nome do responsável e em comentários.
+5. **Estado na URL e não em `useState`:** senão trocar de aba (Tabela → Kanban) perderia o recorte.
+
+### Bug que só o navegador real mostrou
+
+Digitei "tarefa 2" e a URL ficou `?q=trefa+2`: **uma letra se perdia**. O campo estava ligado direto à URL, e cada tecla
+vira uma navegação assíncrona do roteador; a seguinte chega antes de a anterior voltar. **Os testes automatizados passaram**
+(o jsdom é síncrono), então um teste verde não teria pegado isso. Correção: `useBuscaDoBoard` (estado local enquanto se digita,
+escrita na URL depois de 250 ms, e um `ref` que distingue "eu escrevi" de "mudou por fora"). Refeito no navegador com a frase
+inteira digitada de uma vez: nada se perdeu. A lição está em `docs/patterns.md` §10.
+
+### Verificado
+
+- **Navegador real, banco real:** busca sem acento, troca para o Kanban mantendo o recorte, modal de filtros (status),
+  botão "Limpar busca e filtros", reload mantendo o filtro, e o celular (500px) sem rolagem horizontal e sem alvo < 44px.
+- **`npm run verify` exit 0**, 374 testes, cobertura de `src/hooks` em 99%, contraste 50 pares, `dup` com o mesmo clone antigo
+  (eu tinha subido para 4 clones ao repetir o padrão nas 3 telas e unifiquei antes de commitar).
+- Um erro de ida e volta meu, corrigido: o lint de zero warnings reprovou o valor do contexto criado inline no meu teste.
+
+### Não testado
+
+- **Filtro por responsável e "somente atrasadas" no navegador real:** cobertos por teste de lib e de componente, mas no board de
+  teste todas as tarefas estão sem responsável e sem prazo, então não havia o que filtrar de verdade lá.
+- **Board grande (200 tarefas):** o filtro é uma passada em memória (`useMemo`), deve ser barato, mas não medi.
+
