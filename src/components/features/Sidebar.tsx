@@ -11,6 +11,7 @@ import {
   Plus,
   Settings,
   Star,
+  UserCog,
 } from 'lucide-react'
 import { Avatar } from '@/components/ui/Avatar'
 import { Button } from '@/components/ui/Button'
@@ -33,6 +34,9 @@ const ITENS_NAV: ItemNav[] = [
   { href: '/atividades', rotulo: 'Atividades', Icone: Activity },
   { href: '/modelos', rotulo: 'Modelos', Icone: LayoutTemplate },
 ]
+
+/** Só para o master (administração de contas). Esconder é conveniência; o servidor é quem barra. */
+const ITEM_USUARIOS: ItemNav = { href: '/usuarios', rotulo: 'Usuários', Icone: UserCog }
 
 const ITENS_RODAPE: ItemNav[] = [
   { href: '/notificacoes', rotulo: 'Notificações', Icone: Bell },
@@ -82,6 +86,7 @@ export function Sidebar() {
   const { usuario } = useSessao()
   const eu = membros.data?.find((m) => m.id === usuario?.id)
   const nomeWorkspace = workspace.data?.name ?? 'Workspace'
+  const rodape = usuario?.master ? [ITEM_USUARIOS, ...ITENS_RODAPE] : ITENS_RODAPE
 
   function itemDeNav(item: ItemNav, tipo: 'aside' | 'drawer') {
     const ativo = pathname === item.href
@@ -171,7 +176,7 @@ export function Sidebar() {
 
         <div className="mt-auto flex flex-col items-center gap-space-md self-stretch">
           <div className="flex flex-col gap-space-md self-stretch">
-            {ITENS_RODAPE.map((item) => itemDeNav(item, 'aside'))}
+            {rodape.map((item) => itemDeNav(item, 'aside'))}
           </div>
           {eu && (
             <div className="grid size-12 place-items-center" title={eu.full_name}>
@@ -209,7 +214,7 @@ export function Sidebar() {
         </nav>
 
         <div className="mt-auto flex flex-col gap-space-xs border-t border-border px-space-sm py-space-md">
-          {ITENS_RODAPE.map((item) => itemDeNav(item, 'drawer'))}
+          {rodape.map((item) => itemDeNav(item, 'drawer'))}
 
           {eu && (
             <div className="flex items-center gap-space-sm px-space-md py-space-sm">

@@ -53,6 +53,7 @@ Só entra aqui o que aparece em 2 ou mais telas.
 | 9 | **Modal** | `md` · `lg` · `full` · `drawer` | aberto, fechando | `open`, `onClose`, `title`, `footer` | modal de tarefa, confirmações, drawer de navegação mobile |
 | 10 | **ProgressBar** | `solid` · `segmented` | — | `value` ou `segments[]`, `label` | tabela, kanban, gantt, dashboard |
 | 11 | **StateView** | `loading` · `error` · `empty` | — | `state`, `title`, `action`, `children` | **todas** |
+| 13 | **AcoesDoFormulario** | `primary` · `danger` | enviando, desabilitado | `erro`, `rotuloEnviar`, `variante`, `aoCancelar` | todo formulário em modal (painel, grupo, usuário, exclusões) |
 | 12 | **Tabs** | `underline` · `pill` | ativo, foco | `items`, `value`, `onChange` | shell do board, modal |
 
 ### Justificativas dos que não são óbvios
@@ -80,6 +81,8 @@ com o texto sr-only "Carregando…" e a forma (prop `esqueleto`) dentro de `aria
 linhas genéricas (modal, comentários). A peça é `BlocoEsqueleto` (exportada do StateView; `redondo`,
 `sobreFundo` para fora de cartão, onde o cinza padrão some no lavanda). Sem `animate-pulse` com
 `prefers-reduced-motion`.
+
+**#13 AcoesDoFormulario** passa do teto de 12 primitivos de propósito: o mesmo rodapé (erro em `role="alert"` + Cancelar + enviar) estava copiado em 5 formulários e o jscpd acusou na 5ª cópia (regra dos três). Sem regra de negócio: recebe o erro e os rótulos.
 
 **#12 Tabs decide o elemento pelo `href` do item.** Item com `href` vira `<nav>`
 + link com `aria-current="page"`; sem `href` vira `role="tablist"` + `role="tab"`.
@@ -139,6 +142,8 @@ passam por `src/hooks/` → `src/services/`.
 | `FavoritoToggle` | Button (`ghost`, `iconOnly`) | estrela de favorito autossuficiente (lê e alterna sozinha) — BoardShell e BoardCard |
 | `BoardCard` | Menu | um board em Meus Painéis — link pro board + menu Renomear/Excluir |
 | `BoardFormModal` | Modal, Field, TextInput, Button | criar e renomear board (PaineisPage, Sidebar) — mesma dualidade criar/editar do TaskModal |
+| `UsuarioFormModal` | Modal, Field, TextInput, AcoesDoFormulario | tela Usuários (master): cadastrar (senha provisória) e editar nome/e-mail/senha. Novo: campos de conta, nenhum modal existente edita credencial |
+| `ExcluirUsuarioDialog` | Modal, Field, TextInput, AcoesDoFormulario (`danger`) | exclusão de conta confirmada digitando o e-mail; explica o que o cascade apaga. Mesmo freio do ExcluirBoardDialog, regra destrutiva diferente |
 | `ExcluirBoardDialog` | Modal, Field, TextInput, Button (`danger`) | exclusão definitiva de board, confirmada digitando o nome. Separado do BoardFormModal: regra destrutiva diferente, nada em comum além do Modal |
 | `GrupoFormModal` | Modal, Field, TextInput, Select, Button | criar e renomear/recolorir grupo da tabela (`BoardPage`). Novo porque `BoardFormModal` não tem cor e é específico de board; é a 2ª ocorrência do padrão "modal de nome" — a regra dos três manda unificar só na 3ª |
 | `AvisoPWA` | Button | raiz do app (`App.tsx`), fora das rotas. Barra fixa no rodapé com no máximo um aviso: versão nova do PWA (prioridade) ou instalar o app. Novo porque nenhum componente existente é um aviso global; não vira `Toast` genérico porque só ele usa (ver "FORA dos primitivos"). Spec: `docs/superpowers/specs/2026-09-29-pwa-design.md` |

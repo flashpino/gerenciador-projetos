@@ -5,6 +5,11 @@ import { ErroDeDados } from './erros'
 export interface Usuario {
   id: string
   email: string | null
+  /**
+   * Administra contas (tela Usuários). Só esconde/mostra a interface — quem barra de verdade é a função
+   * `usuarios` no servidor. Ausente = não é master.
+   */
+  master?: true
 }
 
 /**
@@ -50,8 +55,13 @@ export async function sair(): Promise<void> {
   await supabase.auth.signOut()
 }
 
-function paraUsuario(user: { id: string; email?: string | null } | null | undefined): Usuario | null {
-  return user ? { id: user.id, email: user.email ?? null } : null
+function paraUsuario(
+  user: { id: string; email?: string | null; app_metadata?: Record<string, unknown> } | null | undefined,
+): Usuario | null {
+  if (!user) return null
+  // app_metadata, nunca user_metadata: este a própria pessoa edita pela API pública.
+  const master = user.app_metadata?.role === 'master'
+  return { id: user.id, email: user.email ?? null, ...(master && { master: true as const }) }
 }
 
 export async function obterSessaoAtual(): Promise<Usuario | null> {

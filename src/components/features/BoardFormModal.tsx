@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Button } from '@/components/ui/Button'
+import { AcoesDoFormulario } from '@/components/ui/AcoesDoFormulario'
 import { Field } from '@/components/ui/Field'
 import { Modal } from '@/components/ui/Modal'
 import { TextInput } from '@/components/ui/TextInput'
@@ -66,20 +66,13 @@ function FormularioBoard({ board, aoConcluir }: { board: BoardEditavel | null; a
         <TextInput value={nome} maxLength={120} onChange={(e) => setNome(e.target.value)} />
       </Field>
 
-      {mutacao.isError && (
-        <p role="alert" className="rounded bg-danger-soft px-space-md py-space-sm text-body text-danger-ink">
-          {mutacao.error.message}
-        </p>
-      )}
-
-      <div className="flex justify-end gap-space-sm">
-        <Button variant="secondary" onClick={aoConcluir}>
-          Cancelar
-        </Button>
-        <Button type="submit" variant="primary" loading={mutacao.isPending} disabled={!board && !workspace.data}>
-          {board ? 'Salvar' : 'Criar painel'}
-        </Button>
-      </div>
+      <AcoesDoFormulario
+        erro={mutacao.error}
+        rotuloEnviar={board ? 'Salvar' : 'Criar painel'}
+        enviando={mutacao.isPending}
+        desabilitado={!board && !workspace.data}
+        aoCancelar={aoConcluir}
+      />
     </form>
   )
 }

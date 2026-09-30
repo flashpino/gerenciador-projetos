@@ -92,6 +92,15 @@ Cada critério vira um teste. Se não dá para observar, não é critério.
     Nesse modo o bloco é só uma visão: não há criar/renomear/excluir grupo nem "Adicionar
     item" (não há grupo de destino). *(2026-09-30)*
 
+### F6 — Administração de contas (master) *(a pedido, 2026-09-30)*
+1. Dado a conta com `app_metadata.role = 'master'`, quando abre "Usuários", então vê todas as contas do
+   sistema (nome, e-mail, último acesso) e pode cadastrar (senha provisória), editar nome/e-mail/senha e
+   excluir. Qualquer outra conta não vê o item e, se chamar a função direto, recebe 403.
+2. Dado que o master exclui uma conta, quando confirma digitando o e-mail, então apagam-se a conta, o
+   workspace dela com boards e tarefas, e os comentários dela em qualquer board (decisão do usuário:
+   "apaga tudo"). O master não pode excluir a própria conta.
+3. Tudo passa pela função `usuarios` no servidor (service role só lá); o app só esconde/mostra a tela.
+
 ### F2 — Kanban
 1. Dado um board com tarefas, quando abro o kanban, então existe uma coluna por status
    e cada coluna mostra sua contagem.

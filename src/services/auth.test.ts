@@ -129,6 +129,18 @@ describe('obterSessaoAtual', () => {
     } as never)
     await expect(obterSessaoAtual()).resolves.toEqual({ id: 'u1', email: 'a@x.com' })
   })
+
+  it('marca master só por app_metadata.role (gravado pelo servidor), nunca por user_metadata', async () => {
+    vi.mocked(supabase.auth.getSession).mockResolvedValue({
+      data: { session: { user: { id: 'u1', email: 'm@x.com', app_metadata: { role: 'master' } } } },
+    } as never)
+    await expect(obterSessaoAtual()).resolves.toEqual({ id: 'u1', email: 'm@x.com', master: true })
+
+    vi.mocked(supabase.auth.getSession).mockResolvedValue({
+      data: { session: { user: { id: 'u2', email: 'b@x.com', app_metadata: {}, user_metadata: { role: 'master' } } } },
+    } as never)
+    await expect(obterSessaoAtual()).resolves.toEqual({ id: 'u2', email: 'b@x.com' })
+  })
 })
 
 describe('escutarSessao', () => {

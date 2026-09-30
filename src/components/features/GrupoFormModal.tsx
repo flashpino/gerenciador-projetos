@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Button } from '@/components/ui/Button'
+import { AcoesDoFormulario } from '@/components/ui/AcoesDoFormulario'
 import { Field } from '@/components/ui/Field'
 import { Modal } from '@/components/ui/Modal'
 import { Select } from '@/components/ui/Select'
@@ -88,20 +88,12 @@ function FormularioGrupo({
         <Select value={cor} options={CORES} onChange={(e) => setCor(e.target.value as GroupColor)} />
       </Field>
 
-      {mutacao.isError && (
-        <p role="alert" className="rounded bg-danger-soft px-space-md py-space-sm text-body text-danger-ink">
-          {mutacao.error.message}
-        </p>
-      )}
-
-      <div className="flex justify-end gap-space-sm">
-        <Button variant="secondary" onClick={aoConcluir}>
-          Cancelar
-        </Button>
-        <Button type="submit" variant="primary" loading={mutacao.isPending}>
-          {grupo ? 'Salvar' : 'Criar grupo'}
-        </Button>
-      </div>
+      <AcoesDoFormulario
+        erro={mutacao.error}
+        rotuloEnviar={grupo ? 'Salvar' : 'Criar grupo'}
+        enviando={mutacao.isPending}
+        aoCancelar={aoConcluir}
+      />
     </form>
   )
 }

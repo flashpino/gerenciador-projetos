@@ -105,4 +105,16 @@ describe('Sidebar', () => {
 
     expect(servico.criarBoard).toHaveBeenCalledWith('w1', 'Roadmap')
   })
+
+  it('o item "Usuários" só aparece para o master', async () => {
+    renderizar()
+    await screen.findByRole('link', { name: 'Favoritos' })
+    expect(screen.queryByRole('link', { name: 'Usuários' })).not.toBeInTheDocument()
+  })
+
+  it('para o master, "Usuários" leva à administração de contas', async () => {
+    vi.mocked(useSessao).mockReturnValue({ usuario: { id: 'u1', email: 'a@x.com', master: true }, carregando: false })
+    renderizar()
+    expect((await screen.findAllByRole('link', { name: 'Usuários' }))[0]).toHaveAttribute('href', '/usuarios')
+  })
 })

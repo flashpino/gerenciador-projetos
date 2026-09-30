@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { AcoesDoFormulario } from '@/components/ui/AcoesDoFormulario'
 import { Button } from '@/components/ui/Button'
 import { Field } from '@/components/ui/Field'
 import { Modal } from '@/components/ui/Modal'
@@ -67,20 +68,14 @@ function ConfirmarExclusao({ board, aoConcluir }: { board: BoardAlvo; aoConcluir
         <TextInput value={digitado} onChange={(e) => setDigitado(e.target.value)} autoComplete="off" />
       </Field>
 
-      {excluir.isError && (
-        <p role="alert" className="rounded bg-danger-soft px-space-md py-space-sm text-body text-danger-ink">
-          {excluir.error.message}
-        </p>
-      )}
-
-      <div className="flex justify-end gap-space-sm">
-        <Button variant="secondary" onClick={aoConcluir}>
-          Cancelar
-        </Button>
-        <Button type="submit" variant="danger" loading={excluir.isPending} disabled={digitado !== board.name}>
-          Excluir painel
-        </Button>
-      </div>
+      <AcoesDoFormulario
+        erro={excluir.error}
+        rotuloEnviar="Excluir painel"
+        variante="danger"
+        enviando={excluir.isPending}
+        desabilitado={digitado !== board.name}
+        aoCancelar={aoConcluir}
+      />
     </form>
   )
 }
