@@ -88,7 +88,7 @@ Ver [BoardShell.tsx](../src/components/features/BoardShell.tsx).
 | Barra superior: busca no workspace | ❌ |
 | Barra superior: ícones de filtro / pessoa / ordenação / ajustes | ❌ |
 | Barra superior: "Convidar / Integrantes" | ➖ `specs.md` corta permissão por papel e múltiplos workspaces |
-| Barra superior: botão "Novo Item" global | ❌ |
+| Barra superior: botão "Novo Item" global | ✅ (2026-09-30): o + abre "Nova tarefa" em qualquer visão |
 | Barra superior: avatar do usuário logado | ❌ |
 | Abas de visão com ícone por view | ◐ abas existem e são `<nav>` real com `aria-current`; sem ícones |
 | "+ Adicionar Exibição" | ❌ |
@@ -304,7 +304,7 @@ executado — é material para você decidir.
 | 1 | **Casca do app:** sidebar nos 3 breakpoints + barra superior | É 100% do que se vê antes de ver qualquer feature, e já está contratado no `responsive.md`. Os tokens já existem | Grande |
 | 2 | **Ligar os 4 botões mortos** | Defeito puro, correção de poucas linhas | Trivial |
 | 3 | **Coluna Tags** | Dado já existe em banco, tipo e fixture; contrato já escrito | Pequeno |
-| 4 | **"Novo Item" acessível de todas as views + criar grupo** | Fecha o buraco de "não dá para criar nada fora da tabela" | Médio |
+| 4 | ~~**"Novo Item" acessível de todas as views + criar grupo**~~ ✅ 2026-09-30 | Fecha o buraco de "não dá para criar nada fora da tabela" | Médio |
 | 5 | **Contadores de subtarefa e comentário no card do kanban** | Dado já existe, alto retorno visual | Pequeno |
 | 6 | **Barra de horas no modal** (`14h / 20h`) | Os dois campos já existem | Trivial |
 | 7 | **Buscar e filtrar dentro do board** | Nunca foi cortado formalmente; precisa entrar no escopo ou na lista de "fora de escopo" — hoje está em limbo | Médio |

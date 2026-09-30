@@ -107,7 +107,7 @@ passam por `src/hooks/` → `src/services/`.
 
 | Componente | Compõe | Vive em |
 |---|---|---|
-| `BoardShell` | Tabs, TextInput, Button, FavoritoToggle, FiltroTarefasModal | todas as 4 views (layout comum + estrela + **busca e botão Filtrar** (não aparecem no Dashboard) + "convidar" abre `IntegrantesModal`; "Novo item" segue desabilitado — Sair mora na Sidebar) |
+| `BoardShell` | Tabs, TextInput, Button, FavoritoToggle, FiltroTarefasModal, TaskModal | todas as 4 views (layout comum + estrela + **busca e botão Filtrar** (não aparecem no Dashboard) + "convidar" abre `IntegrantesModal`; o **+ "Novo item"** abre o `TaskModal` de criação com o primeiro grupo escolhido (trocável), em qualquer visão; desabilitado se o board não tem grupo — Sair mora na Sidebar) |
 | `FiltroTarefasModal` | Modal, Checkbox, Select, Field, Button | botão "Filtrar" do `BoardShell`. Status e prioridade (caixas), responsável (seletor), "somente atrasadas". Aplica na hora; o estado é a URL (`lib/filtro.ts`) |
 | `ResumoFiltro` | Button | "Mostrando X de Y tarefas" + limpar, quando há busca ou filtro. Só aparece dentro de `VisaoDoBoard` |
 | `Esqueletos` | StateView (`BlocoEsqueleto`) | as formas de carregamento por tela: `EsqueletoTabela`, `EsqueletoKanban`, `EsqueletoGantt`, `EsqueletoDashboard`, `EsqueletoPaineis`, `EsqueletoFeed` (espelham os grids e cartões reais) e `EsqueletoDaRota` (página inteira pela rota, `lib/esqueleto.ts` — fallback do `<Suspense>` do AppShell e da abertura). Um arquivo de decoração, não componentes de domínio |

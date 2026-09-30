@@ -309,3 +309,12 @@ Motivo: ao clicar em outra página, a tela antiga ficava congelada até a nova c
 
 - [x] Causa: `md:overflow-x-auto` na grade das colunas (desde a F2). Liberar a rolagem horizontal libera também a vertical (regra do CSS); o menu ⋮ do cartão, que desce além da coluna, virava barra de rolagem e ficava cortado. As colunas têm `min-w-0` e cabem na grade — a rolagem horizontal nunca era usada. Classe removida
 - [x] Verificado no navegador real com o menu aberto: 1440, 1024 e 768 de largura, sem rolagem interna nem horizontal; menu inteiro por cima da coluna
+
+---
+
+## "Novo item" (o + da barra do board) ✅
+
+- [x] O + do `BoardShell` abre o `TaskModal` de criação em qualquer visão (Tabela, Kanban, Gantt, Dashboard), com o primeiro grupo do board já escolhido e o "Grupo de destino" para trocar. Usa a consulta de grupos sem filtro (cache compartilhado com as visões)
+- [x] Board sem grupo: botão desabilitado (`tasks.group_id` NOT NULL)
+- [x] Testes: cria no primeiro grupo, troca de grupo, desabilitado sem grupo. O teste antigo ("segue desabilitado") foi substituído porque o requisito mudou, não para passar
+- [x] Navegador real: abre a partir do Gantt com "A fazer" escolhido. **Não salvei de verdade** — a interface não tem como excluir tarefa, e a tarefa ficaria no banco de dev; o salvar é o mesmo modal da tabela e está coberto pelo teste

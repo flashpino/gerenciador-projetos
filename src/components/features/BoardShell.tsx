@@ -6,12 +6,13 @@ import { Tabs, type ItemTab } from '@/components/ui/Tabs'
 import { TextInput } from '@/components/ui/TextInput'
 import { useBuscaDoBoard } from '@/hooks/useBuscaDoBoard'
 import { useFiltroTarefas } from '@/hooks/useFiltroTarefas'
-import { useBoard, useMembros } from '@/hooks/useQuadro'
+import { useBoard, useGruposComTarefas, useMembros } from '@/hooks/useQuadro'
 import { contarFiltros } from '@/lib/filtro'
 import { lembrarUltimoBoard } from '@/lib/ultimoBoard'
 import { FavoritoToggle } from './FavoritoToggle'
 import { FiltroTarefasModal } from './FiltroTarefasModal'
 import { IntegrantesModal } from './IntegrantesModal'
+import { TaskModal } from './TaskModal'
 
 interface Props {
   titulo: string
@@ -33,6 +34,10 @@ export function BoardShell({ titulo, children }: Props) {
   const busca = useBuscaDoBoard()
   const [integrantesAberto, setIntegrantesAberto] = useState(false)
   const [filtrosAberto, setFiltrosAberto] = useState(false)
+  const [novoAberto, setNovoAberto] = useState(false)
+  // Mesma consulta das visões (cache compartilhado), SEM o filtro: o modal oferece todos os grupos.
+  const grupos = useGruposComTarefas(boardId)
+  const opcoesGrupo = (grupos.data ?? []).map((g) => ({ id: g.id, name: g.name }))
 
   // Único ponto comum às 4 views — é aqui que a raiz `/` aprende pra onde voltar.
   useEffect(() => {
@@ -65,9 +70,8 @@ export function BoardShell({ titulo, children }: Props) {
         </div>
         {/*
           Estrela (sub-projeto 3), busca e filtros (sub-projeto 9) e convidar
-          (sub-projeto 6) funcionam; "Novo item" segue desabilitado até ter vez
-          (docs/superpowers/specs/2026-09-17-casca-sidebar-design.md, seção
-          "Barra superior do board"). "Sair" mora no rodapé da Sidebar.
+          (sub-projeto 6) funcionam. "Novo item" cria tarefa de qualquer visão, no
+          primeiro grupo (trocável no modal). "Sair" mora no rodapé da Sidebar.
         */}
         <div className="glass flex items-center gap-space-xs rounded-full p-space-xs">
           {podeFiltrar && (
@@ -116,8 +120,11 @@ export function BoardShell({ titulo, children }: Props) {
             variant="ghost"
             size="sm"
             iconOnly
-            disabled
-            aria-label="Novo item — em breve"
+            // Sem grupo não há onde a tarefa morar (tasks.group_id NOT NULL).
+            disabled={!board.data || opcoesGrupo.length === 0}
+            onClick={() => setNovoAberto(true)}
+            aria-label="Novo item"
+            aria-haspopup="dialog"
             iconStart={<Plus aria-hidden="true" className="size-4" />}
           />
         </div>
@@ -137,6 +144,17 @@ export function BoardShell({ titulo, children }: Props) {
         aoMudar={definir}
         membros={membros.data ?? []}
       />
+      {board.data && (
+        <TaskModal
+          aberto={novoAberto}
+          aoFechar={() => setNovoAberto(false)}
+          boardId={board.data.id}
+          taskId={null}
+          grupoInicialId={opcoesGrupo[0]?.id ?? ''}
+          grupos={opcoesGrupo}
+          membros={membros.data ?? []}
+        />
+      )}
       {board.data && (
         <IntegrantesModal
           aberto={integrantesAberto}
