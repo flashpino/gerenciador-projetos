@@ -111,6 +111,7 @@ export function Modal({ open, onClose, title, children, footer, size = 'md' }: P
     <dialog
       ref={dialogRef}
       aria-labelledby={idTitulo}
+      data-tamanho={size}
       className={cn(
         'rounded-md border border-border bg-surface p-0 text-ink shadow-overlay backdrop:bg-ink/40',
         TAMANHOS[size],

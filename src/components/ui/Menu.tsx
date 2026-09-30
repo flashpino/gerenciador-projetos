@@ -113,8 +113,8 @@ export function Menu({ trigger, items, rotulo, align = 'start' }: Props) {
           aria-label={rotulo}
           onKeyDown={teclaNoMenu}
           className={cn(
-            'absolute z-50 mt-space-xs min-w-48 rounded-md border border-border bg-surface p-space-xs shadow-overlay',
-            align === 'end' ? 'right-0' : 'left-0',
+            'absolute z-50 mt-space-xs min-w-48 animate-surgir rounded-md border border-border bg-surface p-space-xs shadow-overlay',
+            align === 'end' ? 'right-0 origin-top-right' : 'left-0 origin-top-left',
           )}
         >
           {items.map((item, i) => (

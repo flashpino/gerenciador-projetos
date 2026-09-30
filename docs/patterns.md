@@ -161,6 +161,21 @@ funciona. Rode no navegador.
 
 ---
 
+## 10b. Movimento
+
+Só CSS, só tokens (`--duration-*`, `--ease-out-soft`), sem biblioteca. `prefers-reduced-motion` zera tudo
+(regra global em `tokens.css`, `@layer base`).
+
+- **Entradas:** `animate-entrar` (fade + 6px, página/aviso/erro/vazio) e `animate-surgir` (fade + escala, menu).
+  Troca de página: a chave é a *área* no `AppShell` e a *aba* no `BoardShell` — mudar de aba não anima o
+  cabeçalho. Só entrada: animar a saída exigiria segurar o desmonte no React.
+- **`backwards`, nunca `both`:** um `transform` que sobra no fim (mesmo identidade) cria contexto de
+  empilhamento e bloco de contenção para `fixed` em volta da página inteira.
+- **Modais:** entrada e saída sem JS no `<dialog>` (`@starting-style` + `transition-behavior: allow-discrete`);
+  drawer (`data-tamanho="drawer"`) desliza da esquerda. Navegador sem suporte abre sem animar.
+- **Microinterações:** transição de propriedade (`transition-[...] duration-fast ease-out-soft`), não keyframe.
+  Ícone que muda de estado gira (um ícone só), não troca.
+
 ## 11. O que NÃO fazer
 
 | Não | Por quê |

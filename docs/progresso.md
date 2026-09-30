@@ -330,3 +330,14 @@ Causa: o intervalo cobria só as tarefas com data + hoje ± 3 dias. Sem datas, a
 - [x] Cabeçalho mais alto: rótulo em cima, selo "Hoje" embaixo (antes se sobrepunham); "Sem período definido" em pílula por cima da linha do hoje
 - [x] `overflow-y-hidden` explícito no contêiner; linhas com altura mínima
 - [x] Navegador real a ~1310px: as 3 escalas sem rótulo cortado nem rolagem vertical; Semanas e Meses sem rolagem horizontal
+
+---
+
+## Animações ✅
+
+Pedido: a sidebar animava e o resto não. Decisão: só CSS e tokens, sem dependência (padrão em `docs/patterns.md` §10b).
+
+- [x] Troca de página (fade + 6px; nas abas do board só o conteúdo), menus surgem do botão, modais entram e SAEM animados (`@starting-style`), drawer desliza da esquerda, seta do grupo gira, cartão de painel sobe no hover, aviso do PWA/erro/vazio entram com fade
+- [x] Verificado no navegador (valores calculados): página e aba terminam com opacidade 1 e `transform: none`; menu e modal idem; modal fechando segue visível até o fim da saída; drawer vai de -320px a 0; seta -90° ↔ 0
+- [x] Achado corrigido na verificação: com `animation-fill-mode: both` a página ficava com transform identidade permanente → `backwards`
+- [ ] Não animado, de propósito: saída de páginas e menus (exigiria segurar o desmonte), indicador deslizante das abas, reordenação no kanban

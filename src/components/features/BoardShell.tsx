@@ -136,7 +136,10 @@ export function BoardShell({ titulo, children }: Props) {
         value={pathname}
         className="glass mb-margin w-fit max-w-full rounded-full p-space-xs"
       />
-      {children}
+      {/* key = aba: cada visão entra com o mesmo fade curto; título, busca e abas ficam parados. */}
+      <div key={pathname} className="animate-entrar">
+        {children}
+      </div>
       <FiltroTarefasModal
         aberto={filtrosAberto}
         aoFechar={() => setFiltrosAberto(false)}

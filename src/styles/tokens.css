@@ -184,6 +184,26 @@
   --duration-fast: 140ms;
   --duration-normal: 220ms;
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Entradas. Só entrada (sem saída) em páginas e menus: sair animado exigiria segurar o
+     desmonte no React. `prefers-reduced-motion` já zera tudo (regra global em @layer base). */
+  /* `backwards`, não `both`: ao terminar a animação solta o transform. Um transform que sobra (mesmo
+     identidade) cria contexto de empilhamento e bloco de contenção para `fixed` em volta da página inteira. */
+  --animate-entrar: entrar var(--duration-normal) var(--ease-out-soft) backwards; /* página, aviso */
+  --animate-surgir: surgir var(--duration-fast) var(--ease-out-soft) backwards; /* menu suspenso */
+
+  @keyframes entrar {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+  @keyframes surgir {
+    from {
+      opacity: 0;
+      transform: translateY(-4px) scale(0.96);
+    }
+  }
 }
 
 /* --- Vidro fosco -----------------------------------------------------------
@@ -244,6 +264,64 @@
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* --- <dialog> animado ------------------------------------------------------
+   Entrada E saída sem JS: `@starting-style` dá o estado inicial ao abrir, e
+   `allow-discrete` segura o `display`/camada superior até a saída terminar.
+   Navegador sem suporte simplesmente abre e fecha sem animar. */
+@layer components {
+  dialog {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+    transition:
+      opacity var(--duration-normal) var(--ease-out-soft),
+      transform var(--duration-normal) var(--ease-out-soft),
+      overlay var(--duration-normal) allow-discrete,
+      display var(--duration-normal) allow-discrete;
+  }
+  dialog[open] {
+    opacity: 1;
+    transform: none;
+  }
+  @starting-style {
+    dialog[open] {
+      opacity: 0;
+      transform: translateY(8px) scale(0.98);
+    }
+  }
+  /* Drawer do celular: desliza da esquerda em vez de subir. */
+  dialog[data-tamanho='drawer'],
+  dialog[data-tamanho='drawer'][open] {
+    opacity: 1;
+  }
+  dialog[data-tamanho='drawer'] {
+    transform: translateX(-100%);
+  }
+  dialog[data-tamanho='drawer'][open] {
+    transform: none;
+  }
+  @starting-style {
+    dialog[data-tamanho='drawer'][open] {
+      transform: translateX(-100%);
+    }
+  }
+
+  dialog::backdrop {
+    opacity: 0;
+    transition:
+      opacity var(--duration-normal) var(--ease-out-soft),
+      overlay var(--duration-normal) allow-discrete,
+      display var(--duration-normal) allow-discrete;
+  }
+  dialog[open]::backdrop {
+    opacity: 1;
+  }
+  @starting-style {
+    dialog[open]::backdrop {
+      opacity: 0;
     }
   }
 }

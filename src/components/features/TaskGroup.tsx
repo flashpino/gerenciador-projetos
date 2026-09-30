@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ChevronDown, ChevronRight, EllipsisVertical, Plus } from 'lucide-react'
+import { ChevronDown, EllipsisVertical, Plus } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Checkbox } from '@/components/ui/Checkbox'
@@ -83,11 +83,11 @@ export function TaskGroup({
           aria-expanded={aberto}
           className="flex min-h-touch items-center gap-space-xs md:min-h-0"
         >
-          {aberto ? (
-            <ChevronDown aria-hidden="true" className="size-4" />
-          ) : (
-            <ChevronRight aria-hidden="true" className="size-4" />
-          )}
+          {/* Uma seta só, que gira: trocar de ícone não anima. */}
+          <ChevronDown
+            aria-hidden="true"
+            className={cn('size-4 transition-transform duration-fast ease-out-soft', !aberto && '-rotate-90')}
+          />
           <h2 className={cn('text-title', status ? 'text-ink' : TEXTO_GRUPO[grupo.color])}>{grupo.name}</h2>
         </button>
         <Badge variant="soft">

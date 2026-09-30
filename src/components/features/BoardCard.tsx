@@ -17,7 +17,7 @@ interface Props {
  */
 export function BoardCard({ board, aoRenomear, aoExcluir }: Props) {
   return (
-    <div className="flex items-start gap-space-sm glass rounded-card p-space-md hover:bg-glass-strong">
+    <div className="flex items-start gap-space-sm glass rounded-card p-space-md transition-[background-color,transform,box-shadow] duration-fast ease-out-soft hover:-translate-y-0.5 hover:bg-glass-strong hover:shadow-overlay">
       <Link
         to={`/boards/${board.id}`}
         className="flex min-h-touch min-w-0 flex-1 flex-col justify-center rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"

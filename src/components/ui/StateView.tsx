@@ -38,7 +38,7 @@ export function StateView({ estado, esqueleto, children }: Props) {
 
   if (estado.tipo === 'erro') {
     return (
-      <div role="alert" className="flex flex-col items-center gap-space-md p-margin text-center">
+      <div role="alert" className="flex animate-entrar flex-col items-center gap-space-md p-margin text-center">
         <p className="text-body text-danger-ink">{estado.mensagem}</p>
         {estado.aoTentarDeNovo && (
           <Button variant="secondary" size="sm" onClick={estado.aoTentarDeNovo}>
@@ -50,7 +50,7 @@ export function StateView({ estado, esqueleto, children }: Props) {
   }
 
   return (
-    <div className="flex flex-col items-center gap-space-sm p-margin text-center">
+    <div className="flex animate-entrar flex-col items-center gap-space-sm p-margin text-center">
       <p className="text-title text-ink">{estado.titulo}</p>
       {estado.descricao && <p className="text-body text-ink-muted">{estado.descricao}</p>}
       {estado.acao && <div className="mt-space-sm">{estado.acao}</div>}

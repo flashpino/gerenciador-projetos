@@ -34,7 +34,7 @@ export function AvisoPWA() {
 
   return (
     <output
-      className="fixed inset-x-gutter bottom-gutter z-40 flex flex-wrap items-center gap-space-sm glass-strong rounded-card p-space-md pl-space-lg shadow-overlay md:left-auto md:right-margin md:bottom-margin"
+      className="fixed inset-x-gutter bottom-gutter z-40 flex animate-entrar flex-wrap items-center gap-space-sm glass-strong rounded-card p-space-md pl-space-lg shadow-overlay md:left-auto md:right-margin md:bottom-margin"
     >
       <p className="flex-1 text-body text-ink">{aviso.texto}</p>
       <Button size="sm" variant="ghost" onClick={aviso.secundario.acao}>
