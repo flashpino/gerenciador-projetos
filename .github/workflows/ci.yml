@@ -1,0 +1,26 @@
+# Portão de merge (manual §11.2). Um comando só: `npm run verify` já roda lint,
+# typecheck + build, testes com cobertura, jscpd, knip, check-arch e check-contrast.
+# Não testado ainda: o repositório não tinha remote quando este arquivo foi escrito.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      # Placeholders: src/lib/supabase.ts falha alto sem estas variáveis. O build só as
+      # embute e os testes não fazem rede, então nenhum segredo entra no CI.
+      VITE_SUPABASE_URL: https://placeholder.supabase.co
+      VITE_SUPABASE_ANON_KEY: placeholder-anon-key
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run verify
+      - run: npm audit --audit-level=high
