@@ -351,5 +351,7 @@ Pedido: notificação no celular. Reabre o item "Notificação push" do Fora de 
 - [x] App: interruptor em Configurações (ativar/desativar neste dispositivo; mensagens para bloqueado, sem suporte/iPhone, não configurado), `useNotificacoesPush` (Push API nativa), `services/push.ts`, `public/push-sw.js` (mostra e abre a tarefa no clique) via `importScripts` do Workbox
 - [x] Lógica pura da mensagem e de quem recebe (`supabase/functions/notificar/mensagem.ts`), testada pelo Vitest
 - [x] **Zona Vermelha, escrita e NÃO aplicada:** migration `0007_push_subscriptions` (+ down, RLS por dono), função `notificar` (segredo em tempo constante, validação do payload, limpeza de inscrição vencida), `scripts/gerar-vapid.mjs`
-- [ ] **Passos humanos** (guia): aplicar a 0007, gerar VAPID, `supabase secrets set`, publicar a função, criar o webhook, `VITE_VAPID_PUBLIC_KEY`
+- [x] **Ativado no projeto** (a pedido explícito, 2026-09-30): segredos, deploy da `notificar`, migration `0008_webhook_notificar` (gatilho + `pg_net`, segredo e URL no Vault) aplicada. `WEBHOOK_SECRET` do usuário era igual à chave pública → trocado
+- [x] Testado: 401 sem segredo, 400 payload inválido, banco → função pelo `pg_net` = 204
+- [ ] Teste com duas contas num aparelho real (A ativa e é responsável; B muda o status)
 - [ ] **Não testado de ponta a ponta:** a função Deno e o webhook não rodam aqui; só a lógica pura e o app (com navegador falso) têm teste

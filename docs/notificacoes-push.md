@@ -9,7 +9,7 @@ função e o webhook ficam na **Zona Vermelha** (`CLAUDE.md`): o agente escreveu
 alguém muda status / comenta / cria tarefa
         │  (gatilho 0004 já existente)
         ▼
-  activities  ── INSERT ──►  Database Webhook  ──►  função `notificar`
+  activities  ── INSERT ──►  gatilho 0008 (pg_net)  ──►  função `notificar`
                                                     │ confere x-webhook-secret
                                                     │ valida o payload
                                                     │ acha o responsável da tarefa
@@ -48,10 +48,14 @@ alguém muda status / comenta / cria tarefa
    `--no-verify-jwt` porque quem chama é o webhook, autenticado pelo `x-webhook-secret`
    (comparado em tempo constante), não por um usuário logado.
 
-5. **Criar o Database Webhook** (Dashboard → Database → Webhooks → Create):
-   - Tabela `activities`, evento **Insert**
-   - Tipo **Supabase Edge Functions** → `notificar`, método POST
-   - Header `x-webhook-secret` = o mesmo `WEBHOOK_SECRET` do passo 3
+5. **Webhook em SQL** (migration `0008_webhook_notificar`, no lugar do webhook do painel — o recurso de
+   webhooks do painel nunca foi ligado neste projeto). Gatilho em `activities` chama a função via `pg_net`.
+   O segredo e a URL ficam no **Vault**, não no arquivo:
+   ```sql
+   select vault.create_secret('<WEBHOOK_SECRET>', 'notificar_webhook_secret');
+   select vault.create_secret('https://<ref>.supabase.co/functions/v1/notificar', 'notificar_url');
+   ```
+   **Não crie também o webhook no painel**: cada atividade dispararia dois pushes.
 
 6. **No app:** `VITE_VAPID_PUBLIC_KEY=<pública>` no `.env.local` e nas variáveis do deploy
    (Vite resolve em build: mudou, rebuilda). Sem ela, Configurações diz "ainda não configuradas".
@@ -68,3 +72,10 @@ muda o status dessa tarefa → o aviso chega para A (mesmo com o app fechado, no
 - **Aparelho compartilhado:** o `endpoint` é único por navegador. Se outra conta ativar no mesmo navegador,
   a gravação é recusada pelo RLS (a inscrição é da primeira conta) — ela precisa desativar antes.
 - **Sem preferências por tipo de evento** e sem e-mail (fora de escopo em `docs/specs.md`).
+
+## Estado no projeto `xgipcdxxvgzmbfycyzer` (2026-09-30)
+
+Feito pelo agente a pedido explícito do usuário: segredos da função (`VAPID_*`, `WEBHOOK_SECRET` —
+trocado, pois estava igual à chave pública), deploy da `notificar`, migration 0008 aplicada e Vault
+preenchido. Testado: função recusa sem segredo (401) e payload inválido (400); banco → função pelo
+`pg_net` com o segredo do Vault responde 204. Falta só o teste com duas contas num aparelho real.
