@@ -302,3 +302,10 @@ Motivo: ao clicar em outra página, a tela antiga ficava congelada até a nova c
 - [x] Verificado no navegador real, build de produção, offline (React Query pausa as buscas e a tela fica no skeleton): as 6 telas em 1440px e as 4 visões do board em 375px sem overflow. Achado corrigido: blocos direto sobre o fundo sumiam no lavanda (`sobreFundo`)
 - [ ] Descartado a pedido: pré-carregar o código das páginas (deixaria a troca instantânea também no dev). No build de produção o service worker já faz isso
 - [ ] `buscaEFiltros.test.tsx`: `findBy/waitFor` de 4 s → 8 s. O teste "a busca ignora acento" digita 12 letras (~4,4 s isolado) e falhava 1 vez em 3 na suíte inteira com cobertura; nenhuma asserção foi tocada
+
+---
+
+## Kanban: barra de rolagem ao abrir o menu do cartão ✅
+
+- [x] Causa: `md:overflow-x-auto` na grade das colunas (desde a F2). Liberar a rolagem horizontal libera também a vertical (regra do CSS); o menu ⋮ do cartão, que desce além da coluna, virava barra de rolagem e ficava cortado. As colunas têm `min-w-0` e cabem na grade — a rolagem horizontal nunca era usada. Classe removida
+- [x] Verificado no navegador real com o menu aberto: 1440, 1024 e 768 de largura, sem rolagem interna nem horizontal; menu inteiro por cima da coluna

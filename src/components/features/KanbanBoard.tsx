@@ -108,7 +108,10 @@ export function KanbanBoard({ grupos, membros, aoMover, aoAbrir }: Props) {
           id="painel-kanban"
           role="tabpanel"
           aria-labelledby={`aba-${visivel}`}
-          className="grid grid-cols-1 gap-gutter md:grid-cols-2 md:overflow-x-auto lg:grid-cols-5"
+          // Sem overflow-x-auto: liberar a rolagem horizontal libera também a vertical (regra do CSS), e o menu
+          // ⋮ de um cartão, que desce além da coluna, virava barra de rolagem e ficava cortado. As colunas têm
+          // min-w-0 e cabem na grade: não há o que rolar na horizontal.
+          className="grid grid-cols-1 gap-gutter md:grid-cols-2 lg:grid-cols-5"
         >
           {colunas.map((c) => (
             <KanbanColumn
