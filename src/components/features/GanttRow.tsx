@@ -33,8 +33,9 @@ export function GanttRow({ task, inicioTimeline, escala }: Props) {
 
   if (!task.start_date || !task.due_date) {
     return (
-      <div className="flex h-10 items-center px-space-md text-label text-ink-muted">
-        Sem período definido
+      <div className="flex h-10 items-center whitespace-nowrap px-space-md text-label text-ink-muted">
+        {/* Pílula com fundo e `relative`: fica por cima da linha vertical do "Hoje", que a cortava. */}
+        <span className="relative rounded-full bg-surface-2 px-space-sm py-space-xs">Sem período definido</span>
       </div>
     )
   }

@@ -318,3 +318,15 @@ Motivo: ao clicar em outra página, a tela antiga ficava congelada até a nova c
 - [x] Board sem grupo: botão desabilitado (`tasks.group_id` NOT NULL)
 - [x] Testes: cria no primeiro grupo, troca de grupo, desabilitado sem grupo. O teste antigo ("segue desabilitado") foi substituído porque o requisito mudou, não para passar
 - [x] Navegador real: abre a partir do Gantt com "A fazer" escolhido. **Não salvei de verdade** — a interface não tem como excluir tarefa, e a tarefa ficaria no banco de dev; o salvar é o mesmo modal da tabela e está coberto pelo teste
+
+---
+
+## Gantt: régua minúscula, rótulos quebrados e rolagem vertical ✅
+
+Causa: o intervalo cobria só as tarefas com data + hoje ± 3 dias. Sem datas, a régua virava uma semana (84px); "28 de set – 4 de out" e "Sem período definido" quebravam em várias linhas, estouravam a linha e — com `overflow-x-auto` — viravam barra de rolagem vertical. A primeira semana ainda começava antes do intervalo (posição negativa, cortada).
+
+- [x] `ajustarAEscala` (lib/gantt): início na segunda-feira / dia 1 e extensão mínima (3 semanas em Dias, 10 em Semanas, 6 meses em Meses). Nunca encolhe
+- [x] Rótulos curtos que não quebram: semana = início ("28 de set"); dia = só o número, com o mês no 1º dia e em cada dia 1 ("27/9", "28" … "1/10")
+- [x] Cabeçalho mais alto: rótulo em cima, selo "Hoje" embaixo (antes se sobrepunham); "Sem período definido" em pílula por cima da linha do hoje
+- [x] `overflow-y-hidden` explícito no contêiner; linhas com altura mínima
+- [x] Navegador real a ~1310px: as 3 escalas sem rótulo cortado nem rolagem vertical; Semanas e Meses sem rolagem horizontal

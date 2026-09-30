@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { calcularIntervaloVisivel, gerarTicks, posicaoBarra, posicaoData } from './gantt'
+import { ajustarAEscala, calcularIntervaloVisivel, gerarTicks, posicaoBarra, posicaoData } from './gantt'
 
 describe('calcularIntervaloVisivel', () => {
   it('cobre da tarefa mais cedo à mais tarde, com folga de 3 dias', () => {
@@ -87,5 +87,48 @@ describe('gerarTicks', () => {
     const ticks = gerarTicks(intervalo, 'mes')
     expect(ticks).toHaveLength(2)
     expect(ticks[0]?.largura).toBe(30 * 4) // setembro tem 30 dias, PX_POR_DIA.mes = 4
+  })
+})
+
+describe('ajustarAEscala — a régua nunca fica minúscula nem começa no meio de uma semana/mês', () => {
+  const dias = (a: Date, b: Date) => Math.round((b.getTime() - a.getTime()) / 86_400_000)
+  // Board sem nenhuma tarefa com data: calcularIntervaloVisivel devolve só hoje ± 3 dias.
+  const curto = calcularIntervaloVisivel([{ start_date: null, due_date: null }], new Date(2026, 8, 30))
+
+  it('semana: começa na segunda-feira e cobre pelo menos 10 semanas', () => {
+    const { inicio, fim } = ajustarAEscala(curto, 'semana')
+    expect(inicio.getDay()).toBe(1)
+    expect(dias(inicio, fim)).toBeGreaterThanOrEqual(10 * 7 - 1)
+  })
+
+  it('mês: começa no dia 1 e cobre pelo menos 6 meses', () => {
+    const { inicio, fim } = ajustarAEscala(curto, 'mes')
+    expect(inicio.getDate()).toBe(1)
+    expect(dias(inicio, fim)).toBeGreaterThanOrEqual(180)
+  })
+
+  it('dia: cobre pelo menos 3 semanas', () => {
+    const { fim, inicio } = ajustarAEscala(curto, 'dia')
+    expect(dias(inicio, fim)).toBeGreaterThanOrEqual(20)
+  })
+
+  it('nunca encolhe um intervalo que já é maior que o mínimo', () => {
+    const longo = { inicio: new Date(2026, 0, 5), fim: new Date(2026, 11, 20) }
+    expect(ajustarAEscala(longo, 'semana').fim.toDateString()).toBe(longo.fim.toDateString())
+  })
+
+  it('com o início alinhado, o primeiro tick da semana começa em 0 (não cortado à esquerda)', () => {
+    expect(gerarTicks(ajustarAEscala(curto, 'semana'), 'semana')[0]?.esquerda).toBe(0)
+    expect(gerarTicks(ajustarAEscala(curto, 'mes'), 'mes')[0]?.esquerda).toBe(0)
+  })
+
+  it('o rótulo da semana é curto (só o início): cabe na coluna sem quebrar', () => {
+    // Mesmo formato da escala de dias; o que importa é não trazer o intervalo "21 de set – 27 de set".
+    expect(gerarTicks(ajustarAEscala(curto, 'semana'), 'semana')[0]?.label).toBe('21 de set')
+  })
+
+  it('dia: rótulo só com o número (40px por dia); o mês aparece no primeiro dia e em cada dia 1', () => {
+    const ticks = gerarTicks({ inicio: new Date(2026, 8, 29), fim: new Date(2026, 9, 2) }, 'dia')
+    expect(ticks.map((t) => t.label)).toEqual(['29/9', '30', '1/10', '2'])
   })
 })

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Tabs } from '@/components/ui/Tabs'
-import { calcularIntervaloVisivel, gerarTicks, isoDeData, posicaoData, type EscalaGantt } from '@/lib/gantt'
+import { ajustarAEscala, calcularIntervaloVisivel, gerarTicks, isoDeData, posicaoData, type EscalaGantt } from '@/lib/gantt'
 import type { GroupComTarefas } from '@/types/domain'
 import { GanttRow } from './GanttRow'
 
@@ -21,7 +21,7 @@ export function GanttChart({ grupos }: Props) {
   const [escala, setEscala] = useState<EscalaGantt>('semana')
 
   const tarefas = grupos.flatMap((g) => g.tasks)
-  const intervalo = calcularIntervaloVisivel(tarefas)
+  const intervalo = ajustarAEscala(calcularIntervaloVisivel(tarefas), escala)
   const ticks = gerarTicks(intervalo, escala)
   const larguraTimeline = ticks.reduce((max, t) => Math.max(max, t.esquerda + t.largura), 0)
   // calcularIntervaloVisivel sempre inclui hoje no min/max antes da folga de
@@ -43,8 +43,9 @@ export function GanttChart({ grupos }: Props) {
         className="mb-margin"
       />
 
-      <div className="glass overflow-x-auto rounded-card">
-        <div style={{ width: LARGURA_NOMES + larguraTimeline }}>
+      {/* overflow-y-hidden explícito: só overflow-x-auto libera a rolagem vertical também (regra do CSS). */}
+      <div className="glass overflow-x-auto overflow-y-hidden rounded-card">
+        <div style={{ width: LARGURA_NOMES + larguraTimeline, minWidth: '100%' }}>
           <div className="flex border-b border-border bg-surface-2">
             <div
               className="sticky left-0 z-10 shrink-0 border-r border-border bg-surface-2 px-space-md py-space-sm text-label text-ink-muted"
@@ -52,17 +53,18 @@ export function GanttChart({ grupos }: Props) {
             >
               Tarefas
             </div>
-            <div className="relative shrink-0" style={{ width: larguraTimeline, height: 36 }}>
+            {/* Rótulos em cima, selo "Hoje" embaixo: no mesmo nível, o selo cobria o rótulo da semana. */}
+            <div className="relative shrink-0" style={{ width: larguraTimeline, height: 48 }}>
               {ticks.map((t) => (
                 <div
                   key={t.esquerda}
                   style={{ left: t.esquerda, width: t.largura }}
-                  className="absolute inset-y-0 flex items-center border-r border-border px-space-xs text-label text-ink-muted"
+                  className="absolute inset-y-0 overflow-hidden whitespace-nowrap border-r border-border px-space-xs pt-space-xs text-label text-ink-muted"
                 >
                   {t.label}
                 </div>
               ))}
-              <div style={{ left: hojeEsquerda }} className="absolute inset-y-0 flex items-center">
+              <div style={{ left: hojeEsquerda }} className="absolute bottom-space-xs -translate-x-1/2">
                 <span className="rounded-full bg-primary px-space-sm text-micro font-semibold text-primary-fg">
                   Hoje
                 </span>
@@ -89,7 +91,7 @@ export function GanttChart({ grupos }: Props) {
               {g.tasks.map((t) => (
                 <div key={t.id} className="flex border-b border-border last:border-0">
                   <div
-                    className="sticky left-0 z-10 flex shrink-0 items-center truncate border-r border-border bg-surface-2 px-space-md text-cell text-ink"
+                    className="sticky left-0 z-10 flex min-h-row shrink-0 items-center truncate border-r border-border bg-surface-2 px-space-md text-cell text-ink"
                     style={{ width: LARGURA_NOMES }}
                   >
                     <span className="truncate">{t.title}</span>

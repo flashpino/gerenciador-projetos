@@ -38,6 +38,26 @@ export function calcularIntervaloVisivel(tarefas: TarefaComPeriodo[], hojeBruto 
   return { inicio, fim }
 }
 
+/** Extensão mínima da régua por escala — sem isso, um board sem datas vira uma régua de uma semana (84px). */
+// Semana: 10 semanas (840px + 208 da coluna de nomes) cabem numa tela de ~1300px sem rolagem horizontal.
+const MIN_DIAS: Record<EscalaGantt, number> = { dia: 21, semana: 10 * 7, mes: 183 }
+
+/**
+ * Encaixa o intervalo na escala: início na segunda-feira (semana) ou no dia 1 (mês) — o primeiro tick começa
+ * em 0 em vez de sair cortado à esquerda — e estica o fim até a extensão mínima. Nunca encolhe.
+ */
+export function ajustarAEscala({ inicio, fim }: IntervaloVisivel, escala: EscalaGantt): IntervaloVisivel {
+  const novoInicio = inicioDoDia(inicio)
+  if (escala === 'semana') novoInicio.setDate(novoInicio.getDate() - ((novoInicio.getDay() + 6) % 7))
+  if (escala === 'mes') novoInicio.setDate(1)
+
+  const minimo = new Date(novoInicio)
+  minimo.setDate(minimo.getDate() + MIN_DIAS[escala])
+  const novoFim = new Date(Math.max(fim.getTime(), minimo.getTime()))
+  if (escala === 'mes') novoFim.setMonth(novoFim.getMonth() + 1, 0) // último dia do mês
+  return { inicio: novoInicio, fim: novoFim }
+}
+
 export interface PosicaoBarra {
   esquerda: number
   largura: number
@@ -90,7 +110,9 @@ export function gerarTicks(intervalo: IntervaloVisivel, escala: EscalaGantt): Ti
   if (escala === 'dia') {
     const d = new Date(intervalo.inicio)
     while (d <= intervalo.fim) {
-      ticks.push({ label: rotuloDia(d), esquerda: ticks.length * px, largura: px })
+      // 40px por dia: "27 de set" não cabe. Só o número; o mês entra no 1º dia da régua e em cada dia 1.
+      const label = ticks.length === 0 || d.getDate() === 1 ? `${d.getDate()}/${d.getMonth() + 1}` : String(d.getDate())
+      ticks.push({ label, esquerda: ticks.length * px, largura: px })
       d.setDate(d.getDate() + 1)
     }
     return ticks
@@ -100,10 +122,9 @@ export function gerarTicks(intervalo: IntervaloVisivel, escala: EscalaGantt): Ti
     const d = new Date(intervalo.inicio)
     d.setDate(d.getDate() - ((d.getDay() + 6) % 7)) // volta para a segunda-feira da semana
     while (d <= intervalo.fim) {
-      const fimSemana = new Date(d)
-      fimSemana.setDate(fimSemana.getDate() + 6)
       const esquerda = diasAte(isoDeData(d), intervalo.inicio) * px
-      ticks.push({ label: `${rotuloDia(d)} – ${rotuloDia(fimSemana)}`, esquerda, largura: 7 * px })
+      // Só o início da semana: "28 set – 4 out" não cabe em 84px e quebrava em três linhas.
+      ticks.push({ label: rotuloDia(d), esquerda, largura: 7 * px })
       d.setDate(d.getDate() + 7)
     }
     return ticks
