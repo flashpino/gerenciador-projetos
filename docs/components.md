@@ -125,7 +125,7 @@ passam por `src/hooks/` → `src/services/`.
 | `SubtaskList` | Checkbox, Button, StateView | TaskModal |
 | `CommentList` | Avatar, TextInput, StateView | TaskModal |
 | `AppShell` | Sidebar | container de toda rota autenticada (docs/superpowers/specs/2026-09-17-casca-sidebar-design.md) |
-| `Sidebar` | Avatar, Button, Modal (`drawer`) | navegação do workspace, dentro do AppShell. Duas formas: **trilho** de botões redondos (md+) e **drawer** com rótulos (celular). Mesma função de item para as duas |
+| `Sidebar` | Avatar, Button, Modal (`drawer`) | navegação do workspace, dentro do AppShell. Duas formas: **trilho** de botões redondos (md+, expandem em pílula com o rótulo no hover/foco — ver `responsive.md`) e **drawer** com rótulos (celular). Mesma função de item para as duas |
 | `EmConstrucaoPage` | StateView | 3 rotas "em construção" (Notificações, Ajuda, Configurações) |
 | `FeedAtividades` | Badge | lista de eventos (criou, mudou status, comentou) — `/atividades` e card do Dashboard. Só apresentação; o texto vem de `lib/atividade.ts` |
 | `IntegrantesModal` | Modal, Badge, Button, Field, TextInput, StateView | diálogo do botão "Convidar integrantes" do `BoardShell`. Novo porque nenhum modal existente lista pessoas; `BoardFormModal`/`TaskModal` editam uma entidade só |

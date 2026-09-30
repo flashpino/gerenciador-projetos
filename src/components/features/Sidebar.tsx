@@ -40,19 +40,31 @@ const ITENS_RODAPE: ItemNav[] = [
   { href: '/configuracoes', rotulo: 'Configurações', Icone: Settings },
 ]
 
-// Trilho (md+): só ícone, o rótulo vai para o leitor de tela e para o `title`.
-// Drawer (mobile): rótulo sempre visível — se está vendo o drawer, está no celular.
-// No escopo do módulo (não do componente): não fecha sobre nenhuma variável
-// de Sidebar(), então oxlint (unicorn/consistent-function-scoping) reprova
-// recriá-la a cada render.
-function classeRotulo(tipo: 'aside' | 'drawer') {
-  return cn('truncate', tipo === 'aside' && 'sr-only')
-}
-
-/** Botão redondo do trilho: vidro, e branco com a cor primária quando é a rota atual. */
+/**
+ * Botão do trilho (md+): círculo de 48px só com o ícone; no hover ou no foco de teclado vira pílula e mostra
+ * o rótulo. O rótulo está SEMPRE no DOM (nome acessível do link), só fica clipado pelo overflow enquanto o
+ * botão é círculo. `self-start ml-space-sm` = a posição do círculo centrado no trilho, mas crescendo só para a
+ * direita (centrado, a pílula cresceria também para a esquerda e sairia da tela). Vidro, e branco com a cor
+ * primária quando é a rota atual.
+ */
 const BOTAO_TRILHO =
-  'grid size-12 shrink-0 place-items-center rounded-full border border-glass-border bg-glass text-ink backdrop-blur-md ' +
-  'transition-colors duration-fast hover:bg-glass-strong'
+  'ml-space-sm flex h-12 w-12 shrink-0 items-center self-start overflow-hidden whitespace-nowrap rounded-full border border-glass-border bg-glass text-ink backdrop-blur-md ' +
+  'transition-[width,background-color] duration-fast ease-out-soft motion-reduce:transition-none hover:w-rail-aberto hover:shadow-card focus-visible:w-rail-aberto focus-visible:shadow-card'
+
+/** Fundo ao expandir: opaco (o vidro deixaria o conteúdo aparecer por trás). Fora do BOTAO_TRILHO para o primário ter o próprio hover sem conflito de classes. */
+const HOVER_VIDRO = 'hover:bg-surface focus-visible:bg-surface'
+
+/** Ícone (célula de 48px, fixa à esquerda) + rótulo do botão do trilho. */
+function conteudoTrilho(Icone: ItemNav['Icone'], rotulo: string) {
+  return (
+    <>
+      <span className="grid size-12 shrink-0 place-items-center">
+        <Icone aria-hidden="true" className="size-5" />
+      </span>
+      <span className="pr-space-lg text-body">{rotulo}</span>
+    </>
+  )
+}
 
 /**
  * Casca de navegação do workspace (docs/superpowers/specs/2026-09-17-casca-sidebar-design.md;
@@ -79,18 +91,23 @@ export function Sidebar() {
         to={item.href}
         aria-current={ativo ? 'page' : undefined}
         onClick={() => setAberto(false)}
-        title={item.rotulo}
         className={
           tipo === 'aside'
-            ? cn(BOTAO_TRILHO, ativo && 'border-surface bg-surface text-primary shadow-card')
+            ? cn(BOTAO_TRILHO, HOVER_VIDRO, ativo && 'border-surface bg-surface text-primary shadow-card')
             : cn(
                 'flex min-h-touch items-center gap-space-sm rounded-full px-space-md text-body',
                 ativo ? 'bg-primary-soft font-semibold text-primary' : 'text-sidebar-fg-muted hover:bg-sidebar-hover',
               )
         }
       >
-        <item.Icone aria-hidden="true" className="size-5 shrink-0" />
-        <span className={classeRotulo(tipo)}>{item.rotulo}</span>
+        {tipo === 'aside' ? (
+          conteudoTrilho(item.Icone, item.rotulo)
+        ) : (
+          <>
+            <item.Icone aria-hidden="true" className="size-5 shrink-0" />
+            <span className="truncate">{item.rotulo}</span>
+          </>
+        )}
       </Link>
     )
   }
@@ -106,15 +123,20 @@ export function Sidebar() {
       <button
         type="button"
         onClick={() => void sair()}
-        title="Sair"
         className={
           tipo === 'aside'
-            ? cn(BOTAO_TRILHO, 'text-danger-ink')
+            ? cn(BOTAO_TRILHO, HOVER_VIDRO, 'text-danger-ink')
             : 'flex min-h-touch items-center gap-space-sm rounded-full px-space-md text-body text-sidebar-fg-muted hover:bg-sidebar-hover'
         }
       >
-        <LogOut aria-hidden="true" className="size-5 shrink-0" />
-        <span className={classeRotulo(tipo)}>Sair</span>
+        {tipo === 'aside' ? (
+          conteudoTrilho(LogOut, 'Sair')
+        ) : (
+          <>
+            <LogOut aria-hidden="true" className="size-5 shrink-0" />
+            <span className="truncate">Sair</span>
+          </>
+        )}
       </button>
     )
   }
@@ -135,29 +157,29 @@ export function Sidebar() {
         </div>
         <p className="sr-only">{nomeWorkspace}</p>
 
-        <Button
-          variant="primary"
-          iconOnly
-          aria-label="Novo Painel"
-          title="Novo Painel"
-          className="size-12 rounded-full md:size-12"
-          iconStart={<Plus aria-hidden="true" className="size-5" />}
+        <button
+          type="button"
           onClick={abrirNovoPainel}
-        />
+          className={cn(BOTAO_TRILHO, 'border-transparent bg-primary text-primary-fg hover:bg-primary-hover focus-visible:bg-primary-hover')}
+        >
+          {conteudoTrilho(Plus, 'Novo Painel')}
+        </button>
 
-        <nav aria-label="Navegação do workspace" className="flex flex-col items-center gap-space-md py-space-sm">
+        <nav aria-label="Navegação do workspace" className="flex flex-col gap-space-md self-stretch py-space-sm">
           {ITENS_NAV.map((item) => itemDeNav(item, 'aside'))}
         </nav>
 
-        <div className="mt-auto flex flex-col items-center gap-space-md">
-          {ITENS_RODAPE.map((item) => itemDeNav(item, 'aside'))}
+        <div className="mt-auto flex flex-col items-center gap-space-md self-stretch">
+          <div className="flex flex-col gap-space-md self-stretch">
+            {ITENS_RODAPE.map((item) => itemDeNav(item, 'aside'))}
+          </div>
           {eu && (
             <div className="grid size-12 place-items-center" title={eu.full_name}>
               <Avatar users={[eu]} size="md" />
               <span className="sr-only">{eu.full_name}</span>
             </div>
           )}
-          {botaoSair('aside')}
+          <div className="flex flex-col self-stretch">{botaoSair('aside')}</div>
         </div>
       </>
     )
@@ -218,7 +240,7 @@ export function Sidebar() {
         <span className="truncate text-body font-semibold text-ink">{nomeWorkspace}</span>
       </div>
 
-      <aside className="hidden shrink-0 flex-col items-center gap-space-md px-space-md py-margin md:sticky md:top-0 md:flex md:h-dvh md:w-rail">
+      <aside className="hidden shrink-0 flex-col items-center gap-space-md px-space-md py-margin md:sticky md:top-0 md:z-20 md:flex md:h-dvh md:w-rail">
         {trilho()}
       </aside>
 

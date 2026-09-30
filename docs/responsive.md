@@ -40,6 +40,8 @@ dentro do próprio container — a página não rola. Essa exceção é delibera
 
 Até 2026-09-29 havia uma 3ª forma ("Sidebar completa", 240px, ícone + rótulo a partir de 1440). Foi removida com o novo design (`docs/mockups/novo-design-urbanist.html`): o trilho serve de 768 para cima. O nome do workspace fica no `title` do logo e, no celular, na faixa do topo.
 
+**Trilho expande no hover (2026-09-30):** de md em diante cada botão do trilho (Novo Painel, navegação, rodapé, Sair) vira uma pílula com o rótulo ao passar o mouse **ou receber foco de teclado** (`w-rail-aberto`, 224px), sobre o conteúdo — o `aside` tem `z-20` e largura fixa, então o layout não se mexe. O rótulo fica sempre no DOM (é o nome acessível), só clipado enquanto o botão é círculo; sem `title` (o tooltip repetiria o rótulo). `prefers-reduced-motion`: sem transição. Logo e avatar seguem só com `title`.
+
 O seletor de views (Tabela/Kanban/Gantt/Dashboard) é `Tabs` em todas as larguras.
 Em 375px ele rola horizontalmente **dentro da própria faixa** — isso é `Tabs`,
 não a página.

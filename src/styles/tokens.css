@@ -164,6 +164,7 @@
   --spacing-row-header: 2.75rem;            /* 44px */
   --spacing-canvas: 90rem;                  /* 1440px — largura maxima do shell do board */
   --spacing-rail: 5.5rem;                   /* 88px — trilho lateral (botoes de 48px) */
+  --spacing-rail-aberto: 14rem;             /* 224px — botao do trilho expandido (icone + rotulo) no hover/foco */
 
   /* --- Raio -------------------------------------------------------------- */
   --radius-sm: 0.5rem;
