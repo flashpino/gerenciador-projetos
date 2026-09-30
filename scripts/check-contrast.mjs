@@ -91,6 +91,12 @@ if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith
     checagens.push(['primary (texto/link) sobre vidro', t.primary, vidro, AA_TEXTO])
     checagens.push(['border-strong sobre vidro', t['border-strong'], vidro, AA_COMPONENTE])
   }
+  // Titulo de grupo usa a cor do grupo como TEXTO sobre o vidro (TaskGroup: text-group-*).
+  if (vidro) {
+    for (const g of ['azure', 'grape', 'mint', 'crimson']) {
+      checagens.push([`group-${g} (titulo) sobre vidro`, t[`group-${g}`], vidro, AA_TEXTO])
+    }
+  }
   // Cor "-strong" e cor de GRAFICO (donut, borda de barra): forma precisa de 3:1 (WCAG 1.4.11).
   for (const nome of Object.keys(t)) {
     if (!nome.endsWith('-strong') || nome === 'border-strong') continue

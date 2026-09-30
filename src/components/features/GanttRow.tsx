@@ -1,7 +1,7 @@
 import { cn } from '@/lib/cn'
 import { formatarIntervalo } from '@/lib/date'
 import { posicaoBarra, posicaoData, type EscalaGantt } from '@/lib/gantt'
-import { STATUS } from '@/lib/status'
+import { BORDA_STATUS, STATUS } from '@/lib/status'
 import type { Task } from '@/types/domain'
 
 interface Props {
@@ -46,8 +46,9 @@ export function GanttRow({ task, inicioTimeline, escala }: Props) {
       <div
         style={{ left: esquerda, width: largura }}
         className={cn(
-          'absolute top-1/2 flex h-6 -translate-y-1/2 items-center gap-space-xs overflow-hidden rounded px-space-xs text-micro',
+          'absolute top-1/2 flex h-7 -translate-y-1/2 items-center gap-space-xs overflow-hidden rounded-sm border-2 px-space-sm text-micro',
           STATUS[task.status].classe,
+          BORDA_STATUS[task.status],
         )}
       >
         <span className="truncate">{task.title}</span>

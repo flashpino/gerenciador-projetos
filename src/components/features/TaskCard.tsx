@@ -57,7 +57,7 @@ export function TaskCard({ task, membros, aoMover, aoAbrir }: Props) {
       {...attributes}
       {...listeners}
       className={cn(
-        'rounded-md border border-border bg-surface p-space-md shadow-drag',
+        'glass-strong rounded-md p-space-md shadow-drag',
         isDragging && 'opacity-50',
       )}
     >

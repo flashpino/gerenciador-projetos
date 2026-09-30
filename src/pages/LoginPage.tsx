@@ -42,58 +42,60 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center gap-space-lg px-space-lg">
-      <h1 className="text-headline text-ink">{modo === 'entrar' ? 'Entrar' : 'Criar conta'}</h1>
+    <main className="mx-auto grid min-h-dvh max-w-md place-items-center px-space-lg py-space-xl">
+      <div className="glass flex w-full flex-col gap-space-lg rounded-card p-space-xl">
+        <h1 className="text-headline text-ink">{modo === 'entrar' ? 'Entrar' : 'Criar conta'}</h1>
 
-      <form onSubmit={aoSubmeter} className="flex flex-col gap-space-md">
-        {modo === 'cadastrar' && (
-          <Field label="Nome" required>
-            <TextInput value={nome} onChange={(e) => setNome(e.target.value)} required autoComplete="name" />
+        <form onSubmit={aoSubmeter} className="flex flex-col gap-space-md">
+          {modo === 'cadastrar' && (
+            <Field label="Nome" required>
+              <TextInput value={nome} onChange={(e) => setNome(e.target.value)} required autoComplete="name" />
+            </Field>
+          )}
+
+          <Field label="E-mail" required>
+            <TextInput
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+            />
           </Field>
-        )}
 
-        <Field label="E-mail" required>
-          <TextInput
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            autoComplete="email"
-          />
-        </Field>
+          <Field label="Senha" required>
+            <TextInput
+              type="password"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+              required
+              minLength={6}
+              autoComplete={modo === 'entrar' ? 'current-password' : 'new-password'}
+            />
+          </Field>
 
-        <Field label="Senha" required>
-          <TextInput
-            type="password"
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-            required
-            minLength={6}
-            autoComplete={modo === 'entrar' ? 'current-password' : 'new-password'}
-          />
-        </Field>
+          {erro && (
+            <p role="alert" className="text-label text-danger-ink">
+              {erro}
+            </p>
+          )}
 
-        {erro && (
-          <p role="alert" className="text-label text-danger-ink">
-            {erro}
-          </p>
-        )}
+          <Button type="submit" variant="primary" loading={carregando}>
+            {modo === 'entrar' ? 'Entrar' : 'Criar conta'}
+          </Button>
+        </form>
 
-        <Button type="submit" variant="primary" loading={carregando}>
-          {modo === 'entrar' ? 'Entrar' : 'Criar conta'}
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={() => {
+            setErro(null)
+            setModo(modo === 'entrar' ? 'cadastrar' : 'entrar')
+          }}
+        >
+          {modo === 'entrar' ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Entrar'}
         </Button>
-      </form>
-
-      <Button
-        type="button"
-        variant="ghost"
-        onClick={() => {
-          setErro(null)
-          setModo(modo === 'entrar' ? 'cadastrar' : 'entrar')
-        }}
-      >
-        {modo === 'entrar' ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Entrar'}
-      </Button>
+      </div>
     </main>
   )
 }

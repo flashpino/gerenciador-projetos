@@ -11,7 +11,6 @@ interface PropsGenerica<T extends string> {
   rotuloCampo: string
   nomeTarefa: string
   aoMudar: (novo: T) => void
-  bleed?: boolean
 }
 
 /**
@@ -26,7 +25,7 @@ interface PropsGenerica<T extends string> {
  * garante os 4.5:1 validados pelo check-contrast.
  */
 function EnumCell<T extends string>({
-  valor, opcoes, mapa, rotuloCampo, nomeTarefa, aoMudar, bleed = false,
+  valor, opcoes, mapa, rotuloCampo, nomeTarefa, aoMudar,
 }: PropsGenerica<T>) {
   const items: ItemMenu[] = opcoes.map((op) => ({
     id: op,
@@ -44,16 +43,12 @@ function EnumCell<T extends string>({
         <button
           {...p}
           type="button"
-          className={
-            bleed
-              ? 'flex h-full min-h-touch w-full items-center justify-center hover:brightness-105 md:min-h-0'
-              : 'inline-flex min-h-touch items-center md:min-h-0'
-          }
+          className="inline-flex min-h-touch items-center hover:brightness-95 md:min-h-0"
         >
           <span className="sr-only">
             {rotuloCampo} de {nomeTarefa}: {mapa[valor].rotulo}. Alterar
           </span>
-          <Badge tone={mapa[valor].classe} bleed={bleed} className="pointer-events-none">
+          <Badge tone={mapa[valor].classe} className="pointer-events-none">
             <span aria-hidden="true">{mapa[valor].rotulo}</span>
           </Badge>
         </button>
@@ -66,7 +61,6 @@ interface PropsCelula<T> {
   valor: T
   nomeTarefa: string
   aoMudar: (novo: T) => void
-  bleed?: boolean
 }
 
 export const StatusCell = (p: PropsCelula<TaskStatus>) => (

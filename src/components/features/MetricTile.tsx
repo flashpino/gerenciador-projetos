@@ -16,7 +16,7 @@ interface Props {
  */
 export function MetricTile({ titulo, valor, progresso, atencao }: Props) {
   return (
-    <div className="rounded-md border border-border bg-surface p-space-md">
+    <div className="glass rounded-card p-space-md">
       <div className="flex items-center justify-between gap-space-sm">
         <span className="text-label text-ink-muted">{titulo}</span>
         {atencao && <Badge tone="bg-danger-soft text-danger-ink">Atenção</Badge>}

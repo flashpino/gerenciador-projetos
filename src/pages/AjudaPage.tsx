@@ -11,7 +11,7 @@ export default function AjudaPage() {
       <h1 className="mb-gutter text-display">Ajuda</h1>
       <div className="flex flex-col gap-space-sm">
         {PERGUNTAS.map((p) => (
-          <details key={p.pergunta} className="group rounded-md border border-border bg-surface px-space-md">
+          <details key={p.pergunta} className="glass group rounded-card px-space-lg">
             <summary className="min-h-touch cursor-pointer list-none py-space-sm text-title text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
               {p.pergunta}
             </summary>

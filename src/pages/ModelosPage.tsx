@@ -45,7 +45,7 @@ export default function ModelosPage() {
           return (
             <li
               key={modelo.nome}
-              className="flex flex-col gap-space-sm rounded-md border border-border bg-surface p-space-md"
+              className="flex flex-col gap-space-sm glass rounded-card p-space-md"
             >
               <h2 className="text-title text-ink">{modelo.nome}</h2>
               <p className="text-body text-ink-muted">{modelo.descricao}</p>

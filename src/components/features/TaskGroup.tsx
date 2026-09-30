@@ -46,7 +46,7 @@ export function TaskGroup({ grupo, membros, aoEditar, aoAbrir, aoCriar }: Props)
   }))
 
   return (
-    <section className="mb-margin overflow-hidden rounded-md border border-border bg-surface">
+    <section className="glass mb-margin overflow-hidden rounded-card">
       <header className="flex items-center gap-space-sm border-b border-border px-space-md py-space-sm">
         <span aria-hidden="true" className={cn('h-6 w-1.5 rounded-full', BARRA_GRUPO[grupo.color])} />
         <button
@@ -123,23 +123,21 @@ export function TaskGroup({ grupo, membros, aoEditar, aoAbrir, aoCriar }: Props)
                       aoMudar={(id) => aoEditar(t.id, { assignee_id: id })}
                     />
                   </td>
-                  <td className="p-0">
+                  <td className="px-space-md">
                     <StatusCell
                       valor={t.status}
                       nomeTarefa={t.title}
                       aoMudar={(s) => aoEditar(t.id, { status: s })}
-                      bleed
                     />
                   </td>
                   <td className="px-space-md">
                     <DueDateCell task={t} />
                   </td>
-                  <td className="hidden p-0 lg:table-cell">
+                  <td className="hidden px-space-md lg:table-cell">
                     <PriorityCell
                       valor={t.priority}
                       nomeTarefa={t.title}
                       aoMudar={(p) => aoEditar(t.id, { priority: p })}
-                      bleed
                     />
                   </td>
                   <td className="hidden px-space-md lg:table-cell">

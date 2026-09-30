@@ -43,7 +43,7 @@ export function GanttChart({ grupos }: Props) {
         className="mb-margin"
       />
 
-      <div className="overflow-x-auto rounded-md border border-border">
+      <div className="glass overflow-x-auto rounded-card">
         <div style={{ width: LARGURA_NOMES + larguraTimeline }}>
           <div className="flex border-b border-border bg-surface-2">
             <div
@@ -63,7 +63,7 @@ export function GanttChart({ grupos }: Props) {
                 </div>
               ))}
               <div style={{ left: hojeEsquerda }} className="absolute inset-y-0 flex items-center">
-                <span className="rounded bg-primary px-space-xs text-micro font-semibold text-primary-fg">
+                <span className="rounded-full bg-primary px-space-sm text-micro font-semibold text-primary-fg">
                   Hoje
                 </span>
               </div>
@@ -89,7 +89,7 @@ export function GanttChart({ grupos }: Props) {
               {g.tasks.map((t) => (
                 <div key={t.id} className="flex border-b border-border last:border-0">
                   <div
-                    className="sticky left-0 z-10 flex shrink-0 items-center truncate border-r border-border bg-surface px-space-md text-cell text-ink"
+                    className="sticky left-0 z-10 flex shrink-0 items-center truncate border-r border-border bg-surface-2 px-space-md text-cell text-ink"
                     style={{ width: LARGURA_NOMES }}
                   >
                     <span className="truncate">{t.title}</span>

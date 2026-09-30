@@ -17,6 +17,18 @@ export const STATUS: Record<TaskStatus, { rotulo: string; classe: string }> = {
   stuck:       { rotulo: 'Travado',      classe: 'bg-status-stuck text-status-stuck-fg' },
 }
 
+/**
+ * Borda "forte" por status, para barras do gantt: o fundo suave do STATUS.classe é
+ * claro demais para, sozinho, delimitar uma forma sobre o vidro (WCAG 1.4.11).
+ */
+export const BORDA_STATUS: Record<TaskStatus, string> = {
+  not_started: 'border-status-not-started-strong',
+  working: 'border-status-working-strong',
+  review: 'border-status-review-strong',
+  done: 'border-status-done-strong',
+  stuck: 'border-status-stuck-strong',
+}
+
 /** Ordem das colunas do kanban: do backlog ao bloqueio. */
 export const ORDEM_STATUS: readonly TaskStatus[] = [
   'not_started', 'working', 'review', 'done', 'stuck',

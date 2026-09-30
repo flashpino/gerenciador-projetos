@@ -22,7 +22,7 @@ export function KanbanColumn({ coluna, membros, aoMover, aoAbrir, className }: P
       ref={setNodeRef}
       aria-labelledby={`col-${coluna.status}`}
       className={cn(
-        'flex min-w-0 flex-col rounded-md bg-surface-2 p-space-sm',
+        'glass flex min-w-0 flex-col rounded-card p-space-sm',
         // Realce do alvo: só visual. Quem não vê usa o menu, que não depende disto.
         isOver && 'ring-2 ring-primary',
         className,

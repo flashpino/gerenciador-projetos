@@ -52,11 +52,11 @@ export default function DashboardPage() {
           <MetricTile titulo="Tarefas Atrasadas" valor={String(atrasadas)} atencao={atrasadas > 0} />
         </div>
         <div className="mt-margin grid grid-cols-1 gap-space-md md:grid-cols-2">
-          <div className="rounded-md border border-border bg-surface p-space-md">
+          <div className="glass rounded-card p-space-md">
             <h2 className="mb-space-md text-title text-ink">Distribuição por Status</h2>
             <StatusDonut fatias={distribuicaoStatus(tarefas ?? [])} />
           </div>
-          <div className="rounded-md border border-border bg-surface p-space-md">
+          <div className="glass rounded-card p-space-md">
             <h2 className="mb-space-md text-title text-ink">Progresso por Grupo</h2>
             <GroupProgressList grupos={grupos.data ?? []} />
           </div>
@@ -66,7 +66,7 @@ export default function DashboardPage() {
       {/* Fora do StateView das métricas: board sem tarefas ainda tem histórico. */}
       <section
         aria-labelledby="titulo-atividades"
-        className="mt-margin rounded-md border border-border bg-surface p-space-md"
+        className="mt-margin glass rounded-card p-space-md"
       >
         <h2 id="titulo-atividades" className="mb-space-md text-title text-ink">
           Atividades recentes

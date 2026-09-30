@@ -56,7 +56,7 @@ function FormularioNome({ perfil, email }: { perfil: Profile; email: string }) {
   }
 
   return (
-    <form onSubmit={aoSubmeter} className="flex max-w-sm flex-col gap-space-md">
+    <form onSubmit={aoSubmeter} className="glass flex max-w-md flex-col gap-space-md rounded-card p-space-lg">
       <Field label="Nome de exibição" error={erro ?? undefined}>
         {/* maxLength nativo cobre o limite de 120 do banco. */}
         <TextInput

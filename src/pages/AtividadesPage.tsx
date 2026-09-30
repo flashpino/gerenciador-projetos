@@ -16,7 +16,9 @@ export default function AtividadesPage() {
     <div className="mx-auto max-w-canvas p-gutter md:p-margin">
       <h1 className="mb-gutter text-display">Atividades</h1>
       <StateView estado={estado}>
-        <FeedAtividades atividades={atividades.data ?? []} mostrarBoard />
+        <div className="glass rounded-card p-space-lg">
+          <FeedAtividades atividades={atividades.data ?? []} mostrarBoard />
+        </div>
       </StateView>
     </div>
   )
