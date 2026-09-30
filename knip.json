@@ -6,8 +6,5 @@
   "project": [
     "src/**/*.{ts,tsx,css}",
     "scripts/**/*.mjs"
-  ],
-  "ignoreDependencies": [
-    "vite-plugin-pwa"
   ]
 }
