@@ -31,7 +31,8 @@ export default defineConfig({
       },
       // Só os arquivos do app. Sem runtimeCaching: dado do Supabase nunca vem do cache
       // (docs/specs.md — PWA instalável, não offline).
-      workbox: { globPatterns: ['**/*.{js,css,html,svg,png,woff2}'] },
+      // push-sw.js (public/): mostra a notificação push e abre a tarefa no clique. Fora do precache.
+      workbox: { globPatterns: ['**/*.{js,css,html,svg,png,woff2}'], globIgnores: ['push-sw.js'], importScripts: ['push-sw.js'] },
       devOptions: { enabled: false },
     }),
   ],

@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/Button'
 import { Field } from '@/components/ui/Field'
 import { StateView } from '@/components/ui/StateView'
 import { TextInput } from '@/components/ui/TextInput'
+import { useNotificacoesPush, type EstadoPush } from '@/hooks/useNotificacoesPush'
 import { useSessao } from '@/hooks/useSessao'
 import { useAtualizarNome, useMembros, useWorkspaceAtual } from '@/hooks/useQuadro'
 import { estadoDaQuery } from '@/lib/estadoDaQuery'
@@ -35,6 +36,8 @@ export default function ConfiguracoesPage() {
       <StateView estado={estado}>
         {eu?.[0] && <FormularioNome key={eu[0].id} perfil={eu[0]} email={usuario?.email ?? ''} />}
       </StateView>
+      {/* Fora do StateView do perfil: é deste aparelho, não depende do perfil carregar. */}
+      <NotificacoesDoDispositivo />
     </div>
   )
 }
@@ -86,5 +89,55 @@ function FormularioNome({ perfil, email }: { perfil: Profile; email: string }) {
         </Button>
       </div>
     </form>
+  )
+}
+
+/** O que dizer quando não há botão a oferecer. `ativo`/`inativo` têm botão; `carregando` não diz nada. */
+const AVISO: Partial<Record<EstadoPush, string>> = {
+  'sem-suporte':
+    'Este navegador não recebe notificações. No iPhone, instale o app (Compartilhar → Adicionar à Tela de Início) e abra por lá.',
+  'nao-configurado': 'As notificações ainda não foram configuradas no servidor.',
+  negado: 'As notificações estão bloqueadas para este site. Libere nas configurações do navegador e recarregue.',
+}
+
+function NotificacoesDoDispositivo() {
+  const { estado, ativar, desativar, processando, erro } = useNotificacoesPush()
+
+  return (
+    <section
+      aria-labelledby="titulo-notificacoes"
+      className="glass mt-margin flex max-w-md flex-col gap-space-md rounded-card p-space-lg"
+    >
+      <h2 id="titulo-notificacoes" className="text-title">
+        Notificações neste dispositivo
+      </h2>
+      <p className="text-body text-ink-muted">
+        Receba um aviso quando alguém mudar o status, comentar ou criar uma tarefa atribuída a você.
+      </p>
+
+      {AVISO[estado] && <p className="text-body text-ink">{AVISO[estado]}</p>}
+
+      {erro && (
+        <p role="alert" className="rounded bg-danger-soft px-space-md py-space-sm text-body text-danger-ink">
+          {erro.message}
+        </p>
+      )}
+
+      {estado === 'inativo' && (
+        <div>
+          <Button variant="primary" loading={processando} onClick={() => void ativar()}>
+            Ativar notificações
+          </Button>
+        </div>
+      )}
+      {estado === 'ativo' && (
+        <div className="flex flex-wrap items-center gap-space-md">
+          <output className="text-body text-ink">Ativadas neste dispositivo.</output>
+          <Button variant="secondary" loading={processando} onClick={() => void desativar()}>
+            Desativar
+          </Button>
+        </div>
+      )}
+    </section>
   )
 }

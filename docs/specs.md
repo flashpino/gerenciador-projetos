@@ -165,7 +165,7 @@ Explícito para que seja possível recusar depois, sem nova discussão:
 | Upload real de anexos | Storage, antivírus, cota, permissão de arquivo. Sozinho é uma v2 |
 | Time tracking com cronômetro | `horas estimadas` e `horas gastas` são campos simples; o cronômetro não é |
 | ~~Templates de board~~ | **Reaberto e entregue** no sub-projeto 5 (2026-09-28): catálogo fixo de 3 modelos em `/modelos`, só grupos, sem migration — `docs/superpowers/specs/2026-09-28-modelos-design.md`. Continua fora: salvar board como modelo, tarefas de exemplo |
-| Notificação por e-mail / push | Exige fila, preferência por usuário e opt-out |
+| ~~Notificação push~~ | **Reaberto a pedido** (2026-09-30): push no celular/navegador para o **responsável** da tarefa quando outra pessoa cria, muda o status ou comenta. Opt-in por dispositivo em Configurações. Sem fila: o webhook de `activities` chama a função `notificar`. Guia: `docs/notificacoes-push.md`. Continua fora: e-mail, preferências por tipo de evento, aviso de atribuição feita depois da criação |
 | Exportação XLSX / PDF | Uma dependência pesada para um caso que o copiar-colar cobre na v1 |
 | Colaboração em tempo real | Traz reconciliação de estado e conflito de edição concorrente |
 | Funcionamento offline | Exige resolução de conflito. O PWA da v1 é **instalável, não offline** |

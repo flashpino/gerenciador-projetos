@@ -11,10 +11,19 @@ vi.mock('@/services/boards', () => ({
   atualizarNomePerfil: vi.fn(),
 }))
 
+vi.mock('@/hooks/useNotificacoesPush', () => ({ useNotificacoesPush: vi.fn() }))
+
 import * as servico from '@/services/boards'
+import { useNotificacoesPush, type EstadoPush } from '@/hooks/useNotificacoesPush'
 import ConfiguracoesPage from './ConfiguracoesPage'
 
 const SESSAO = { usuario: { id: 'u1', email: 'ana@x.com' }, carregando: false }
+
+const ativar = vi.fn()
+const desativar = vi.fn()
+function push(estado: EstadoPush, erro: Error | null = null) {
+  vi.mocked(useNotificacoesPush).mockReturnValue({ estado, ativar, desativar, processando: false, erro })
+}
 
 function renderizar() {
   const { wrapper: QueryWrapper } = criarWrapper()
@@ -37,6 +46,7 @@ describe('ConfiguracoesPage', () => {
       { id: 'u1', full_name: 'Ana Lima', avatar_url: null },
       { id: 'u2', full_name: 'Beto Souza', avatar_url: null },
     ])
+    push('inativo')
   })
 
   it('mostra o nome atual da pessoa (não o de outro membro) e o e-mail só de leitura', async () => {
@@ -102,5 +112,42 @@ describe('ConfiguracoesPage', () => {
     vi.mocked(servico.buscarWorkspaceAtual).mockRejectedValue(new Error('Sem workspace'))
     renderizar()
     expect(await screen.findByRole('alert')).toHaveTextContent('Sem workspace')
+  })
+
+  describe('notificações neste dispositivo', () => {
+    it('desligadas: botão para ativar, que chama o hook', async () => {
+      const user = userEvent.setup()
+      renderizar()
+      await user.click(await screen.findByRole('button', { name: 'Ativar notificações' }))
+      expect(ativar).toHaveBeenCalled()
+    })
+
+    it('ligadas: diz que estão ativas e oferece desativar', async () => {
+      push('ativo')
+      const user = userEvent.setup()
+      renderizar()
+      expect(await screen.findByText('Ativadas neste dispositivo.')).toBeInTheDocument()
+      await user.click(screen.getByRole('button', { name: 'Desativar' }))
+      expect(desativar).toHaveBeenCalled()
+    })
+
+    it('bloqueadas no navegador: explica como liberar, sem botão que não funcionaria', async () => {
+      push('negado')
+      renderizar()
+      expect(await screen.findByText(/bloqueadas para este site/)).toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: 'Ativar notificações' })).not.toBeInTheDocument()
+    })
+
+    it('sem suporte: explica o caso do iPhone (instalar na tela inicial)', async () => {
+      push('sem-suporte')
+      renderizar()
+      expect(await screen.findByText(/tela de início/i)).toBeInTheDocument()
+    })
+
+    it('erro ao ativar aparece como alerta', async () => {
+      push('inativo', new Error('Não foi possível salvar.'))
+      renderizar()
+      expect(await screen.findByRole('alert')).toHaveTextContent('Não foi possível salvar.')
+    })
   })
 })

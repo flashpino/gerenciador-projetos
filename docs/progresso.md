@@ -341,3 +341,15 @@ Pedido: a sidebar animava e o resto não. Decisão: só CSS e tokens, sem depend
 - [x] Verificado no navegador (valores calculados): página e aba terminam com opacidade 1 e `transform: none`; menu e modal idem; modal fechando segue visível até o fim da saída; drawer vai de -320px a 0; seta -90° ↔ 0
 - [x] Achado corrigido na verificação: com `animation-fill-mode: both` a página ficava com transform identidade permanente → `backwards`
 - [ ] Não animado, de propósito: saída de páginas e menus (exigiria segurar o desmonte), indicador deslizante das abas, reordenação no kanban
+
+---
+
+## Notificações push ✅ (código) · ⏳ (ativação no servidor)
+
+Pedido: notificação no celular. Reabre o item "Notificação push" do Fora de Escopo (`docs/specs.md`). Guia: `docs/notificacoes-push.md`.
+
+- [x] App: interruptor em Configurações (ativar/desativar neste dispositivo; mensagens para bloqueado, sem suporte/iPhone, não configurado), `useNotificacoesPush` (Push API nativa), `services/push.ts`, `public/push-sw.js` (mostra e abre a tarefa no clique) via `importScripts` do Workbox
+- [x] Lógica pura da mensagem e de quem recebe (`supabase/functions/notificar/mensagem.ts`), testada pelo Vitest
+- [x] **Zona Vermelha, escrita e NÃO aplicada:** migration `0007_push_subscriptions` (+ down, RLS por dono), função `notificar` (segredo em tempo constante, validação do payload, limpeza de inscrição vencida), `scripts/gerar-vapid.mjs`
+- [ ] **Passos humanos** (guia): aplicar a 0007, gerar VAPID, `supabase secrets set`, publicar a função, criar o webhook, `VITE_VAPID_PUBLIC_KEY`
+- [ ] **Não testado de ponta a ponta:** a função Deno e o webhook não rodam aqui; só a lógica pura e o app (com navegador falso) têm teste
