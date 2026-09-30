@@ -138,5 +138,10 @@ Todo elemento interativo alcançável por teclado, com foco visível.
 npm run verify
 ```
 Roda, em ordem: lint (zero warnings) → typecheck + build → testes com cobertura →
-jscpd (duplicação literal) → knip (código morto) → check-arch (fronteiras).
+jscpd (duplicação literal) → knip (código morto) → check-arch (fronteiras) →
+check-contrast → `npm audit --audit-level=high` (dependência com falha alta/crítica reprova).
+
+Antes de todo push, além do verify: `gh api repos/flashpino/gerenciador-projetos/dependabot/alerts?state=open`.
+O `npm audit` pode atrasar horas em relação ao banco do GitHub (CVE-2026-102278 apareceu
+lá e na Hostinger antes). Alerta aberto = avisar o usuário antes de subir.
 Um comando, não seis. O sexto é o que se esquece.
