@@ -54,7 +54,7 @@ Só entra aqui o que aparece em 2 ou mais telas.
 | 10 | **ProgressBar** | `solid` · `segmented` | — | `value` ou `segments[]`, `label` | tabela, kanban, gantt, dashboard |
 | 11 | **StateView** | `loading` · `error` · `empty` | — | `state`, `title`, `action`, `children` | **todas** |
 | 13 | **AcoesDoFormulario** | `primary` · `danger` | enviando, desabilitado | `erro`, `rotuloEnviar`, `variante`, `aoCancelar` | todo formulário em modal (painel, grupo, usuário, exclusões) |
-| 12 | **Tabs** | `underline` · `pill` | ativo, foco | `items`, `value`, `onChange` | shell do board, modal |
+| 12 | **Tabs** | `underline` · `pill` | ativo, foco | `items` (item aceita `rotuloCurto`, visível abaixo de md), `value`, `onChange` | shell do board, modal |
 
 ### Justificativas dos que não são óbvios
 

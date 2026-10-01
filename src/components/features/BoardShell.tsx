@@ -56,7 +56,7 @@ export function BoardShell({ titulo, children }: Props) {
   // de visão mantém o recorte (docs/superpowers/specs/2026-09-30-busca-filtros-design.md).
   const { search } = useLocation()
   const views: ItemTab[] = [
-    { id: base, rotulo: 'Tabela Principal', href: `${base}${search}` },
+    { id: base, rotulo: 'Tabela Principal', rotuloCurto: 'Tabela', href: `${base}${search}` },
     { id: `${base}/kanban`, rotulo: 'Kanban', href: `${base}/kanban${search}` },
     { id: `${base}/gantt`, rotulo: 'Gantt', href: `${base}/gantt${search}` },
     { id: `${base}/dashboard`, rotulo: 'Dashboard', href: `${base}/dashboard${search}` },

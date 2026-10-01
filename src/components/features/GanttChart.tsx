@@ -89,9 +89,10 @@ export function GanttChart({ grupos }: Props) {
               {g.tasks.map((t) => (
                 <div key={t.id} className="flex border-b border-border last:border-0">
                   <div
-                    className="sticky left-0 z-10 flex min-h-row w-35 shrink-0 md:w-60 items-center truncate border-r border-border bg-surface-2 px-space-md text-cell text-ink"
+                    className="sticky left-0 z-10 flex min-h-row w-35 shrink-0 items-center overflow-hidden border-r border-border bg-surface-2 px-space-md py-space-xs text-cell text-ink md:w-60"
                   >
-                    <span className="truncate">{t.title}</span>
+                    {/* 140px no celular: 2 linhas leem o nome quase inteiro; de md em diante sobra largura para 1. */}
+                    <span className="line-clamp-2 break-words md:truncate">{t.title}</span>
                   </div>
                   <div className="relative shrink-0" style={{ width: larguraTimeline }}>
                     <div

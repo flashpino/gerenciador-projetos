@@ -5,6 +5,8 @@ import { cn } from '@/lib/cn'
 export interface ItemTab {
   id: string
   rotulo: string
+  /** Rótulo visível abaixo de md, para a faixa caber sem rolar. O nome acessível segue `rotulo`. */
+  rotuloCurto?: string
   /** Contagem ao lado do rótulo. Vai para o nome acessível, não só para o olho. */
   contagem?: number
   /** Se presente, o item navega em vez de alternar painel. Ver nota abaixo. */
@@ -31,7 +33,14 @@ const nome = (i: ItemTab) =>
 
 const visual = (i: ItemTab) => (
   <>
-    <span aria-hidden="true">{i.rotulo}</span>
+    {i.rotuloCurto ? (
+      <>
+        <span aria-hidden="true" className="md:hidden">{i.rotuloCurto}</span>
+        <span aria-hidden="true" className="hidden md:inline">{i.rotulo}</span>
+      </>
+    ) : (
+      <span aria-hidden="true">{i.rotulo}</span>
+    )}
     {i.contagem !== undefined && (
       <span aria-hidden="true" className="rounded-full bg-surface-3 px-space-xs text-micro text-ink-muted">
         {i.contagem}

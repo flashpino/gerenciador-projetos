@@ -247,25 +247,29 @@ export function TaskGroup({
                     {t.title}
                   </button>
                 </div>
-                <div className="mt-space-xs flex flex-wrap items-center gap-x-space-xs">
+                {/* Duas linhas fixas (status + prazo / responsável + progresso): todo card tem a mesma
+                    forma, qualquer que seja o tamanho do status. */}
+                <div className="mt-space-xs flex items-center gap-x-space-xs">
                   <StatusCell
                     valor={t.status}
                     nomeTarefa={t.title}
                     aoMudar={(s) => aoEditar(t.id, { status: s })}
                   />
                   <DueDateCell task={t} />
+                </div>
+                <div className="flex items-center gap-space-sm">
                   <AssigneeCell
                     assigneeId={t.assignee_id}
                     membros={membros}
                     nomeTarefa={t.title}
                     aoMudar={(id) => aoEditar(t.id, { assignee_id: id })}
                   />
+                  <ProgressBar
+                    value={t.progress}
+                    label={`Progresso de ${t.title}`}
+                    className="min-w-16 flex-1"
+                  />
                 </div>
-                <ProgressBar
-                  value={t.progress}
-                  label={`Progresso de ${t.title}`}
-                  className="mt-space-sm"
-                />
               </li>
             ))}
           </ul>
