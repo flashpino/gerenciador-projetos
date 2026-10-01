@@ -3,6 +3,7 @@
 Permite que o Claude, **em qualquer sessão e em qualquer pasta**, crie as tarefas de um plano no sistema e vá
 atualizando o status conforme conclui. Serve para projeto **novo** e para projeto que **já existe**.
 Spec e decisões: `docs/superpowers/specs/2026-09-30-integracao-claude-design.md`.
+Sem a CLI (outra ferramenta, outra linguagem): a API HTTP direta está em [`docs/api-tarefas.md`](api-tarefas.md).
 
 ## Como funciona, em uma frase
 
@@ -14,8 +15,8 @@ o Claude tem exatamente o acesso de um membro do workspace, nada além.
 
 ### 1. Crie a conta de serviço
 
-Em uma janela anônima, abra o app e **cadastre** uma conta dedicada (ex.: `claude.bot@seudominio.com`), com **senha forte e
-única**. Não reutilize sua conta pessoal. Ao cadastrar, o app cria para ela um workspace próprio; ignore-o.
+Logado como **master**, use a tela **Usuários** → **Novo usuário** (ou, sem ser master, cadastre numa janela anônima)
+uma conta dedicada (ex.: `claude.bot@seudominio.com`), com **senha forte e única**. Não reutilize sua conta pessoal. Ao cadastrar, o app cria para ela um workspace próprio; ignore-o.
 
 ### 2. Convide-a no seu workspace
 
