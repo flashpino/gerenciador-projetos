@@ -13,7 +13,7 @@ vi.mock('@/services/boards', () => ({
 
 import { BoardCard } from './BoardCard'
 
-const BOARD = { id: 'b1', name: 'Sprint Alpha', created_at: '2026-09-01T10:00:00Z' }
+const BOARD = { id: 'b1', name: 'Sprint Alpha', created_at: '2026-09-01T10:00:00Z', workspace_id: 'w1' }
 
 function renderizar() {
   const aoRenomear = vi.fn()

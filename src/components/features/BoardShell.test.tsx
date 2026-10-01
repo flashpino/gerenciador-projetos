@@ -182,9 +182,15 @@ describe('BoardShell', () => {
     expect(screen.queryByRole('button', { name: /^Filtrar/ })).not.toBeInTheDocument()
   })
 
-  it('"Convidar integrantes" habilita quando o board carrega', async () => {
+  it('não há convite na barra do painel: compartilhar é do workspace (seletor do menu lateral)', async () => {
     renderizar()
-    const botao = await screen.findByRole('button', { name: 'Convidar integrantes' })
-    await vi.waitFor(() => expect(botao).toBeEnabled())
+    await vi.waitFor(() => expect(servico.buscarBoard).toHaveBeenCalled())
+    expect(screen.queryByRole('button', { name: 'Convidar integrantes' })).not.toBeInTheDocument()
+  })
+
+  it('abrir um painel de outro workspace torna esse workspace o atual', async () => {
+    localStorage.setItem('workspaceAtualId', 'w-outro')
+    renderizar()
+    await vi.waitFor(() => expect(localStorage.getItem('workspaceAtualId')).toBe('w1'))
   })
 })

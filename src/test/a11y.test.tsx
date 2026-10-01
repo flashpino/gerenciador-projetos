@@ -175,8 +175,8 @@ describe('Acessibilidade automatizada (axe) — telas principais do MVP', () => 
 
   it('PaineisPage (Meus Painéis) não tem violação WCAG', async () => {
     vi.mocked(servico.buscarBoards).mockResolvedValue([
-      { id: 'b1', name: 'Sprint Alpha Q3', created_at: '2026-09-01T10:00:00Z' },
-      { id: 'b2', name: 'Roadmap', created_at: '2026-09-10T10:00:00Z' },
+      { id: 'b1', name: 'Sprint Alpha Q3', created_at: '2026-09-01T10:00:00Z', workspace_id: 'w1' },
+      { id: 'b2', name: 'Roadmap', created_at: '2026-09-10T10:00:00Z', workspace_id: 'w1' },
     ])
     vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace', owner_id: 'u1' })
     const { wrapper: QueryWrapper } = criarWrapper()
@@ -193,8 +193,8 @@ describe('Acessibilidade automatizada (axe) — telas principais do MVP', () => 
 
   it('PaineisPage variante Favoritos não tem violação WCAG', async () => {
     vi.mocked(servico.buscarBoards).mockResolvedValue([
-      { id: 'b1', name: 'Sprint Alpha Q3', created_at: '2026-09-01T10:00:00Z' },
-      { id: 'b2', name: 'Roadmap', created_at: '2026-09-10T10:00:00Z' },
+      { id: 'b1', name: 'Sprint Alpha Q3', created_at: '2026-09-01T10:00:00Z', workspace_id: 'w1' },
+      { id: 'b2', name: 'Roadmap', created_at: '2026-09-10T10:00:00Z', workspace_id: 'w1' },
     ])
     vi.mocked(servico.buscarFavoritos).mockResolvedValue(['b2'])
     vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace', owner_id: 'u1' })

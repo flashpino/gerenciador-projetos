@@ -380,3 +380,17 @@ Relato: o "Instalar" só aparecia no PC. Causa: o aviso dependia do `beforeinsta
 - [x] `AvisoPWA`: botão Instalar ou instrução + "Entendi"
 - [x] Os testes antigos do hook ("com o evento, oferece") foram reescritos porque o requisito mudou (o PC deixou de receber o aviso), não para passar
 - [x] Navegador (emulação): iPhone → instruções do Compartilhar; Android → instrução do menu (em dev não há o evento; no build ele vira botão); PC → nada
+
+---
+
+## Vários workspaces e compartilhar o workspace ✅ (código) · ⏳ (navegador)
+
+Pedido: criar workspaces e compartilhar o workspace (não o painel). Reabre o item de `docs/specs.md`. Sem migration: as policies já eram por workspace (dono cria/renomeia/exclui; dono adiciona membros).
+
+- [x] `buscarWorkspaceAtual` deixou de ser "o único de que sou dono" (`.single()` quebraria com dois): escolhe o último aberto, senão o próprio, senão o primeiro (`lib/workspaceAtual.ts`, testado)
+- [x] `criarWorkspace` com id gerado no app (o RLS só mostra workspace a membros) e desfazer se entrar como membro falhar; renomear; excluir
+- [x] `SeletorWorkspace` no menu lateral (trilho e drawer); `WorkspaceFormModal`; tela `/workspaces`; `ExcluirWorkspaceDialog`
+- [x] Convite saiu da barra do painel (compartilha-se o workspace, pelo seletor ou pela tela); abrir um painel de outro workspace torna-o o atual
+- [x] Meus Painéis mostra só os do workspace aberto (com o nome dele); Favoritos continua cruzando workspaces
+- [x] verify exit 0: 629/629, 0 clones, audit ok
+- [ ] **Não verificado no navegador real** (contexto da sessão no limite): conferir seletor, criar/trocar/excluir workspace e Meus Painéis

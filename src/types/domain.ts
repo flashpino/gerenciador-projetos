@@ -13,6 +13,8 @@ export interface Board {
   id: string
   name: string
   created_at: string
+  /** Meus Painéis mostra só os do workspace aberto. */
+  workspace_id: string
 }
 
 export interface Group {

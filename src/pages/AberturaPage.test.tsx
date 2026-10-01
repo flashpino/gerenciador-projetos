@@ -9,8 +9,8 @@ import * as servico from '@/services/boards'
 import AberturaPage from './AberturaPage'
 
 const BOARDS = [
-  { id: 'b1', name: 'Primeiro', created_at: '2026-09-01T10:00:00Z' },
-  { id: 'b2', name: 'Segundo', created_at: '2026-09-10T10:00:00Z' },
+  { id: 'b1', name: 'Primeiro', created_at: '2026-09-01T10:00:00Z', workspace_id: 'w1' },
+  { id: 'b2', name: 'Segundo', created_at: '2026-09-10T10:00:00Z', workspace_id: 'w1' },
 ]
 
 function renderizar() {

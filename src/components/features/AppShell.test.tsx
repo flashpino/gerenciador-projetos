@@ -6,6 +6,7 @@ import { criarWrapper } from '@/test/query'
 vi.mock('@/services/boards', () => ({
   buscarWorkspaceAtual: vi.fn().mockResolvedValue({ id: 'w1', name: 'Meu Workspace' }),
   buscarMembros: vi.fn().mockResolvedValue([]),
+  buscarWorkspaces: vi.fn().mockResolvedValue([{ id: 'w1', name: 'Meu Workspace', owner_id: 'u1' }]),
 }))
 vi.mock('@/services/auth', () => ({ sair: vi.fn() }))
 vi.mock('@/hooks/useSessao', () => ({

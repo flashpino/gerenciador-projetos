@@ -273,8 +273,8 @@ describe('boards — lista, um board e CRUD', () => {
 
   it('useBoards devolve a lista na ordem que o serviço entregou', async () => {
     vi.mocked(servico.buscarBoards).mockResolvedValue([
-      { id: 'b1', name: 'Sprint Alpha', created_at: '2026-09-01T10:00:00Z' },
-      { id: 'b2', name: 'Roadmap', created_at: '2026-09-10T10:00:00Z' },
+      { id: 'b1', name: 'Sprint Alpha', created_at: '2026-09-01T10:00:00Z', workspace_id: 'w1' },
+      { id: 'b2', name: 'Roadmap', created_at: '2026-09-10T10:00:00Z', workspace_id: 'w1' },
     ])
     const { wrapper } = criarWrapper()
     const { result } = renderHook(() => useBoards(), { wrapper })
@@ -310,7 +310,7 @@ describe('boards — lista, um board e CRUD', () => {
   })
 
   it('useCriarBoard repassa workspaceId e nome ao serviço', async () => {
-    vi.mocked(servico.criarBoard).mockResolvedValue({ id: 'b3', name: 'Novo', created_at: '' })
+    vi.mocked(servico.criarBoard).mockResolvedValue({ id: 'b3', name: 'Novo', created_at: '', workspace_id: 'w1' })
     const { wrapper } = criarWrapper()
     const { result } = renderHook(() => useCriarBoard(), { wrapper })
 
@@ -321,7 +321,7 @@ describe('boards — lista, um board e CRUD', () => {
   })
 
   it('useRenomearBoard repassa id e nome', async () => {
-    vi.mocked(servico.renomearBoard).mockResolvedValue({ id: 'b1', name: 'Outro', created_at: '' })
+    vi.mocked(servico.renomearBoard).mockResolvedValue({ id: 'b1', name: 'Outro', created_at: '', workspace_id: 'w1' })
     const { wrapper } = criarWrapper()
     const { result } = renderHook(() => useRenomearBoard(), { wrapper })
 

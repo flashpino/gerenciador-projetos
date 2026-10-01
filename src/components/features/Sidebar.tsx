@@ -21,6 +21,9 @@ import { useMembros, useWorkspaceAtual } from '@/hooks/useQuadro'
 import { useSessao } from '@/hooks/useSessao'
 import { sair } from '@/services/auth'
 import { BoardFormModal } from './BoardFormModal'
+import { IntegrantesModal } from './IntegrantesModal'
+import { SeletorWorkspace } from './SeletorWorkspace'
+import { WorkspaceFormModal } from './WorkspaceFormModal'
 
 interface ItemNav {
   href: string
@@ -80,6 +83,8 @@ function conteudoTrilho(Icone: ItemNav['Icone'], rotulo: string) {
 export function Sidebar() {
   const [aberto, setAberto] = useState(false)
   const [criandoBoard, setCriandoBoard] = useState(false)
+  const [novoWorkspace, setNovoWorkspace] = useState(false)
+  const [compartilhando, setCompartilhando] = useState(false)
   const { pathname } = useLocation()
   const workspace = useWorkspaceAtual()
   const membros = useMembros(workspace.data?.id)
@@ -117,6 +122,12 @@ export function Sidebar() {
     )
   }
 
+  // Fecha o drawer antes, como no Novo Painel: dois <dialog> modais empilhados no celular.
+  function abrirCompartilhar() {
+    setAberto(false)
+    setCompartilhando(true)
+  }
+
   function abrirNovoPainel() {
     // Fecha o drawer antes: dois <dialog> modais empilhados no mobile.
     setAberto(false)
@@ -149,18 +160,8 @@ export function Sidebar() {
   function trilho() {
     return (
       <>
-        {/* Logo: as três colunas do kanban, a mesma marca do ícone do app. O nome do workspace fica aqui. */}
-        <div
-          title={nomeWorkspace}
-          className="mb-space-sm grid size-12 shrink-0 place-items-center rounded-full bg-primary text-primary-fg"
-        >
-          <svg aria-hidden="true" viewBox="0 0 24 24" className="size-6 fill-current">
-            <rect x="3" y="3" width="4.5" height="18" rx="1.6" />
-            <rect x="9.75" y="3" width="4.5" height="13" rx="1.6" />
-            <rect x="16.5" y="3" width="4.5" height="8" rx="1.6" />
-          </svg>
-        </div>
-        <p className="sr-only">{nomeWorkspace}</p>
+        {/* O logo é o seletor de workspace (trocar, novo, compartilhar, gerenciar). */}
+        <SeletorWorkspace aoNovo={() => setNovoWorkspace(true)} aoCompartilhar={abrirCompartilhar} />
 
         <button
           type="button"
@@ -193,8 +194,8 @@ export function Sidebar() {
   function gaveta() {
     return (
       <>
-        <div className="px-space-md py-space-md">
-          <p className="truncate text-title font-semibold text-sidebar-fg">{nomeWorkspace}</p>
+        <div className="px-space-sm py-space-md">
+          <SeletorWorkspace variante="gaveta" aoNovo={() => setNovoWorkspace(true)} aoCompartilhar={abrirCompartilhar} />
         </div>
 
         <div className="px-space-sm">
@@ -255,6 +256,16 @@ export function Sidebar() {
 
       {/* Fora de trilho()/gaveta(): renderizam duas vezes (aside + drawer) e o formulário é um só. */}
       <BoardFormModal aberto={criandoBoard} aoFechar={() => setCriandoBoard(false)} board={null} />
+      <WorkspaceFormModal aberto={novoWorkspace} aoFechar={() => setNovoWorkspace(false)} workspace={null} />
+      {/* Compartilhar é do workspace aberto inteiro: quem entra vê todos os painéis dele. */}
+      {workspace.data && (
+        <IntegrantesModal
+          aberto={compartilhando}
+          aoFechar={() => setCompartilhando(false)}
+          workspaceId={workspace.data.id}
+          donoId={workspace.data.owner_id}
+        />
+      )}
     </>
   )
 }

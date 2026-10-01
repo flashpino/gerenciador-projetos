@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient, type QueryKey } from '@tanstack/react-query'
+import { useCallback } from 'react'
 import type { CamposEditaveis, NovaTarefa } from '@/services/boards'
 import {
   adicionarMembro,
@@ -14,19 +15,24 @@ import {
   buscarMembros,
   buscarTarefaDetalhe,
   buscarWorkspaceAtual,
+  buscarWorkspaces,
   criarBoard,
   criarComentario,
   criarGrupo,
   criarSubtarefa,
   criarTarefa,
+  criarWorkspace,
   desfavoritar,
+  excluirWorkspace,
   favoritar,
   removerBoard,
   removerGrupo,
   removerMembro,
   removerSubtarefa,
   renomearBoard,
+  renomearWorkspace,
 } from '@/services/boards'
+import { lembrarWorkspaceAtual } from '@/lib/workspaceAtual'
 import { ehNaoEncontrado } from '@/services/erros'
 import type { GroupComTarefas, GrupoInicial, Subtask, TaskComDetalhe } from '@/types/domain'
 
@@ -37,6 +43,7 @@ import type { GroupComTarefas, GrupoInicial, Subtask, TaskComDetalhe } from '@/t
  */
 const chaves = {
   workspace: ['workspace'] as const,
+  workspaces: ['workspaces'] as const,
   boards: ['boards'] as const,
   board: (boardId: string) => ['board', boardId] as const,
   favoritos: ['favoritos'] as const,
@@ -92,6 +99,53 @@ function useMutacaoOtimista<TDado, TVars>(
 
 export function useWorkspaceAtual() {
   return useQuery({ queryKey: chaves.workspace, queryFn: buscarWorkspaceAtual })
+}
+
+/** Todos os workspaces de que a pessoa é membro — o seletor do menu e a tela Workspaces. */
+export function useWorkspaces() {
+  return useQuery({ queryKey: chaves.workspaces, queryFn: buscarWorkspaces })
+}
+
+/** Abre outro workspace: lembra a escolha e recarrega o atual (menu, Meus Painéis, Novo Painel seguem). */
+export function useTrocarWorkspace() {
+  const qc = useQueryClient()
+  return useCallback(
+    (id: string) => {
+      lembrarWorkspaceAtual(id)
+      void qc.invalidateQueries({ queryKey: chaves.workspace })
+    },
+    [qc],
+  )
+}
+
+/** Ações deliberadas (modal), sem otimismo: recarregam a lista e o atual. */
+function useMutacaoWorkspace<TVars, TRes>(
+  mutationFn: (vars: TVars) => Promise<TRes>,
+  aoConcluir?: (res: TRes) => void,
+  recarregarTambem: readonly QueryKey[] = [],
+) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn,
+    onSuccess: (res) => {
+      aoConcluir?.(res)
+      for (const chave of [chaves.workspaces, chaves.workspace, ...recarregarTambem]) void qc.invalidateQueries({ queryKey: chave })
+    },
+  })
+}
+
+/** O workspace criado já abre. */
+export function useCriarWorkspace() {
+  return useMutacaoWorkspace((nome: string) => criarWorkspace(nome), (ws) => lembrarWorkspaceAtual(ws.id))
+}
+
+export function useRenomearWorkspace() {
+  return useMutacaoWorkspace(({ id, nome }: { id: string; nome: string }) => renomearWorkspace(id, nome))
+}
+
+/** O cascade leva os boards (e os favoritos deles): Meus Painéis e Favoritos recarregam também. */
+export function useExcluirWorkspace() {
+  return useMutacaoWorkspace((id: string) => excluirWorkspace(id), undefined, [chaves.boards, chaves.favoritos])
 }
 
 export function useBoards() {

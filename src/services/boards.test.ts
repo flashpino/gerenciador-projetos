@@ -109,7 +109,7 @@ describe('workspaces', () => {
         ? { insert: vi.fn().mockResolvedValue({ error: null }), delete: () => ({ eq }) }
         : { insert: vi.fn().mockResolvedValue({ error: { code: '42501', message: 'rls' } }) }) as never)
 
-    await expect(criarWorkspace('Clientes')).rejects.toThrow()
+    await expect(criarWorkspace('Clientes')).rejects.toThrow('Você não tem permissão para isso.')
     expect(eq).toHaveBeenCalledWith('id', expect.any(String))
   })
 

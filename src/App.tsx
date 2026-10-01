@@ -24,6 +24,7 @@ const ModelosPage = lazy(() => import('@/pages/ModelosPage'))
 const AjudaPage = lazy(() => import('@/pages/AjudaPage'))
 const ConfiguracoesPage = lazy(() => import('@/pages/ConfiguracoesPage'))
 const UsuariosPage = lazy(() => import('@/pages/UsuariosPage'))
+const WorkspacesPage = lazy(() => import('@/pages/WorkspacesPage'))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -69,6 +70,7 @@ export default function App() {
                   <Route path="/ajuda" element={<AjudaPage />} />
                   <Route path="/configuracoes" element={<ConfiguracoesPage />} />
                   <Route path="/usuarios" element={<UsuariosPage />} />
+                  <Route path="/workspaces" element={<WorkspacesPage />} />
                 </Route>
               </Route>
               <Route path="*" element={<NaoEncontrada />} />

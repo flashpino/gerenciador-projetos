@@ -7,6 +7,7 @@ import { criarWrapper } from '@/test/query'
 
 vi.mock('@/services/boards', () => ({
   buscarWorkspaceAtual: vi.fn(),
+  buscarWorkspaces: vi.fn().mockResolvedValue([]),
   buscarMembros: vi.fn(),
   criarBoard: vi.fn(),
   renomearBoard: vi.fn(),
@@ -89,7 +90,7 @@ describe('Sidebar', () => {
   })
 
   it('"Novo Painel" abre o formulário de criação e cria no workspace atual', async () => {
-    vi.mocked(servico.criarBoard).mockResolvedValue({ id: 'b9', name: 'Roadmap', created_at: '' })
+    vi.mocked(servico.criarBoard).mockResolvedValue({ id: 'b9', name: 'Roadmap', created_at: '', workspace_id: 'w1' })
     const user = userEvent.setup()
     renderizar()
 

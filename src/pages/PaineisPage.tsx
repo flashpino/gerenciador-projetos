@@ -7,7 +7,7 @@ import { ExcluirBoardDialog } from '@/components/features/ExcluirBoardDialog'
 import { Button } from '@/components/ui/Button'
 import { EsqueletoPaineis } from '@/components/features/Esqueletos'
 import { StateView } from '@/components/ui/StateView'
-import { useBoards, useFavoritos } from '@/hooks/useQuadro'
+import { useBoards, useFavoritos, useWorkspaceAtual } from '@/hooks/useQuadro'
 import { estadoDaQuery } from '@/lib/estadoDaQuery'
 import type { Board } from '@/types/domain'
 
@@ -18,6 +18,7 @@ interface Props {
 
 export default function PaineisPage({ filtro = 'todos' }: Props) {
   const boards = useBoards()
+  const workspace = useWorkspaceAtual()
   const favoritos = useFavoritos()
   const soFavoritos = filtro === 'favoritos'
   // null = fechado, 'novo' = criando, um Board = renomeando.
@@ -26,7 +27,10 @@ export default function PaineisPage({ filtro = 'todos' }: Props) {
   const abrirCriacao = () => setForm('novo')
   const tituloRef = useRef<HTMLHeadingElement>(null)
 
-  const lista = soFavoritos ? boards.data?.filter((b) => favoritos.data?.includes(b.id)) : boards.data
+  // Meus Painéis: só os do workspace aberto. Favoritos: de todos (atalho pessoal, cruza workspaces).
+  const lista = soFavoritos
+    ? boards.data?.filter((b) => favoritos.data?.includes(b.id))
+    : workspace.data && boards.data?.filter((b) => b.workspace_id === workspace.data.id)
   // Na variante favoritos, os quatro estados dependem das duas queries.
   const consulta = soFavoritos
     ? {
@@ -35,7 +39,12 @@ export default function PaineisPage({ filtro = 'todos' }: Props) {
         error: boards.error ?? favoritos.error,
         data: lista,
       }
-    : boards
+    : {
+        isPending: boards.isPending || workspace.isPending,
+        isError: boards.isError || workspace.isError,
+        error: boards.error ?? workspace.error,
+        data: lista,
+      }
 
   const estado = estadoDaQuery(
     consulta,
@@ -67,9 +76,12 @@ export default function PaineisPage({ filtro = 'todos' }: Props) {
   return (
     <div className="mx-auto max-w-canvas p-gutter md:p-margin">
       <div className="mb-gutter flex items-center justify-between gap-space-md">
-        <h1 ref={tituloRef} tabIndex={-1} className="text-display focus:outline-none">
-          {soFavoritos ? 'Favoritos' : 'Meus Painéis'}
-        </h1>
+        <div className="min-w-0">
+          <h1 ref={tituloRef} tabIndex={-1} className="text-display focus:outline-none">
+            {soFavoritos ? 'Favoritos' : 'Meus Painéis'}
+          </h1>
+          {!soFavoritos && workspace.data && <p className="truncate text-body text-ink-muted">{workspace.data.name}</p>}
+        </div>
         <Button
           variant="primary"
           size="sm"

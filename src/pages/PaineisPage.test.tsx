@@ -19,8 +19,8 @@ import * as servico from '@/services/boards'
 import PaineisPage from './PaineisPage'
 
 const BOARDS = [
-  { id: 'b1', name: 'Sprint Alpha', created_at: '2026-09-01T10:00:00Z' },
-  { id: 'b2', name: 'Roadmap', created_at: '2026-09-10T10:00:00Z' },
+  { id: 'b1', name: 'Sprint Alpha', created_at: '2026-09-01T10:00:00Z', workspace_id: 'w1' },
+  { id: 'b2', name: 'Roadmap', created_at: '2026-09-10T10:00:00Z', workspace_id: 'w1' },
 ]
 
 function renderizar() {
@@ -51,6 +51,17 @@ describe('PaineisPage', () => {
     vi.mocked(servico.buscarBoards).mockRejectedValue(new Error('Sem conexão.'))
     renderizar()
     expect(await screen.findByRole('alert')).toHaveTextContent('Sem conexão.')
+  })
+
+  it('mostra só os painéis do workspace aberto e diz qual é', async () => {
+    vi.mocked(servico.buscarBoards).mockResolvedValue([
+      ...BOARDS,
+      { id: 'b9', name: 'De outro workspace', created_at: '', workspace_id: 'w2' },
+    ])
+    renderizar()
+    expect(await screen.findByRole('link', { name: /Sprint Alpha/ })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /De outro workspace/ })).not.toBeInTheDocument()
+    expect(screen.getByText('Meu Workspace')).toBeInTheDocument()
   })
 
   it('vazio oferece criar o primeiro painel', async () => {

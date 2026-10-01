@@ -1,17 +1,17 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
-import { Filter, Plus, Search, UserPlus } from 'lucide-react'
+import { Filter, Plus, Search } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Tabs, type ItemTab } from '@/components/ui/Tabs'
 import { TextInput } from '@/components/ui/TextInput'
 import { useBuscaDoBoard } from '@/hooks/useBuscaDoBoard'
 import { useFiltroTarefas } from '@/hooks/useFiltroTarefas'
-import { useBoard, useGruposComTarefas, useMembros } from '@/hooks/useQuadro'
+import { useBoard, useGruposComTarefas, useMembros, useTrocarWorkspace } from '@/hooks/useQuadro'
 import { contarFiltros } from '@/lib/filtro'
 import { lembrarUltimoBoard } from '@/lib/ultimoBoard'
+import { lerWorkspaceAtual } from '@/lib/workspaceAtual'
 import { FavoritoToggle } from './FavoritoToggle'
 import { FiltroTarefasModal } from './FiltroTarefasModal'
-import { IntegrantesModal } from './IntegrantesModal'
 import { TaskModal } from './TaskModal'
 
 interface Props {
@@ -32,7 +32,6 @@ export function BoardShell({ titulo, children }: Props) {
   const membros = useMembros(board.data?.workspace_id)
   const { filtro, definir } = useFiltroTarefas()
   const busca = useBuscaDoBoard()
-  const [integrantesAberto, setIntegrantesAberto] = useState(false)
   const [filtrosAberto, setFiltrosAberto] = useState(false)
   const [novoAberto, setNovoAberto] = useState(false)
   // Mesma consulta das visões (cache compartilhado), SEM o filtro: o modal oferece todos os grupos.
@@ -43,6 +42,13 @@ export function BoardShell({ titulo, children }: Props) {
   useEffect(() => {
     if (boardId) lembrarUltimoBoard(boardId)
   }, [boardId])
+
+  // Abrir um painel de outro workspace (link, favorito) torna ele o atual: menu e Meus Painéis acompanham.
+  const trocarWorkspace = useTrocarWorkspace()
+  const workspaceDoBoard = board.data?.workspace_id
+  useEffect(() => {
+    if (workspaceDoBoard && workspaceDoBoard !== lerWorkspaceAtual()) trocarWorkspace(workspaceDoBoard)
+  }, [workspaceDoBoard, trocarWorkspace])
 
   const base = `/boards/${boardId}`
   // A busca e os filtros moram na query da URL; as abas a levam junto, então trocar
@@ -69,8 +75,8 @@ export function BoardShell({ titulo, children }: Props) {
           <FavoritoToggle boardId={boardId} nome={titulo} />
         </div>
         {/*
-          Estrela (sub-projeto 3), busca e filtros (sub-projeto 9) e convidar
-          (sub-projeto 6) funcionam. "Novo item" cria tarefa de qualquer visão, no
+          Estrela (sub-projeto 3) e busca e filtros (sub-projeto 9). Compartilhar saiu daqui:
+          é do workspace inteiro, no seletor do menu lateral. "Novo item" cria tarefa de qualquer visão, no
           primeiro grupo (trocável no modal). "Sair" mora no rodapé da Sidebar.
         */}
         <div className="glass flex items-center gap-space-xs rounded-full p-space-xs">
@@ -111,15 +117,6 @@ export function BoardShell({ titulo, children }: Props) {
             variant="ghost"
             size="sm"
             iconOnly
-            disabled={!board.data}
-            onClick={() => setIntegrantesAberto(true)}
-            aria-label="Convidar integrantes"
-            iconStart={<UserPlus aria-hidden="true" className="size-4" />}
-          />
-          <Button
-            variant="ghost"
-            size="sm"
-            iconOnly
             // Sem grupo não há onde a tarefa morar (tasks.group_id NOT NULL).
             disabled={!board.data || opcoesGrupo.length === 0}
             onClick={() => setNovoAberto(true)}
@@ -156,14 +153,6 @@ export function BoardShell({ titulo, children }: Props) {
           grupoInicialId={opcoesGrupo[0]?.id ?? ''}
           grupos={opcoesGrupo}
           membros={membros.data ?? []}
-        />
-      )}
-      {board.data && (
-        <IntegrantesModal
-          aberto={integrantesAberto}
-          aoFechar={() => setIntegrantesAberto(false)}
-          workspaceId={board.data.workspace_id}
-          donoId={board.data.owner_id}
         />
       )}
     </div>

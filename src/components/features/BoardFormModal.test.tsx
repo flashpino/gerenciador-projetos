@@ -42,7 +42,7 @@ describe('BoardFormModal', () => {
   })
 
   it('cria o board no workspace atual e abre o board novo', async () => {
-    vi.mocked(servico.criarBoard).mockResolvedValue({ id: 'b9', name: 'Roadmap Q4', created_at: '' })
+    vi.mocked(servico.criarBoard).mockResolvedValue({ id: 'b9', name: 'Roadmap Q4', created_at: '', workspace_id: 'w1' })
     const user = userEvent.setup()
     renderizar(null)
 
@@ -67,7 +67,7 @@ describe('BoardFormModal', () => {
   })
 
   it('renomear vem com o nome atual preenchido e salva o novo', async () => {
-    vi.mocked(servico.renomearBoard).mockResolvedValue({ id: 'b1', name: 'Sprint Beta', created_at: '' })
+    vi.mocked(servico.renomearBoard).mockResolvedValue({ id: 'b1', name: 'Sprint Beta', created_at: '', workspace_id: 'w1' })
     const user = userEvent.setup()
     const aoFechar = renderizar({ id: 'b1', name: 'Sprint Alpha' })
 

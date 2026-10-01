@@ -52,7 +52,7 @@ describe('ModelosPage', () => {
   })
 
   it('"Usar modelo" cria o board com nome e grupos do modelo e abre o board', async () => {
-    vi.mocked(servico.criarBoard).mockResolvedValue({ id: 'b9', name: 'Sprint de software', created_at: '' })
+    vi.mocked(servico.criarBoard).mockResolvedValue({ id: 'b9', name: 'Sprint de software', created_at: '', workspace_id: 'w1' })
     const user = userEvent.setup()
     renderizar()
 

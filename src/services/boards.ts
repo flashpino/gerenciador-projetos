@@ -117,7 +117,7 @@ export async function criarBoard(
   const { data: board, error } = await supabase
     .from('boards')
     .insert({ workspace_id: workspaceId, name })
-    .select('id, name, created_at')
+    .select('id, name, created_at, workspace_id')
     .single()
   if (error) throw traduzirErro(error)
 
@@ -134,7 +134,7 @@ export async function renomearBoard(id: string, name: string): Promise<Board> {
     .from('boards')
     .update({ name })
     .eq('id', id)
-    .select('id, name, created_at')
+    .select('id, name, created_at, workspace_id')
     .single()
 
   if (error) throw traduzirErro(error)
