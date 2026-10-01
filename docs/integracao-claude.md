@@ -20,7 +20,8 @@ uma conta dedicada (ex.: `claude.bot@seudominio.com`), com **senha forte e únic
 
 ### 2. Convide-a no seu workspace
 
-Logado como **você** (dono do workspace): abra qualquer board → ícone **Convidar integrantes** → e-mail da conta de serviço.
+Logado como **você** (dono do workspace): no menu lateral, clique no logo (seletor de workspace) → **Compartilhar workspace** (ou tela **Workspaces** → Compartilhar) → e-mail da conta de serviço.
+O convite é do **workspace inteiro**: a conta vê todos os painéis dele (não há convite por painel).
 Só funciona para quem já tem conta (por isso o passo 1 vem antes); nenhum e-mail é enviado.
 
 - Revogar depois = remover a conta de serviço na mesma janela. Ela perde o acesso na hora.

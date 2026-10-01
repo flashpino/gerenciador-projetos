@@ -16,7 +16,7 @@ falando **direto com a API HTTP do Supabase**, sem instalar nada.
 | **URL do projeto** | `https://xgipcdxxvgzmbfycyzer.supabase.co` | Não |
 | **Chave pública (anon)** | `VITE_SUPABASE_ANON_KEY` do `.env.local` | Não — é feita para ficar no navegador |
 | **E-mail e senha de uma conta de serviço** | Crie na tela **Usuários** (só o master vê), ex.: `claude.bot@…`, senha forte e única | **Sim** |
-| **Convite no workspace** | Logado como dono: qualquer board → **Convidar integrantes** → e-mail da conta de serviço | — |
+| **Convite no workspace** | Logado como dono: no menu lateral, clique no logo (seletor de workspace) → **Compartilhar workspace** (ou tela **Workspaces** → Compartilhar) → e-mail da conta de serviço | — |
 
 A conta de serviço é um **usuário comum**: o RLS do banco deixa ela ler e escrever **só** nos workspaces em que é
 membro. Nunca use a `SUPABASE_SERVICE_ROLE_KEY` para isto — ela ignora o RLS.
@@ -229,4 +229,5 @@ await api('comments', 'POST', { task_id: tarefa.id, author_id: login.user.id, bo
 - Só a **chave anon** + o **login da conta de serviço**. A service role nunca sai do servidor.
 - Senha por variável de ambiente; nunca em arquivo do projeto, commit, log ou mensagem de erro.
 - Vazou? Na tela **Usuários**, troque a senha (Editar) ou exclua a conta; ou remova-a do workspace em
-  **Convidar integrantes**. O acesso cai na hora.
+  **Compartilhar workspace**. O acesso cai na hora.
+- Convidado (conta de serviço inclusa) **não exclui painéis**: só o dono do workspace (migration 0009).

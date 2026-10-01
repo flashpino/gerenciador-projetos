@@ -523,6 +523,19 @@ Os seis blocos devem imprimir `NOTICE ... OK`.
 
 ---
 
+## Push, webhook e exclusão de painéis (migrations 0007–0009)
+
+| Migration | O que faz | RLS |
+|---|---|---|
+| `0007_push_subscriptions` | Tabela `push_subscriptions` (uma linha por aparelho inscrito: `endpoint` único, `p256dh`, `auth`, `user_id` default `auth.uid()`) | Cada pessoa só vê, cria, atualiza e apaga as **próprias**. Quem lê para enviar é a função `notificar`, com a service role |
+| `0008_webhook_notificar` | Gatilho `activities_notificar_push` (after insert em `activities`) → `net.http_post` (pg_net) para a função `notificar` | Função `security definer`; segredo do header e URL ficam no **Vault** (`notificar_webhook_secret`, `notificar_url`), nunca no arquivo |
+| `0009_so_dono_exclui_board` | `boards_all` vira `boards_select`/`insert`/`update` (todo membro) + `boards_delete` (só o **dono** do workspace) | Convidado vê, cria e edita painéis, não exclui |
+
+**Vários workspaces por conta (2026-10-01): sem migration.** As policies de `workspaces` já eram do dono
+(criar com `owner_id = auth.uid()`, renomear, excluir) e `ws_members_insert` já deixava o dono se pôr como
+membro. Atenção: `workspaces_select` só mostra workspace a **membros** — por isso o app gera o `id` do
+workspace novo antes de inserir e não pede a linha de volta no insert.
+
 ## Advisors — o que o linter do Supabase apontou
 
 Rodados após cada migration (`get_advisors`, tipos `security` e `performance`).

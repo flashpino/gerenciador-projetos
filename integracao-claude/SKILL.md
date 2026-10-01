@@ -26,7 +26,7 @@ node "$GP" eu
 
 - Mostra a conta, os workspaces (com **dono**) e os boards a que ela tem acesso.
 - "configuração incompleta" → **pare e avise o usuário**: ele roda `node "$GP" configurar` uma vez. **Nunca peça nem escreva a senha.**
-- "sem permissão" / board não aparece → a conta de serviço não foi convidada no workspace. Diga ao usuário: *"Convidar integrantes"* no board, com o e-mail da conta.
+- "sem permissão" / board não aparece → a conta de serviço não foi convidada no workspace. Diga ao usuário: logo do menu lateral → *"Compartilhar workspace"*, com o e-mail da conta.
 
 ## 1. Projeto NOVO — quando o plano estiver definido
 
