@@ -38,7 +38,7 @@ async function botaoCriarHabilitado() {
 describe('BoardFormModal', () => {
   beforeEach(() => {
     vi.resetAllMocks()
-    vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace' })
+    vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace', owner_id: 'u1' })
   })
 
   it('cria o board no workspace atual e abre o board novo', async () => {

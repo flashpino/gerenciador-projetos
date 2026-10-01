@@ -12,9 +12,13 @@ import {
   buscarBoard,
   buscarMembros,
   buscarWorkspaceAtual,
+  buscarWorkspaces,
   criarBoard,
   criarGrupo,
+  criarWorkspace,
+  excluirWorkspace,
   removerGrupo,
+  renomearWorkspace,
 } from './boards'
 
 // boards: insert().select().single() → board criado; groups: insert() → o que o teste inspeciona.
@@ -50,17 +54,77 @@ describe('criarBoard', () => {
   })
 })
 
-describe('buscarWorkspaceAtual', () => {
-  beforeEach(() => vi.resetAllMocks())
-
-  it('pega o workspace do qual a pessoa é dona, não o primeiro visível', async () => {
+describe('workspaces', () => {
+  beforeEach(() => {
+    vi.resetAllMocks()
+    localStorage.clear()
     vi.mocked(supabase.auth.getSession).mockResolvedValue({ data: { session: { user: { id: 'u1' } } }, error: null } as never)
-    const eq = vi.fn(() => ({ single: vi.fn().mockResolvedValue({ data: { id: 'w1', name: 'Meu Workspace' }, error: null }) }))
-    vi.mocked(supabase.from).mockReturnValue({ select: () => ({ eq }) } as never)
+  })
 
-    await expect(buscarWorkspaceAtual()).resolves.toEqual({ id: 'w1', name: 'Meu Workspace' })
+  const LISTA = [
+    { id: 'w-convite', name: 'Do Pino', owner_id: 'u-pino' },
+    { id: 'w-meu', name: 'Meu Workspace', owner_id: 'u1' },
+    { id: 'w-clientes', name: 'Clientes', owner_id: 'u1' },
+  ]
+  const listaNoBanco = () => {
+    const order = vi.fn().mockResolvedValue({ data: LISTA, error: null })
+    vi.mocked(supabase.from).mockReturnValue({ select: () => ({ order }) } as never)
+  }
+
+  it('buscarWorkspaces lista os de que a pessoa é membro (o RLS filtra), com o dono', async () => {
+    listaNoBanco()
+    await expect(buscarWorkspaces()).resolves.toEqual(LISTA)
     expect(supabase.from).toHaveBeenCalledWith('workspaces')
-    expect(eq).toHaveBeenCalledWith('owner_id', 'u1')
+  })
+
+  it('buscarWorkspaceAtual: sem escolha guardada, o próprio (não o de quem convidou)', async () => {
+    listaNoBanco()
+    await expect(buscarWorkspaceAtual()).resolves.toEqual({ id: 'w-meu', name: 'Meu Workspace', owner_id: 'u1' })
+  })
+
+  it('buscarWorkspaceAtual: respeita o último escolhido', async () => {
+    listaNoBanco()
+    localStorage.setItem('workspaceAtualId', 'w-clientes')
+    await expect(buscarWorkspaceAtual()).resolves.toMatchObject({ id: 'w-clientes' })
+  })
+
+  it('criarWorkspace grava o workspace SEM pedir a linha de volta e põe o dono como membro', async () => {
+    // Sem ser membro ainda, o RLS de select esconderia a linha: por isso o id nasce no app.
+    const inserirWs = vi.fn().mockResolvedValue({ error: null })
+    const inserirMembro = vi.fn().mockResolvedValue({ error: null })
+    vi.mocked(supabase.from).mockImplementation(((t: string) =>
+      t === 'workspaces' ? { insert: inserirWs } : { insert: inserirMembro }) as never)
+
+    const ws = await criarWorkspace('  Clientes  ')
+
+    expect(ws).toMatchObject({ name: 'Clientes', owner_id: 'u1' })
+    expect(inserirWs).toHaveBeenCalledWith({ id: ws.id, name: 'Clientes', owner_id: 'u1' })
+    expect(inserirMembro).toHaveBeenCalledWith({ workspace_id: ws.id, user_id: 'u1' })
+  })
+
+  it('criarWorkspace: se entrar como membro falha, apaga o workspace recém-criado (não fica órfão)', async () => {
+    const eq = vi.fn().mockResolvedValue({ error: null })
+    vi.mocked(supabase.from).mockImplementation(((t: string) =>
+      t === 'workspaces'
+        ? { insert: vi.fn().mockResolvedValue({ error: null }), delete: () => ({ eq }) }
+        : { insert: vi.fn().mockResolvedValue({ error: { code: '42501', message: 'rls' } }) }) as never)
+
+    await expect(criarWorkspace('Clientes')).rejects.toThrow()
+    expect(eq).toHaveBeenCalledWith('id', expect.any(String))
+  })
+
+  it('renomearWorkspace e excluirWorkspace agem só naquele id (o RLS limita ao dono)', async () => {
+    const eqUpdate = vi.fn().mockResolvedValue({ error: null })
+    const update = vi.fn(() => ({ eq: eqUpdate }))
+    const eqDelete = vi.fn().mockResolvedValue({ error: null })
+    vi.mocked(supabase.from).mockReturnValue({ update, delete: () => ({ eq: eqDelete }) } as never)
+
+    await renomearWorkspace('w-clientes', ' Clientes 2026 ')
+    await excluirWorkspace('w-clientes')
+
+    expect(update).toHaveBeenCalledWith({ name: 'Clientes 2026' })
+    expect(eqUpdate).toHaveBeenCalledWith('id', 'w-clientes')
+    expect(eqDelete).toHaveBeenCalledWith('id', 'w-clientes')
   })
 })
 

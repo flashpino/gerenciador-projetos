@@ -37,7 +37,7 @@ async function botaoHabilitado(nomeModelo: string) {
 describe('ModelosPage', () => {
   beforeEach(() => {
     vi.resetAllMocks()
-    vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace' })
+    vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace', owner_id: 'u1' })
   })
 
   it('lista os modelos com seus grupos', () => {

@@ -35,7 +35,7 @@ function renderizar(rota = '/') {
 describe('Sidebar', () => {
   beforeEach(() => {
     vi.resetAllMocks()
-    vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace' })
+    vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace', owner_id: 'u1' })
     vi.mocked(servico.buscarMembros).mockResolvedValue(MEMBROS)
     vi.mocked(useSessao).mockReturnValue({ usuario: { id: 'u1', email: 'a@x.com' }, carregando: false })
   })

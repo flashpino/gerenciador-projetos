@@ -178,7 +178,7 @@ describe('Acessibilidade automatizada (axe) — telas principais do MVP', () => 
       { id: 'b1', name: 'Sprint Alpha Q3', created_at: '2026-09-01T10:00:00Z' },
       { id: 'b2', name: 'Roadmap', created_at: '2026-09-10T10:00:00Z' },
     ])
-    vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace' })
+    vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace', owner_id: 'u1' })
     const { wrapper: QueryWrapper } = criarWrapper()
     const { container, findByText } = render(
       <MemoryRouter>
@@ -197,7 +197,7 @@ describe('Acessibilidade automatizada (axe) — telas principais do MVP', () => 
       { id: 'b2', name: 'Roadmap', created_at: '2026-09-10T10:00:00Z' },
     ])
     vi.mocked(servico.buscarFavoritos).mockResolvedValue(['b2'])
-    vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace' })
+    vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace', owner_id: 'u1' })
     const { wrapper: QueryWrapper } = criarWrapper()
     const { container, findByText } = render(
       <MemoryRouter>
@@ -237,7 +237,7 @@ describe('Acessibilidade automatizada (axe) — telas principais do MVP', () => 
   })
 
   it('ModelosPage não tem violação WCAG', async () => {
-    vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace' })
+    vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace', owner_id: 'u1' })
     const { wrapper: QueryWrapper } = criarWrapper()
     const { container, findByRole } = render(
       <MemoryRouter>
@@ -323,7 +323,7 @@ describe('Acessibilidade automatizada (axe) — telas principais do MVP', () => 
   })
 
   it('ConfiguracoesPage não tem violação WCAG', async () => {
-    vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace' })
+    vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace', owner_id: 'u1' })
     vi.mocked(servico.buscarMembros).mockResolvedValue(MEMBROS)
     const { wrapper: QueryWrapper } = criarWrapper()
     const { container, findByLabelText } = render(

@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import type { Atividade, Board, Comment, Group, GroupComTarefas, GrupoInicial, Profile, Subtask, Task, TaskComDetalhe } from '@/types/domain'
+import { escolherWorkspace, lerWorkspaceAtual } from '@/lib/workspaceAtual'
 import { ErroDeDados, traduzirErro } from './erros'
 
 /**
@@ -11,25 +12,76 @@ import { ErroDeDados, traduzirErro } from './erros'
  *  - nao conhece React: nada de hook, estado ou cache aqui dentro
  */
 
-/**
- * Workspace do usuario: o do qual a pessoa é dona — convidada em outro, ela vê os dois, mas cria no dela.
- * Usado pela Sidebar pra mostrar o nome e pelo BoardFormModal pra criar board nele.
- */
-export async function buscarWorkspaceAtual(): Promise<{ id: string; name: string }> {
-  const { data: sessao } = await supabase.auth.getSession()
-  const dono = sessao.session?.user.id
-  if (!dono) throw new ErroDeDados('Sua sessão expirou. Entre de novo.')
+export interface Workspace {
+  id: string
+  name: string
+  owner_id: string
+}
 
-  const { data, error } = await supabase.from('workspaces').select('id, name').eq('owner_id', dono).single()
+async function meuId(): Promise<string> {
+  const { data: sessao } = await supabase.auth.getSession()
+  const id = sessao.session?.user.id
+  if (!id) throw new ErroDeDados('Sua sessão expirou. Entre de novo.')
+  return id
+}
+
+/** Workspaces de que a pessoa é membro (o RLS de workspaces filtra), na ordem de criação. */
+export async function buscarWorkspaces(): Promise<Workspace[]> {
+  const { data, error } = await supabase
+    .from('workspaces')
+    .select('id, name, owner_id')
+    .order('created_at', { ascending: true })
   if (error) throw traduzirErro(error)
-  return data
+  return data ?? []
+}
+
+/**
+ * O workspace aberto agora (lib/workspaceAtual): o último escolhido, senão o próprio, senão o primeiro.
+ * Sidebar, Meus Painéis, Novo Painel e Modelos leem este — trocar é `lembrarWorkspaceAtual` + invalidar.
+ */
+export async function buscarWorkspaceAtual(): Promise<Workspace> {
+  const [lista, eu] = await Promise.all([buscarWorkspaces(), meuId()])
+  const atual = escolherWorkspace(lista, lerWorkspaceAtual(), eu)
+  if (!atual) throw new ErroDeDados('Nenhum workspace disponível.')
+  return atual
+}
+
+/**
+ * Cria um workspace com a pessoa como dona e membro. O id nasce aqui: o RLS de select só mostra
+ * workspace de que se é MEMBRO, então pedir a linha de volta no insert falharia antes do 2º passo.
+ * Dois inserts (não RPC — uma function atômica seria migration); se o 2º falha, desfaz o 1º.
+ */
+export async function criarWorkspace(nome: string): Promise<Workspace> {
+  const dono = await meuId()
+  const ws: Workspace = { id: crypto.randomUUID(), name: nome.trim(), owner_id: dono }
+
+  const { error } = await supabase.from('workspaces').insert(ws)
+  if (error) throw traduzirErro(error)
+
+  const { error: erroMembro } = await supabase.from('workspace_members').insert({ workspace_id: ws.id, user_id: dono })
+  if (erroMembro) {
+    await supabase.from('workspaces').delete().eq('id', ws.id)
+    throw traduzirErro(erroMembro)
+  }
+  return ws
+}
+
+export async function renomearWorkspace(id: string, nome: string): Promise<void> {
+  const { error } = await supabase.from('workspaces').update({ name: nome.trim() }).eq('id', id)
+  if (error) throw traduzirErro(error)
+}
+
+/** Só o dono (RLS). O cascade leva boards, grupos, tarefas e a lista de membros. */
+export async function excluirWorkspace(id: string): Promise<void> {
+  const { error } = await supabase.from('workspaces').delete().eq('id', id)
+  if (error) throw traduzirErro(error)
 }
 
 /** Boards do workspace (RLS isola). Ordem de criação: o primeiro é o fallback da raiz `/`. */
 export async function buscarBoards(): Promise<Board[]> {
   const { data, error } = await supabase
     .from('boards')
-    .select('id, name, created_at')
+    .select('id, name, created_at, workspace_id')
     .order('created_at', { ascending: true })
 
   if (error) throw traduzirErro(error)

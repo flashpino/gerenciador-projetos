@@ -41,7 +41,7 @@ function renderizar() {
 describe('ConfiguracoesPage', () => {
   beforeEach(() => {
     vi.resetAllMocks()
-    vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace' })
+    vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace', owner_id: 'u1' })
     vi.mocked(servico.buscarMembros).mockResolvedValue([
       { id: 'u1', full_name: 'Ana Lima', avatar_url: null },
       { id: 'u2', full_name: 'Beto Souza', avatar_url: null },
