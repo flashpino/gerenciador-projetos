@@ -402,3 +402,11 @@ Pedido: criar workspaces e compartilhar o workspace (não o painel). Reabre o it
 - [x] App: "Excluir" some do menu do painel para quem não é dono (`souDono` vem de `buscarWorkspaceAtual`); teste do convidado
 - [x] Migration `0009_so_dono_exclui_board` (+ down): `boards_all` vira select/insert/update para membros e delete só para o dono
 - [ ] **Aplicar a 0009 (humano):** a aplicação pelo agente foi bloqueada pelo Claude Code (alteração de infraestrutura protegida). Sem ela, o banco ainda deixa convidado excluir pela API
+
+---
+
+## 404 ao recarregar a página na Hostinger ✅ (código) · ⏳ (publicar)
+
+- [x] `public/.htaccess`: rota que não é arquivo vai para o `index.html` (app de página única); `index.html`, `sw.js` e manifest sem cache
+- [x] Build confirma a cópia para `dist/.htaccess`
+- [ ] Não testado na Hostinger (depende de publicar). Se o upload for manual, conferir que o `.htaccess` (arquivo oculto) subiu

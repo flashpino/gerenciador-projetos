@@ -1,0 +1,26 @@
+# Hostinger (Apache/LiteSpeed). O Vite copia este arquivo para a raiz do dist/.
+#
+# App de página única: /boards/123, /paineis etc. só existem dentro do React Router.
+# Sem isto, recarregar a página (ou abrir um link direto) pede ao servidor um arquivo
+# que não existe e ele responde 404.
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Arquivo ou pasta que existe de verdade (JS, CSS, ícones, sw.js): entrega como está.
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Qualquer outra rota: entrega o app, que resolve a rota sozinho.
+  RewriteRule ^ /index.html [L]
+</IfModule>
+
+# Nunca guardar em cache o index.html nem o service worker: são eles que apontam para a
+# versão nova. Os arquivos em assets/ têm hash no nome e podem ficar em cache à vontade.
+<IfModule mod_headers.c>
+  <FilesMatch "^(index\.html|sw\.js|push-sw\.js|registerSW\.js|manifest\.webmanifest)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
