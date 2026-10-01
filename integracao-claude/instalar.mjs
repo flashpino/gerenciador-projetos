@@ -18,6 +18,8 @@ const destino = i > -1 && process.argv[i + 1] ? path.resolve(process.argv[i + 1]
 
 fs.mkdirSync(destino, { recursive: true })
 for (const arquivo of ARQUIVOS) fs.copyFileSync(path.join(origem, arquivo), path.join(destino, arquivo))
+// A referência da API HTTP vai junto: a sessão de OUTRO projeto não enxerga o docs/ deste repositório.
+fs.copyFileSync(path.join(origem, '..', 'docs', 'api-tarefas.md'), path.join(destino, 'API.md'))
 
 process.stdout.write(`Instalado em ${destino}\n`)
 process.stdout.write(`Próximo passo (uma vez, feito por você): node "${path.join(destino, 'gp.mjs')}" configurar\n`)

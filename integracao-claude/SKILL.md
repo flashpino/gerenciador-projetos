@@ -15,6 +15,9 @@ node "$GP" ajuda
 
 Rode sempre de dentro do projeto: o vínculo (`.gerenciador.json`, sem segredo, pode ir para o git) é procurado da pasta atual para cima.
 
+Sem a CLI (outra linguagem/ferramenta, ou a CLI não serve ao caso): a API HTTP direta — login, criar tarefa com a
+tag `ref:`, atualizar status, comentar — está em **`API.md`, nesta mesma pasta da skill**.
+
 ## 0. Antes de tudo: a conta funciona?
 
 ```bash
