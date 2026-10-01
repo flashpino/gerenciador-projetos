@@ -19,8 +19,8 @@
   /* --- Tipografia ------------------------------------------------------- */
   --font-sans: 'Urbanist', ui-sans-serif, system-ui, -apple-system, sans-serif;
 
-  --text-display: 2.125rem;      /* 34px */
-  --text-display--line-height: 2.5rem;
+  --text-display: 1.75rem;       /* 28px no celular; 34px de md em diante (override em @layer base) */
+  --text-display--line-height: 2.125rem;
   --text-display--font-weight: 600;
   --text-display--letter-spacing: -0.02em;
 
@@ -245,6 +245,15 @@
       linear-gradient(160deg, var(--color-canvas-hi), var(--color-canvas));
     background-attachment: fixed;
     min-height: 100dvh;
+  }
+
+  /* Titulo de pagina: 28px no celular (o @theme), 34px de md em diante. 34px em
+     375px comia a largura e cortava o nome do quadro. */
+  @media (width >= 48rem) {
+    :root {
+      --text-display: 2.125rem;             /* 34px */
+      --text-display--line-height: 2.5rem;
+    }
   }
 
   /* Foco visivel em TUDO que recebe foco. Nao remova: e requisito WCAG 2.4.7

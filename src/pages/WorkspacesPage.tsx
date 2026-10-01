@@ -56,7 +56,7 @@ export default function WorkspacesPage() {
             const dono = w.owner_id === usuario?.id
             return (
               <li key={w.id} className="flex flex-wrap items-center gap-space-md px-space-lg py-space-md">
-                <p className="flex min-w-0 flex-1 items-center gap-space-sm text-body font-semibold text-ink">
+                <p className="flex min-w-0 flex-1 basis-48 items-center gap-space-sm text-body font-semibold text-ink">
                   <span className="truncate">{w.name}</span>
                   <Badge variant="soft">{dono ? 'Seu' : 'Convidado'}</Badge>
                 </p>

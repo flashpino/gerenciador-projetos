@@ -18,9 +18,11 @@ interface Props {
 // Sem ele o modal abre colado no canto superior esquerdo (visto no navegador;
 // invisível no jsdom, que roda com `css: false`).
 const TAMANHOS: Record<Tamanho, string> = {
-  md: 'm-auto w-[min(28rem,calc(100vw-2rem))]',
-  lg: 'm-auto w-[min(42rem,calc(100vw-2rem))]',
-  full: 'm-auto h-[calc(100vh-2rem)] w-[calc(100vw-2rem)]',
+  md: 'm-auto w-[min(28rem,calc(100vw-2rem))] rounded-md border',
+  // Tela cheia no celular (docs/responsive.md, F5: caixa flutuante deixa alvos na borda e o teclado
+  // virtual cobre metade do formulário); caixa centrada de md em diante. `hidden open:flex`: ver drawer.
+  lg: 'm-0 hidden h-dvh max-h-none w-full max-w-none flex-col open:flex md:m-auto md:h-fit md:max-h-[calc(100dvh-2rem)] md:w-[min(42rem,calc(100vw-2rem))] md:rounded-md md:border',
+  full: 'm-auto h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] rounded-md border',
   // Ocupa a lateral inteira — usado pelo drawer de navegação em 375px
   // (docs/responsive.md:38, docs/superpowers/specs/2026-09-17-casca-
   // sidebar-design.md). Mesmo <dialog>, trap de foco e Esc de graça; só a
@@ -35,7 +37,7 @@ const TAMANHOS: Record<Tamanho, string> = {
   //
   // `max-h-none`: o estilo padrão do navegador (`dialog:modal { max-height:
   // calc(100% - 6px - 2em) }`) cortava o h-dvh e deixava um vão no rodapé.
-  drawer: 'fixed inset-y-0 left-0 m-0 hidden h-dvh max-h-none w-[min(20rem,85vw)] max-w-none flex-col rounded-none open:flex',
+  drawer: 'fixed inset-y-0 left-0 m-0 hidden h-dvh max-h-none w-[min(20rem,85vw)] max-w-none flex-col border-r open:flex',
 }
 
 // O conteúdo do drawer precisa preencher a altura toda, não ficar limitado
@@ -45,6 +47,7 @@ const TAMANHOS: Record<Tamanho, string> = {
 // borda — o padding virava uma moldura branca em volta dele.
 const ALTURA_CONTEUDO: Partial<Record<Tamanho, string>> = {
   drawer: 'flex-1 overflow-y-auto',
+  lg: 'min-h-0 flex-1 overflow-y-auto p-space-lg md:max-h-[70vh]',
 }
 
 /**
@@ -113,7 +116,7 @@ export function Modal({ open, onClose, title, children, footer, size = 'md' }: P
       aria-labelledby={idTitulo}
       data-tamanho={size}
       className={cn(
-        'rounded-md border border-border bg-surface p-0 text-ink shadow-overlay backdrop:bg-ink/40',
+        'border-border bg-surface p-0 text-ink shadow-overlay backdrop:bg-ink/40',
         TAMANHOS[size],
       )}
     >
@@ -125,7 +128,7 @@ export function Modal({ open, onClose, title, children, footer, size = 'md' }: P
           type="button"
           aria-label="Fechar"
           onClick={() => dialogRef.current?.close()}
-          className="rounded p-space-xs hover:bg-surface-2"
+          className="grid min-h-touch min-w-touch place-items-center rounded hover:bg-surface-2 md:min-h-0 md:min-w-0 md:p-space-xs"
         >
           <X aria-hidden="true" className="size-4" />
         </button>

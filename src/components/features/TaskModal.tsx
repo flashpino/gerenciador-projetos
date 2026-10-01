@@ -193,7 +193,7 @@ function FormularioTarefa({
         <TextInput multiline rows={3} value={descricao} onChange={(e) => setDescricao(e.target.value)} />
       </Field>
 
-      <div className="grid grid-cols-2 gap-space-md">
+      <div className="grid gap-space-md md:grid-cols-2">
         <Field label="Grupo de destino">
           <Select
             value={grupoId}
@@ -201,7 +201,7 @@ function FormularioTarefa({
             options={grupos.map((g) => ({ value: g.id, label: g.name }))}
           />
         </Field>
-        <div className="flex items-end gap-space-sm">
+        <div className="flex flex-wrap items-end gap-space-sm">
           <StatusCell valor={status} nomeTarefa={nomeParaAria} aoMudar={setStatus} />
           <PriorityCell valor={prioridade} nomeTarefa={nomeParaAria} aoMudar={setPrioridade} />
         </div>

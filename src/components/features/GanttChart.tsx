@@ -8,11 +8,10 @@ interface Props {
   grupos: GroupComTarefas[]
 }
 
-const LARGURA_NOMES = 208
-
 /**
  * Sem grafico de terceiro (docs/components.md): barras sao divs posicionados
  * por px sobre uma grade de ticks. Coluna de nomes fica `sticky left-0`
+ * (140px no celular, 240px de md em diante — docs/responsive.md, F3)
  * dentro do MESMO container com scroll — visualmente fixa, tecnicamente um
  * so scroll horizontal (critério F3.6), sem duplicar a lista em duas arvores
  * de DOM que teriam que ficar alinhadas na vertical à mão.
@@ -45,11 +44,11 @@ export function GanttChart({ grupos }: Props) {
 
       {/* overflow-y-hidden explícito: só overflow-x-auto libera a rolagem vertical também (regra do CSS). */}
       <div className="glass overflow-x-auto overflow-y-hidden rounded-card">
-        <div style={{ width: LARGURA_NOMES + larguraTimeline, minWidth: '100%' }}>
+        {/* w-max: a largura é a soma das linhas (coluna de nomes + timeline), qualquer que seja a coluna. */}
+        <div className="w-max min-w-full">
           <div className="flex border-b border-border bg-surface-2">
             <div
-              className="sticky left-0 z-10 shrink-0 border-r border-border bg-surface-2 px-space-md py-space-sm text-label text-ink-muted"
-              style={{ width: LARGURA_NOMES }}
+              className="sticky left-0 z-10 w-35 shrink-0 border-r md:w-60 border-border bg-surface-2 px-space-md py-space-sm text-label text-ink-muted"
             >
               Tarefas
             </div>
@@ -76,8 +75,7 @@ export function GanttChart({ grupos }: Props) {
             <div key={g.id}>
               <div className="flex bg-surface-2">
                 <div
-                  className="sticky left-0 z-10 flex shrink-0 items-center truncate border-r border-border bg-surface-2 px-space-md py-space-xs"
-                  style={{ width: LARGURA_NOMES }}
+                  className="sticky left-0 z-10 flex w-35 shrink-0 items-center truncate md:w-60 border-r border-border bg-surface-2 px-space-md py-space-xs"
                 >
                   {/* h2, não h3: a página (BoardShell) já usa h1 para o título do
                       board; TaskGroup (Tabela Principal) usa h2 para o mesmo nível
@@ -91,8 +89,7 @@ export function GanttChart({ grupos }: Props) {
               {g.tasks.map((t) => (
                 <div key={t.id} className="flex border-b border-border last:border-0">
                   <div
-                    className="sticky left-0 z-10 flex min-h-row shrink-0 items-center truncate border-r border-border bg-surface-2 px-space-md text-cell text-ink"
-                    style={{ width: LARGURA_NOMES }}
+                    className="sticky left-0 z-10 flex min-h-row w-35 shrink-0 md:w-60 items-center truncate border-r border-border bg-surface-2 px-space-md text-cell text-ink"
                   >
                     <span className="truncate">{t.title}</span>
                   </div>

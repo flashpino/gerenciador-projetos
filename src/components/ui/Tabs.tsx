@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { cn } from '@/lib/cn'
 
@@ -56,7 +57,18 @@ export function Tabs({
   // (docs/responsive.md, regra global) — por isso o overflow vive aqui. `relative`
   // prende o texto sr-only (position:absolute) de cada aba dentro da faixa: sem
   // isso ele escapa do overflow e estica a página quando as abas passam da tela.
-  const faixa = cn('relative flex gap-space-xs overflow-x-auto', className)
+  // Sem a barra de rolagem cinza: a aba cortada na borda já mostra que há mais.
+  const faixa = cn('relative flex gap-space-xs overflow-x-auto [scrollbar-width:none]', className)
+
+  // Em 375px a aba ativa pode nascer fora da faixa (Dashboard é a 4ª): centraliza ela. Mexe só no
+  // scrollLeft da faixa — scrollIntoView poderia rolar a página junto. `relative` faz da faixa o offsetParent.
+  const refFaixa = useRef<HTMLElement & HTMLDivElement>(null)
+  const idxAtivo = items.findIndex((i) => i.id === value)
+  useEffect(() => {
+    const el = refFaixa.current
+    const ativo = el?.children[idxAtivo]
+    if (el && ativo instanceof HTMLElement) el.scrollLeft = ativo.offsetLeft - (el.clientWidth - ativo.offsetWidth) / 2
+  }, [idxAtivo])
 
   const aparencia = (ativo: boolean) =>
     cn(
@@ -64,14 +76,14 @@ export function Tabs({
       variant === 'underline'
         ? cn('border-b-2 px-space-md md:min-h-9', ativo ? 'border-primary font-semibold text-primary' : 'border-transparent text-ink-muted')
         : cn(
-            'rounded-full px-space-lg font-semibold transition-colors duration-fast',
+            'rounded-full px-space-md font-semibold transition-colors duration-fast md:px-space-lg',
             ativo ? 'bg-primary text-primary-fg' : 'text-ink hover:bg-glass-strong',
           ),
     )
 
   if (items[0]?.href !== undefined) {
     return (
-      <nav aria-label={rotulo} className={faixa}>
+      <nav ref={refFaixa} aria-label={rotulo} className={faixa}>
         {items.map((i) => (
           <Link
             key={i.id}
@@ -103,7 +115,7 @@ export function Tabs({
   return (
     // tabIndex={-1} necessario para o lint jsx-a11y (role interativo) — nao afeta
     // a ordem de tab por ser negativo; quem recebe foco de verdade e o <button role="tab"> ativo.
-    <div role="tablist" aria-label={rotulo} onKeyDown={tecla} tabIndex={-1} className={faixa}>
+    <div ref={refFaixa} role="tablist" aria-label={rotulo} onKeyDown={tecla} tabIndex={-1} className={faixa}>
       {items.map((i) => (
         <button
           key={i.id}

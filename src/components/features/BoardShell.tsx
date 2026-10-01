@@ -4,6 +4,7 @@ import { Filter, Plus, Search } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Tabs, type ItemTab } from '@/components/ui/Tabs'
 import { TextInput } from '@/components/ui/TextInput'
+import { cn } from '@/lib/cn'
 import { useBuscaDoBoard } from '@/hooks/useBuscaDoBoard'
 import { useFiltroTarefas } from '@/hooks/useFiltroTarefas'
 import { useBoard, useGruposComTarefas, useMembros, useTrocarWorkspace } from '@/hooks/useQuadro'
@@ -71,7 +72,8 @@ export function BoardShell({ titulo, children }: Props) {
     <div className="mx-auto max-w-canvas p-gutter md:p-margin">
       <div className="mb-gutter flex flex-wrap items-center justify-between gap-space-md">
         <div className="flex min-w-0 items-center gap-space-sm">
-          <h1 className="min-w-0 truncate text-display">{titulo}</h1>
+          {/* Quebra no celular (o nome inteiro importa mais que uma linha só); corta só de md em diante. */}
+          <h1 className="min-w-0 break-words text-display md:truncate">{titulo}</h1>
           <FavoritoToggle boardId={boardId} nome={titulo} />
         </div>
         {/*
@@ -79,10 +81,10 @@ export function BoardShell({ titulo, children }: Props) {
           é do workspace inteiro, no seletor do menu lateral. "Novo item" cria tarefa de qualquer visão, no
           primeiro grupo (trocável no modal). "Sair" mora no rodapé da Sidebar.
         */}
-        <div className="glass flex items-center gap-space-xs rounded-full p-space-xs">
+        <div className={cn('glass flex items-center gap-space-xs rounded-full p-space-xs', podeFiltrar && 'w-full md:w-auto')}>
           {podeFiltrar && (
             <>
-              <div className="relative flex items-center">
+              <div className="relative flex min-w-0 flex-1 items-center md:flex-none">
                 <Search aria-hidden="true" className="pointer-events-none absolute left-space-md size-4 text-ink-muted" />
                 <TextInput
                   type="search"
@@ -90,7 +92,7 @@ export function BoardShell({ titulo, children }: Props) {
                   placeholder="Buscar tarefa…"
                   value={busca.texto}
                   onChange={(e) => busca.setTexto(e.target.value)}
-                  className="w-40 rounded-full border-transparent bg-transparent pl-10 md:w-56"
+                  className="w-full rounded-full border-transparent bg-transparent pl-10 md:w-56"
                 />
               </div>
               <Button

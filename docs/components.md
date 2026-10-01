@@ -70,6 +70,13 @@ comum em formulário gerado.
 **#9 Modal usa o `<dialog>` nativo.** Trap de foco, `Esc` e camada superior vêm
 de graça do navegador. Escrever trap de foco à mão é ~80 linhas e sempre tem um
 bug de borda. Devolver o foco ao elemento de origem é a única parte manual.
+`size="lg"` (TaskModal) é **tela cheia abaixo de md** e caixa centrada de md em diante
+(`responsive.md`, F5). Raio e borda moram em cada tamanho, não na base: o `cn` só
+concatena, então `rounded-md` na base brigaria com `rounded-none` no tamanho.
+
+**#7 Checkbox com `rotuloOculto`**: o quadrado tem 16px, mas o `<label>` (aria-hidden,
+nome vem do `aria-label` do input) cobre 44×44 em volta no celular — alvo de toque mínimo
+sem mudar o desenho.
 
 **#11 StateView é o primitivo mais importante da lista.** Ele recebe um estado
 discriminado e obriga os quatro: loading, erro, vazio, sucesso. "Esqueci o

@@ -229,7 +229,7 @@ export function TaskGroup({
           <ul className="md:hidden">
             {tarefas.map((t) => (
               <li key={t.id} className="border-b border-border p-space-md last:border-0">
-                <div className="flex items-start gap-space-sm">
+                <div className="flex items-center gap-space-sm">
                   <Checkbox
                     checked={t.status === 'done'}
                     onChange={(v) => aoEditar(t.id, { status: v ? 'done' : 'working' })}
@@ -247,7 +247,7 @@ export function TaskGroup({
                     {t.title}
                   </button>
                 </div>
-                <div className="mt-space-sm flex flex-wrap items-center gap-space-sm">
+                <div className="mt-space-xs flex flex-wrap items-center gap-x-space-xs">
                   <StatusCell
                     valor={t.status}
                     nomeTarefa={t.title}
