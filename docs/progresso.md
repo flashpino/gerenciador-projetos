@@ -394,3 +394,11 @@ Pedido: criar workspaces e compartilhar o workspace (não o painel). Reabre o it
 - [x] Meus Painéis mostra só os do workspace aberto (com o nome dele); Favoritos continua cruzando workspaces
 - [x] verify exit 0: 629/629, 0 clones, audit ok
 - [ ] **Não verificado no navegador real** (contexto da sessão no limite): conferir seletor, criar/trocar/excluir workspace e Meus Painéis
+
+---
+
+## Só o dono do workspace exclui painéis ✅ (app) · ⏳ (banco)
+
+- [x] App: "Excluir" some do menu do painel para quem não é dono (`souDono` vem de `buscarWorkspaceAtual`); teste do convidado
+- [x] Migration `0009_so_dono_exclui_board` (+ down): `boards_all` vira select/insert/update para membros e delete só para o dono
+- [ ] **Aplicar a 0009 (humano):** a aplicação pelo agente foi bloqueada pelo Claude Code (alteração de infraestrutura protegida). Sem ela, o banco ainda deixa convidado excluir pela API

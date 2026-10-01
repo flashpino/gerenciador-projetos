@@ -96,7 +96,12 @@ export default function PaineisPage({ filtro = 'todos' }: Props) {
         <ul className="grid grid-cols-1 gap-space-md md:grid-cols-2 lg:grid-cols-3">
           {lista?.map((b) => (
             <li key={b.id}>
-              <BoardCard board={b} aoRenomear={setForm} aoExcluir={setBoardParaExcluir} />
+              {/* Só o dono do workspace exclui (o banco recusa os demais — boards_delete, 0009). */}
+              <BoardCard
+                board={b}
+                aoRenomear={setForm}
+                aoExcluir={workspace.data?.souDono && b.workspace_id === workspace.data.id ? setBoardParaExcluir : undefined}
+              />
             </li>
           ))}
         </ul>

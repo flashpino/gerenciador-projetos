@@ -38,7 +38,7 @@ describe('PaineisPage', () => {
   beforeEach(() => {
     vi.resetAllMocks()
     vi.mocked(servico.buscarFavoritos).mockResolvedValue([])
-    vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace', owner_id: 'u1' })
+    vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace', owner_id: 'u1', souDono: true })
   })
 
   it('carregando', () => {
@@ -97,6 +97,16 @@ describe('PaineisPage', () => {
 
     await screen.findByRole('dialog', { name: 'Renomear painel' })
     expect(screen.getByLabelText('Nome do painel')).toHaveValue('Roadmap')
+  })
+
+  it('convidado (não é dono do workspace) não vê "Excluir" — só o dono exclui painéis', async () => {
+    vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Do Pino', owner_id: 'u9', souDono: false })
+    vi.mocked(servico.buscarBoards).mockResolvedValue(BOARDS)
+    const user = userEvent.setup()
+    renderizar()
+    await user.click(await screen.findByRole('button', { name: 'Ações de Sprint Alpha' }))
+    expect(screen.getByRole('menuitem', { name: 'Renomear' })).toBeInTheDocument()
+    expect(screen.queryByRole('menuitem', { name: 'Excluir' })).not.toBeInTheDocument()
   })
 
   it('"Excluir" no card abre a confirmação daquele board', async () => {

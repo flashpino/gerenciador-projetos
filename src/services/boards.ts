@@ -16,6 +16,8 @@ export interface Workspace {
   id: string
   name: string
   owner_id: string
+  /** Só no workspace atual: a pessoa logada é a dona (só ela exclui painéis — RLS boards_delete, 0009). */
+  souDono?: boolean
 }
 
 async function meuId(): Promise<string> {
@@ -43,7 +45,7 @@ export async function buscarWorkspaceAtual(): Promise<Workspace> {
   const [lista, eu] = await Promise.all([buscarWorkspaces(), meuId()])
   const atual = escolherWorkspace(lista, lerWorkspaceAtual(), eu)
   if (!atual) throw new ErroDeDados('Nenhum workspace disponível.')
-  return atual
+  return { ...atual, souDono: atual.owner_id === eu }
 }
 
 /**

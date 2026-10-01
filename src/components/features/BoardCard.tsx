@@ -8,7 +8,8 @@ import { FavoritoToggle } from './FavoritoToggle'
 interface Props {
   board: Board
   aoRenomear: (board: Board) => void
-  aoExcluir: (board: Board) => void
+  /** Ausente = sem "Excluir" no menu (só o dono do workspace exclui painéis). */
+  aoExcluir?: (board: Board) => void
 }
 
 /**
@@ -33,7 +34,7 @@ export function BoardCard({ board, aoRenomear, aoExcluir }: Props) {
         align="end"
         items={[
           { id: 'renomear', rotulo: 'Renomear', aoEscolher: () => aoRenomear(board) },
-          { id: 'excluir', rotulo: 'Excluir', aoEscolher: () => aoExcluir(board) },
+          ...(aoExcluir ? [{ id: 'excluir', rotulo: 'Excluir', aoEscolher: () => aoExcluir(board) }] : []),
         ]}
         trigger={(p) => (
           <button

@@ -79,7 +79,7 @@ describe('workspaces', () => {
 
   it('buscarWorkspaceAtual: sem escolha guardada, o próprio (não o de quem convidou)', async () => {
     listaNoBanco()
-    await expect(buscarWorkspaceAtual()).resolves.toEqual({ id: 'w-meu', name: 'Meu Workspace', owner_id: 'u1' })
+    await expect(buscarWorkspaceAtual()).resolves.toEqual({ id: 'w-meu', name: 'Meu Workspace', owner_id: 'u1', souDono: true })
   })
 
   it('buscarWorkspaceAtual: respeita o último escolhido', async () => {
