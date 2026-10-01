@@ -82,7 +82,7 @@ export function criarApi({ url, chave, fetchImpl = fetch }) {
       return linhas[0] ?? null
     },
 
-    workspaces: () => rest('workspaces?select=id,name,owner_id,dono:profiles(full_name)&order=created_at.asc'),
+    workspaces: () => rest('workspaces?select=id,name,owner_id,dono:profiles!owner_id(full_name)&order=created_at.asc'),
     boards: () => rest('boards?select=id,name,workspace_id,created_at&order=created_at.asc'),
 
     async estadoDoBoard(boardId) {

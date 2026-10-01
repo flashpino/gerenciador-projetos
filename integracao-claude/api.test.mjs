@@ -64,6 +64,14 @@ describe('requisições autenticadas', () => {
     expect(chamadas[0].init.headers.Authorization).toBe('Bearer TOKEN-SECRETO')
   })
 
+  it('workspaces traz o dono pela coluna owner_id (workspaces↔profiles tem 2 caminhos: dono e membros)', async () => {
+    // Sem o "!owner_id" o PostgREST recusa com 300/PGRST201 — visto contra o banco real em 2026-09-30.
+    const api = await logada()
+    fila.push(resposta(200, []))
+    await api.workspaces()
+    expect(decodeURIComponent(chamadas[0].url)).toContain('dono:profiles!owner_id(full_name)')
+  })
+
   it('a URL base perde a barra final', async () => {
     const api = await logada()
     fila.push(resposta(200, []))

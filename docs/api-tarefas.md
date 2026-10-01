@@ -64,7 +64,7 @@ Prefer: return=representation      ← em POST/PATCH: devolve a linha gravada (c
 
 ```bash
 # Workspaces em que a conta é membro (com o nome do dono — os nomes "Meu Workspace" se repetem, use o id)
-GET /rest/v1/workspaces?select=id,name,owner_id,dono:profiles(full_name)&order=created_at.asc
+GET /rest/v1/workspaces?select=id,name,owner_id,dono:profiles!owner_id(full_name)&order=created_at.asc
 
 # Boards visíveis
 GET /rest/v1/boards?select=id,name,workspace_id&order=created_at.asc
