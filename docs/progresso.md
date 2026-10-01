@@ -367,7 +367,7 @@ Pedido: o master `flashpino@hotmail.com` cadastra, edita e exclui usuários. Dec
 - [x] App: sessão com `master`, `services/usuarios.ts`, `useUsuarios`, tela `/usuarios`, item "Usuários" no menu só para o master, `UsuarioFormModal`, `ExcluirUsuarioDialog`
 - [x] `AcoesDoFormulario` (primitivo #13): rodapé de formulário repetido em 5 modais unificado — jscpd de 4 clones para 0
 - [x] Sem migration: as FKs já são cascade/set null (conferido)
-- [ ] **Ativação (Zona Vermelha):** publicar a função `usuarios` e marcar o master (SQL em `app_metadata`)
+- [x] **Ativado** (2026-09-30): o usuário marcou o master (`app_metadata.role`); o agente publicou a função `usuarios` depois que a tela, já no ar, deu erro de CORS (era 404: função inexistente). Testado: preflight 200 com CORS, chamada sem login 401
 - [ ] Observado: `boardInexistente.test.tsx` falhou 1 vez na suíte inteira com cobertura e passou isolado e na rodada seguinte (sensível a carga, como o `buscaEFiltros`)
 
 ---
