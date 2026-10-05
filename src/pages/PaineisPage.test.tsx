@@ -13,6 +13,8 @@ vi.mock('@/services/boards', () => ({
   criarBoard: vi.fn(),
   renomearBoard: vi.fn(),
   removerBoard: vi.fn(),
+  buscarWorkspaces: vi.fn(),
+  moverBoard: vi.fn(),
 }))
 
 import * as servico from '@/services/boards'
@@ -39,6 +41,10 @@ describe('PaineisPage', () => {
     vi.resetAllMocks()
     vi.mocked(servico.buscarFavoritos).mockResolvedValue([])
     vi.mocked(servico.buscarWorkspaceAtual).mockResolvedValue({ id: 'w1', name: 'Meu Workspace', owner_id: 'u1', souDono: true })
+    vi.mocked(servico.buscarWorkspaces).mockResolvedValue([
+      { id: 'w1', name: 'Meu Workspace', owner_id: 'u1' },
+      { id: 'w2', name: 'Marketing', owner_id: 'u1' },
+    ])
   })
 
   it('carregando', () => {
@@ -107,6 +113,7 @@ describe('PaineisPage', () => {
     await user.click(await screen.findByRole('button', { name: 'Ações de Sprint Alpha' }))
     expect(screen.getByRole('menuitem', { name: 'Renomear' })).toBeInTheDocument()
     expect(screen.queryByRole('menuitem', { name: 'Excluir' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('menuitem', { name: 'Mover para outro workspace' })).not.toBeInTheDocument()
   })
 
   it('"Excluir" no card abre a confirmação daquele board', async () => {
@@ -119,6 +126,26 @@ describe('PaineisPage', () => {
 
     await screen.findByRole('dialog', { name: 'Excluir painel' })
     expect(screen.getByLabelText('Digite "Roadmap" para confirmar')).toBeInTheDocument()
+  })
+
+  it('"Mover para outro workspace" no card abre o diálogo com os outros workspaces e move', async () => {
+    vi.mocked(servico.buscarBoards).mockResolvedValue(BOARDS)
+    vi.mocked(servico.moverBoard).mockResolvedValue(undefined)
+    const user = userEvent.setup()
+    renderizar()
+
+    await user.click(await screen.findByRole('button', { name: 'Ações de Roadmap' }))
+    await user.click(screen.getByRole('menuitem', { name: 'Mover para outro workspace' }))
+
+    await screen.findByRole('dialog', { name: 'Mover painel' })
+    // O workspace de onde o painel sai não é destino.
+    const destino = await screen.findByRole('combobox', { name: 'Workspace de destino' })
+    await waitFor(() => expect(screen.getByRole('option', { name: 'Marketing' })).toBeInTheDocument())
+    expect(screen.queryByRole('option', { name: 'Meu Workspace' })).not.toBeInTheDocument()
+
+    await user.selectOptions(destino, 'Marketing')
+    await user.click(screen.getByRole('button', { name: 'Mover painel' }))
+    expect(servico.moverBoard).toHaveBeenCalledWith('b2', 'w2')
   })
 
   it('depois de excluir, o foco vai pro título da página — o botão de origem sumiu com o card', async () => {

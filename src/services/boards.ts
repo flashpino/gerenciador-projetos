@@ -143,6 +143,15 @@ export async function renomearBoard(id: string, name: string): Promise<Board> {
   return data
 }
 
+/**
+ * Leva o painel (com grupos, tarefas e comentários, que pendem do board) para outro workspace.
+ * O banco confere: dono do workspace de origem (gatilho do 0010) e membro do destino (boards_update).
+ */
+export async function moverBoard(id: string, workspaceId: string): Promise<void> {
+  const { error } = await supabase.from('boards').update({ workspace_id: workspaceId }).eq('id', id)
+  if (error) throw traduzirErro(error)
+}
+
 /** O `on delete cascade` do schema leva grupos, tarefas, subtarefas e comentários junto. */
 export async function removerBoard(id: string): Promise<void> {
   const { error } = await supabase.from('boards').delete().eq('id', id)

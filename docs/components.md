@@ -155,6 +155,7 @@ passam por `src/hooks/` → `src/services/`.
 | `WorkspaceFormModal` | Modal, Field, TextInput, AcoesDoFormulario | criar (já abre) e renomear workspace |
 | `ExcluirWorkspaceDialog` | Modal, Field, TextInput, AcoesDoFormulario (`danger`) | exclusão de workspace confirmada pelo nome; o cascade leva os painéis |
 | `ExcluirBoardDialog` | Modal, Field, TextInput, Button (`danger`) | exclusão definitiva de board, confirmada digitando o nome. Separado do BoardFormModal: regra destrutiva diferente, nada em comum além do Modal |
+| `MoverBoardDialog` | Modal, Field, Select, AcoesDoFormulario | "Mover para outro workspace" no ⋮ do BoardCard (só o dono, como o excluir). Novo porque nenhum modal existente escolhe um destino: BoardFormModal edita o nome, ExcluirBoardDialog confirma por digitação. Sem lista de destino (só um workspace), explica em vez de mostrar seletor vazio |
 | `GrupoFormModal` | Modal, Field, TextInput, Select, Button | criar e renomear/recolorir grupo da tabela (`BoardPage`). Novo porque `BoardFormModal` não tem cor e é específico de board; é a 2ª ocorrência do padrão "modal de nome" — a regra dos três manda unificar só na 3ª |
 | `AvisoPWA` | Button | raiz do app (`App.tsx`), fora das rotas. Barra fixa no rodapé com no máximo um aviso: versão nova do PWA (prioridade) ou instalar o app. Novo porque nenhum componente existente é um aviso global; não vira `Toast` genérico porque só ele usa (ver "FORA dos primitivos"). Spec: `docs/superpowers/specs/2026-09-29-pwa-design.md` |
 

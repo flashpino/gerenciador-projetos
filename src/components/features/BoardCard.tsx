@@ -10,13 +10,15 @@ interface Props {
   aoRenomear: (board: Board) => void
   /** Ausente = sem "Excluir" no menu (só o dono do workspace exclui painéis). */
   aoExcluir?: (board: Board) => void
+  /** Ausente = sem "Mover" no menu (mesma regra do excluir: só o dono do workspace). */
+  aoMover?: (board: Board) => void
 }
 
 /**
  * Um board na lista "Meus Painéis". O Menu fica FORA do Link: botão dentro
  * de link é HTML inválido e o clique no menu navegaria junto.
  */
-export function BoardCard({ board, aoRenomear, aoExcluir }: Props) {
+export function BoardCard({ board, aoRenomear, aoExcluir, aoMover }: Props) {
   return (
     <div className="flex items-start gap-space-sm glass rounded-card p-space-md transition-[background-color,transform,box-shadow] duration-fast ease-out-soft hover:-translate-y-0.5 hover:bg-glass-strong hover:shadow-overlay">
       <Link
@@ -34,6 +36,7 @@ export function BoardCard({ board, aoRenomear, aoExcluir }: Props) {
         align="end"
         items={[
           { id: 'renomear', rotulo: 'Renomear', aoEscolher: () => aoRenomear(board) },
+          ...(aoMover ? [{ id: 'mover', rotulo: 'Mover para outro workspace', aoEscolher: () => aoMover(board) }] : []),
           ...(aoExcluir ? [{ id: 'excluir', rotulo: 'Excluir', aoEscolher: () => aoExcluir(board) }] : []),
         ]}
         trigger={(p) => (

@@ -4,10 +4,11 @@ import { Plus } from 'lucide-react'
 import { BoardCard } from '@/components/features/BoardCard'
 import { BoardFormModal } from '@/components/features/BoardFormModal'
 import { ExcluirBoardDialog } from '@/components/features/ExcluirBoardDialog'
+import { MoverBoardDialog } from '@/components/features/MoverBoardDialog'
 import { Button } from '@/components/ui/Button'
 import { EsqueletoPaineis } from '@/components/features/Esqueletos'
 import { StateView } from '@/components/ui/StateView'
-import { useBoards, useFavoritos, useWorkspaceAtual } from '@/hooks/useQuadro'
+import { useBoards, useFavoritos, useWorkspaceAtual, useWorkspaces } from '@/hooks/useQuadro'
 import { estadoDaQuery } from '@/lib/estadoDaQuery'
 import type { Board } from '@/types/domain'
 
@@ -24,8 +25,14 @@ export default function PaineisPage({ filtro = 'todos' }: Props) {
   // null = fechado, 'novo' = criando, um Board = renomeando.
   const [form, setForm] = useState<Board | 'novo' | null>(null)
   const [boardParaExcluir, setBoardParaExcluir] = useState<Board | null>(null)
+  const [boardParaMover, setBoardParaMover] = useState<Board | null>(null)
+  const workspaces = useWorkspaces()
   const abrirCriacao = () => setForm('novo')
   const tituloRef = useRef<HTMLHeadingElement>(null)
+
+  const ehDoDono = (b: Board) => Boolean(workspace.data?.souDono && b.workspace_id === workspace.data.id)
+  // Destino: qualquer workspace de que a pessoa é membro, menos o de onde o painel sai.
+  const destinos = (workspaces.data ?? []).filter((w) => w.id !== boardParaMover?.workspace_id)
 
   // Meus Painéis: só os do workspace aberto. Favoritos: de todos (atalho pessoal, cruza workspaces).
   const lista = soFavoritos
@@ -96,11 +103,12 @@ export default function PaineisPage({ filtro = 'todos' }: Props) {
         <ul className="grid grid-cols-1 gap-space-md md:grid-cols-2 lg:grid-cols-3">
           {lista?.map((b) => (
             <li key={b.id}>
-              {/* Só o dono do workspace exclui (o banco recusa os demais — boards_delete, 0009). */}
+              {/* Só o dono do workspace exclui e move (o banco recusa os demais — boards_delete 0009, gatilho 0010). */}
               <BoardCard
                 board={b}
                 aoRenomear={setForm}
-                aoExcluir={workspace.data?.souDono && b.workspace_id === workspace.data.id ? setBoardParaExcluir : undefined}
+                aoExcluir={ehDoDono(b) ? setBoardParaExcluir : undefined}
+                aoMover={ehDoDono(b) ? setBoardParaMover : undefined}
               />
             </li>
           ))}
@@ -111,6 +119,15 @@ export default function PaineisPage({ filtro = 'todos' }: Props) {
         aberto={form !== null}
         aoFechar={() => setForm(null)}
         board={form === 'novo' ? null : form}
+      />
+      <MoverBoardDialog
+        board={boardParaMover}
+        destinos={destinos}
+        aoFechar={() => {
+          setBoardParaMover(null)
+          // Mesmo motivo do excluir: se moveu, o card (e o "⋮" que devolveria o foco) saiu da lista.
+          tituloRef.current?.focus()
+        }}
       />
       <ExcluirBoardDialog
         board={boardParaExcluir}

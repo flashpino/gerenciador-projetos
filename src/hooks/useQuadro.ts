@@ -25,6 +25,7 @@ import {
   desfavoritar,
   excluirWorkspace,
   favoritar,
+  moverBoard,
   removerBoard,
   removerGrupo,
   removerMembro,
@@ -203,6 +204,19 @@ export function useExcluirBoard() {
         qc.invalidateQueries({ queryKey: chaves.boards }),
         // A cascata do banco apagou o favorito junto (0003).
         qc.invalidateQueries({ queryKey: chaves.favoritos }),
+      ]),
+  })
+}
+
+export function useMoverBoard() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, workspaceId }: { id: string; workspaceId: string }) => moverBoard(id, workspaceId),
+    // Devolve a promessa pelo mesmo motivo do excluir: o diálogo só fecha com o card já fora da lista.
+    onSuccess: (_r, { id }) =>
+      Promise.all([
+        qc.invalidateQueries({ queryKey: chaves.boards }),
+        qc.invalidateQueries({ queryKey: chaves.board(id) }),
       ]),
   })
 }

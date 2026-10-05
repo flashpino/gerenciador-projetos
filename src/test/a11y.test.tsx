@@ -29,6 +29,7 @@ vi.mock('@/services/boards', () => ({
   buscarBoard: vi.fn(),
   buscarBoards: vi.fn(),
   buscarWorkspaceAtual: vi.fn(),
+  buscarWorkspaces: vi.fn(),
   buscarGruposComTarefas: vi.fn(),
   buscarMembros: vi.fn(),
   buscarTarefaDetalhe: vi.fn(),
@@ -124,6 +125,7 @@ describe('Acessibilidade automatizada (axe) — telas principais do MVP', () => 
     vi.mocked(servico.buscarBoard).mockResolvedValue({ id: 'b1', name: 'Sprint Alpha Q3', workspace_id: 'w1', owner_id: 'u1' })
     vi.mocked(servico.buscarGruposComTarefas).mockResolvedValue(grupos())
     vi.mocked(servico.buscarMembros).mockResolvedValue(MEMBROS)
+    vi.mocked(servico.buscarWorkspaces).mockResolvedValue([])
   })
 
   it('LoginPage não tem violação WCAG', async () => {

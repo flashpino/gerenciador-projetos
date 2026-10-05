@@ -18,15 +18,16 @@ const BOARD = { id: 'b1', name: 'Sprint Alpha', created_at: '2026-09-01T10:00:00
 function renderizar() {
   const aoRenomear = vi.fn()
   const aoExcluir = vi.fn()
+  const aoMover = vi.fn()
   const { wrapper: QueryWrapper } = criarWrapper()
   render(
     <QueryWrapper>
       <MemoryRouter>
-        <BoardCard board={BOARD} aoRenomear={aoRenomear} aoExcluir={aoExcluir} />
+        <BoardCard board={BOARD} aoRenomear={aoRenomear} aoExcluir={aoExcluir} aoMover={aoMover} />
       </MemoryRouter>
     </QueryWrapper>,
   )
-  return { aoRenomear, aoExcluir }
+  return { aoRenomear, aoExcluir, aoMover }
 }
 
 describe('BoardCard', () => {
@@ -59,5 +60,30 @@ describe('BoardCard', () => {
     await user.click(screen.getByRole('menuitem', { name: 'Excluir' }))
 
     expect(aoExcluir).toHaveBeenCalledWith(BOARD)
+  })
+
+  it('"Mover para outro workspace" no menu entrega o board', async () => {
+    const user = userEvent.setup()
+    const { aoMover } = renderizar()
+
+    await user.click(screen.getByRole('button', { name: 'Ações de Sprint Alpha' }))
+    await user.click(screen.getByRole('menuitem', { name: 'Mover para outro workspace' }))
+
+    expect(aoMover).toHaveBeenCalledWith(BOARD)
+  })
+
+  it('sem aoMover (não é o dono), o menu não oferece mover', async () => {
+    const user = userEvent.setup()
+    const { wrapper: QueryWrapper } = criarWrapper()
+    render(
+      <QueryWrapper>
+        <MemoryRouter>
+          <BoardCard board={BOARD} aoRenomear={vi.fn()} />
+        </MemoryRouter>
+      </QueryWrapper>,
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Ações de Sprint Alpha' }))
+    expect(screen.queryByRole('menuitem', { name: 'Mover para outro workspace' })).not.toBeInTheDocument()
   })
 })
